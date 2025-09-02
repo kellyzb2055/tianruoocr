@@ -1,6 +1,7 @@
-﻿using System;
+﻿﻿﻿﻿﻿﻿﻿﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -55,7 +56,27 @@ namespace TrOCR
         	}
         	catch (Exception ex)
         	{
-        		MessageBox.Show("捕获到未处理异常: " + ex.ToString(), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        		// 记录详细的异常信息到日志文件
+        		try
+        		{
+        			var logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "error.log");
+        			var logDir = Path.GetDirectoryName(logPath);
+        			if (!Directory.Exists(logDir))
+        			{
+        				Directory.CreateDirectory(logDir);
+        			}
+        			
+        			var logEntry = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] 未处理异常:{ex}{new string('=', 80)}";
+        			File.AppendAllText(logPath, logEntry, Encoding.UTF8);
+        		}
+        		catch
+        		{
+        			// 如果日志记录失败，忽略错误
+        		}
+        		
+        		// 显示用户友好的错误信息
+        		var errorMsg = $"程序启动时发生错误:{ex.Message}，详细信息已记录到 Data/error.log 文件中。";
+        		MessageBox.Show(errorMsg, "TrOCR 启动错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
         	}
         }
       
@@ -201,6 +222,7 @@ namespace TrOCR
                 IniHelper.SetValue("快捷键", "翻译文本", "F9");
                 IniHelper.SetValue("快捷键", "记录界面", "请按下快捷键");
                 IniHelper.SetValue("快捷键", "识别界面", "请按下快捷键");
+                IniHelper.SetValue("快捷键", "输入翻译", "请按下快捷键");
                 IniHelper.SetValue("密钥_百度", "secret_id", "YsZKG1wha34PlDOPYaIrIIKO");
                 IniHelper.SetValue("密钥_百度", "secret_key", "HPRZtdOHrdnnETVsZM2Nx7vbDkMfxrkD");
                 IniHelper.SetValue("代理", "代理类型", "系统代理");
@@ -292,6 +314,11 @@ namespace TrOCR
             if (IniHelper.GetValue("快捷键", "识别界面") == "发生错误")
             {
                 IniHelper.SetValue("快捷键", "识别界面", "请按下快捷键");
+            }
+
+            if (IniHelper.GetValue("快捷键", "输入翻译") == "发生错误")
+            {
+                IniHelper.SetValue("快捷键", "输入翻译", "请按下快捷键");
             }
 
             if (IniHelper.GetValue("密钥_百度", "secret_id") == "发生错误")

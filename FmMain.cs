@@ -1216,6 +1216,27 @@ namespace TrOCR
 		}
 
 		/// <summary>
+		/// 安全获取配置值的辅助方法
+		/// </summary>
+		/// <param name="section">配置节</param>
+		/// <param name="key">配置键</param>
+		/// <param name="defaultValue">默认值</param>
+		/// <returns>配置值或默认值</returns>
+		private string GetConfigValueSafely(string section, string key, string defaultValue = "")
+		{
+			try
+			{
+				var value = IniHelper.GetValue(section, key);
+				return (string.IsNullOrEmpty(value) || value == "发生错误") ? defaultValue : value;
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine($"读取配置失败 [{section}][{key}]: {ex.Message}");
+				return defaultValue;
+			}
+		}
+
+		/// <summary>
 		/// 初始化应用程序配置，包括OCR接口、翻译接口、快捷键和各种API密钥
 		/// </summary>
 		private void InitConfig()
@@ -1224,20 +1245,17 @@ namespace TrOCR
 			InitializeApiMenus();
 			
 			// 初始化OCR接口配置
-			interface_flag = IniHelper.GetValue("配置", "接口");
-			if (interface_flag == "发生错误")
+			interface_flag = GetConfigValueSafely("配置", "接口", "搜狗");
+			if (string.IsNullOrEmpty(interface_flag))
 			{
-				IniHelper.SetValue("配置", "接口", "搜狗");
-				OCR_foreach("搜狗");
+				interface_flag = "搜狗";
+				IniHelper.SetValue("配置", "接口", interface_flag);
 			}
-			else
-			{
-				OCR_foreach(interface_flag);
-			}
+			OCR_foreach(interface_flag);
 			
 			// 初始化翻译接口配置
-			StaticValue.Translate_Current_API = IniHelper.GetValue("配置", "翻译接口");
-			if (StaticValue.Translate_Current_API == "发生错误")
+			StaticValue.Translate_Current_API = GetConfigValueSafely("配置", "翻译接口", "谷歌");
+			if (string.IsNullOrEmpty(StaticValue.Translate_Current_API))
 			{
 				StaticValue.Translate_Current_API = "谷歌";
 			}
@@ -1246,40 +1264,33 @@ namespace TrOCR
 			
 			// 初始化快捷键配置
 			var filePath = AppDomain.CurrentDomain.BaseDirectory + "Data\\config.ini";
-			if (IniHelper.GetValue("快捷键", "文字识别") != "请按下快捷键")
+			
+			// 安全加载热键配置的辅助方法
+			Action<string, string, int> loadHotkey = (section, key, flagId) =>
 			{
-				var value = IniHelper.GetValue("快捷键", "文字识别");
-				var text = "None";
-				var text2 = "F4";
-				SetHotkey(text, text2, value, 200);
-			}
-			if (IniHelper.GetValue("快捷键", "翻译文本") != "请按下快捷键")
-			{
-				var value2 = IniHelper.GetValue("快捷键", "翻译文本");
-				var text3 = "None";
-				var text4 = "F7";
-				SetHotkey(text3, text4, value2, 205);
-			}
-			if (IniHelper.GetValue("快捷键", "记录界面") != "请按下快捷键")
-			{
-				var value3 = IniHelper.GetValue("快捷键", "记录界面");
-				var text5 = "None";
-				var text6 = "F8";
-				SetHotkey(text5, text6, value3, 206);
-			}
-			if (IniHelper.GetValue("快捷键", "识别界面") != "请按下快捷键")
-			{
-				var value4 = IniHelper.GetValue("快捷键", "识别界面");
-				var text7 = "None";
-				var text8 = "F11";
-				SetHotkey(text7, text8, value4, 235);
-			}
-			if (IniHelper.GetValue("快捷键", "输入翻译") != "请按下快捷键")
-			{
-				var value5 = IniHelper.GetValue("快捷键", "输入翻译");
-				// 移除令人困惑的默认键 F1，因为SetHotkey函数会直接解析 value5 字符串
-				SetHotkey("None", "", value5, 240);
-			}
+				try
+				{
+					var hotkeyValue = IniHelper.GetValue(section, key);
+					if (!string.IsNullOrEmpty(hotkeyValue) && 
+					    hotkeyValue != "请按下快捷键" && 
+					    hotkeyValue != "发生错误")
+					{
+						SetHotkey("None", "", hotkeyValue, flagId);
+					}
+				}
+				catch (Exception ex)
+				{
+					// 记录错误但不中断程序执行
+					System.Diagnostics.Debug.WriteLine($"加载热键配置失败 [{section}][{key}]: {ex.Message}");
+				}
+			};
+
+			// 加载各个热键配置
+			loadHotkey("快捷键", "文字识别", 200);
+			loadHotkey("快捷键", "翻译文本", 205);
+			loadHotkey("快捷键", "记录界面", 206);
+			loadHotkey("快捷键", "识别界面", 235);
+			loadHotkey("快捷键", "输入翻译", 240);
 			
 			// --- 加载OCR密钥 ---
 			// 加载百度OCR密钥
@@ -2573,6 +2584,13 @@ namespace TrOCR
 		/// <param name="flag">热键标识符</param>
 		public void SetHotkey(string text, string text2, string value, int flag)
 		{
+			// 检查输入参数是否有效
+			if (string.IsNullOrEmpty(value) || value == "发生错误" || value == "请按下快捷键")
+			{
+				// 如果配置无效，直接返回，不注册热键
+				return;
+			}
+
 			var array = (value + "+").Split('+');
 			// 解析快捷键字符串，根据格式确定修饰键和按键
 			if (array.Length == 3)
@@ -2590,12 +2608,39 @@ namespace TrOCR
 				text,
 				text2
 			};
-			// 尝试注册热键，如果失败则提示用户
-			if (!HelpWin32.RegisterHotKey(Handle, flag, (HelpWin32.KeyModifiers)Enum.Parse(typeof(HelpWin32.KeyModifiers), array2[0].Trim()), (Keys)Enum.Parse(typeof(Keys), array2[1].Trim())))
+
+			// 安全解析修饰键枚举
+			if (!Enum.TryParse<HelpWin32.KeyModifiers>(array2[0].Trim(), true, out HelpWin32.KeyModifiers keyModifiers))
 			{
-				CommonHelper.ShowHelpMsg("快捷键冲突，请更换！");
+				// 如果解析失败，使用默认值None
+				keyModifiers = HelpWin32.KeyModifiers.None;
 			}
-			HelpWin32.RegisterHotKey(Handle, flag, (HelpWin32.KeyModifiers)Enum.Parse(typeof(HelpWin32.KeyModifiers), array2[0].Trim()), (Keys)Enum.Parse(typeof(Keys), array2[1].Trim()));
+
+			// 安全解析按键枚举
+			if (!Enum.TryParse<Keys>(array2[1].Trim(), true, out Keys key))
+			{
+				// 如果解析失败，直接返回，不注册热键
+				return;
+			}
+
+			try
+			{
+				// 尝试注册热键，如果失败则提示用户
+				if (!HelpWin32.RegisterHotKey(Handle, flag, keyModifiers, key))
+				{
+					CommonHelper.ShowHelpMsg("快捷键冲突，请更换！");
+				}
+				else
+				{
+					// 注册成功后再次调用确保热键生效
+					HelpWin32.RegisterHotKey(Handle, flag, keyModifiers, key);
+				}
+			}
+			catch (Exception ex)
+			{
+				// 捕获任何异常，避免程序崩溃
+				CommonHelper.ShowHelpMsg($"热键注册失败: {ex.Message}");
+			}
 		}
 #endregion
 // ====================================================================================================================
