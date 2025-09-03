@@ -6337,7 +6337,46 @@ namespace TrOCR
 			if (menuItem != null)
 			{
 				string visibilityValue = IniHelper.GetValue(section, key);
-				bool isVisible = visibilityValue == "发生错误" || Convert.ToBoolean(visibilityValue);
+				bool isVisible;
+
+				if (bool.TryParse(visibilityValue, out isVisible))
+				{
+					// Value was "True" or "False", isVisible is now set correctly.
+				}
+				else // Value was "发生错误" or something else. Apply default logic.
+				{
+					if (section == "翻译接口显示")
+					{
+						switch (key)
+						{
+							case "TencentInteractive":
+							case "Caiyun":
+							case "Volcano":
+								isVisible = false;
+								break;
+							default:
+								isVisible = true;
+								break;
+						}
+					}
+					else if (section == "Ocr接口显示")
+					{
+						switch (key)
+						{
+							case "Baimiao":
+								isVisible = false;
+								break;
+							default:
+								isVisible = true;
+								break;
+						}
+					}
+					else
+					{
+						isVisible = true; // Default for any other section
+					}
+				}
+				
 				menuItem.Visible = isVisible;
 			}
 		}

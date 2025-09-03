@@ -684,6 +684,34 @@ namespace TrOCR
 			tabControl2.SelectedIndexChanged += AdjustPageSize;
 			tabControl_Trans.SelectedIndexChanged += AdjustPageSize;
 			AdjustPageSize(tab_标签, EventArgs.Empty);
+
+			// 为所有接口可见性复选框附加事件处理程序
+			checkBox_ShowOcrBaidu.CheckedChanged += ApiVisibility_CheckedChanged;
+			checkBox_ShowOcrBaiduAccurate.CheckedChanged += ApiVisibility_CheckedChanged;
+			checkBox_ShowOcrTencent.CheckedChanged += ApiVisibility_CheckedChanged;
+			checkBox_ShowOcrTencentAccurate.CheckedChanged += ApiVisibility_CheckedChanged;
+			checkBox_ShowOcrBaimiao.CheckedChanged += ApiVisibility_CheckedChanged;
+			checkBox_ShowOcrSougou.CheckedChanged += ApiVisibility_CheckedChanged;
+			checkBox_ShowOcrYoudao.CheckedChanged += ApiVisibility_CheckedChanged;
+			checkBox_ShowOcrWeChat.CheckedChanged += ApiVisibility_CheckedChanged;
+			checkBox_ShowOcrMathfuntion.CheckedChanged += ApiVisibility_CheckedChanged;
+			checkBox_ShowOcrTable.CheckedChanged += ApiVisibility_CheckedChanged;
+			checkBox_ShowOcrShupai.CheckedChanged += ApiVisibility_CheckedChanged;
+			checkBox_ShowOcrTableBaidu.CheckedChanged += ApiVisibility_CheckedChanged;
+			checkBox_ShowOcrTableAli.CheckedChanged += ApiVisibility_CheckedChanged;
+			checkBox_ShowOcrShupaiLR.CheckedChanged += ApiVisibility_CheckedChanged;
+			checkBox_ShowOcrShupaiRL.CheckedChanged += ApiVisibility_CheckedChanged;
+			checkBox_ShowGoogle.CheckedChanged += ApiVisibility_CheckedChanged;
+			checkBox_ShowBaidu.CheckedChanged += ApiVisibility_CheckedChanged;
+			checkBox_ShowTencent.CheckedChanged += ApiVisibility_CheckedChanged;
+			checkBox_ShowBing.CheckedChanged += ApiVisibility_CheckedChanged;
+			checkBox_ShowBing2.CheckedChanged += ApiVisibility_CheckedChanged;
+			checkBox_ShowMicrosoft.CheckedChanged += ApiVisibility_CheckedChanged;
+			checkBox_ShowYandex.CheckedChanged += ApiVisibility_CheckedChanged;
+			checkBox_ShowTencentInteractive.CheckedChanged += ApiVisibility_CheckedChanged;
+			checkBox_ShowCaiyun.CheckedChanged += ApiVisibility_CheckedChanged;
+			checkBox_ShowVolcano.CheckedChanged += ApiVisibility_CheckedChanged;
+			checkBox_ShowCaiyun2.CheckedChanged += ApiVisibility_CheckedChanged;
 		}
 
 		/// <summary>
@@ -1908,6 +1936,61 @@ namespace TrOCR
 		    {
 		         this.ClientSize = new System.Drawing.Size(this.ClientSize.Width, scaledHeight);
 		    }
+		}
+
+		/// <summary>
+		/// 检查接口可见性复选框的状态变化
+		/// </summary>
+		private void ApiVisibility_CheckedChanged(object sender, EventArgs e)
+		{
+		 CheckBox checkBox = sender as CheckBox;
+		 if (checkBox == null || checkBox.Checked)
+		 {
+		  return; // 只在取消勾选时处理
+		 }
+
+		 string currentOcrApi = IniHelper.GetValue("配置", "接口");
+		 string currentTranslateApi = IniHelper.GetValue("配置", "翻译接口");
+
+		 bool isInUse = false;
+
+		 // OCR API 检查
+		 if (checkBox == checkBox_ShowOcrBaidu && (new[] { "中英", "日语", "韩语" }).Contains(currentOcrApi)) isInUse = true;
+		 else if (checkBox == checkBox_ShowOcrBaiduAccurate && currentOcrApi == "百度-高精度") isInUse = true;
+		 else if (checkBox == checkBox_ShowOcrTencent && currentOcrApi == "腾讯") isInUse = true;
+		 else if (checkBox == checkBox_ShowOcrTencentAccurate && currentOcrApi == "腾讯-高精度") isInUse = true;
+		 else if (checkBox == checkBox_ShowOcrBaimiao && currentOcrApi == "白描") isInUse = true;
+		 else if (checkBox == checkBox_ShowOcrSougou && currentOcrApi == "搜狗") isInUse = true;
+		 else if (checkBox == checkBox_ShowOcrYoudao && currentOcrApi == "有道") isInUse = true;
+		 else if (checkBox == checkBox_ShowOcrWeChat && currentOcrApi == "微信") isInUse = true;
+		 else if (checkBox == checkBox_ShowOcrMathfuntion && currentOcrApi == "公式") isInUse = true;
+		 else if (checkBox == checkBox_ShowOcrTable && (new[] { "百度表格", "阿里表格" }).Contains(currentOcrApi)) isInUse = true;
+		 else if (checkBox == checkBox_ShowOcrShupai && (new[] { "从左向右", "从右向左" }).Contains(currentOcrApi)) isInUse = true;
+		 else if (checkBox == checkBox_ShowOcrTableBaidu && currentOcrApi == "百度表格") isInUse = true;
+		 else if (checkBox == checkBox_ShowOcrTableAli && currentOcrApi == "阿里表格") isInUse = true;
+		 else if (checkBox == checkBox_ShowOcrShupaiLR && currentOcrApi == "从左向右") isInUse = true;
+		 else if (checkBox == checkBox_ShowOcrShupaiRL && currentOcrApi == "从右向左") isInUse = true;
+		 // 翻译 API 检查
+		 else if (checkBox == checkBox_ShowGoogle && currentTranslateApi == "谷歌") isInUse = true;
+		 else if (checkBox == checkBox_ShowBaidu && currentTranslateApi == "百度") isInUse = true;
+		 else if (checkBox == checkBox_ShowTencent && currentTranslateApi == "腾讯") isInUse = true;
+		 else if (checkBox == checkBox_ShowBing && currentTranslateApi == "Bing") isInUse = true;
+		 else if (checkBox == checkBox_ShowBing2 && currentTranslateApi == "Bing2") isInUse = true;
+		 else if (checkBox == checkBox_ShowMicrosoft && currentTranslateApi == "Microsoft") isInUse = true;
+		 else if (checkBox == checkBox_ShowYandex && currentTranslateApi == "Yandex") isInUse = true;
+		 else if (checkBox == checkBox_ShowTencentInteractive && currentTranslateApi == "腾讯交互翻译") isInUse = true;
+		 else if (checkBox == checkBox_ShowCaiyun && currentTranslateApi == "彩云小译") isInUse = true;
+		 else if (checkBox == checkBox_ShowVolcano && currentTranslateApi == "火山翻译") isInUse = true;
+		 else if (checkBox == checkBox_ShowCaiyun2 && currentTranslateApi == "彩云小译2") isInUse = true;
+		//如果接口正在使用，弹出提示
+		 if (isInUse)
+		 {
+		  MessageBox.Show("该接口正在使用中，不能隐藏。", "提示", MessageBoxButtons.OK, MessageBoxIcon.None);
+		  // 重新勾选复选框，并临时移除事件处理程序以避免无限循环
+		  checkBox.CheckedChanged -= ApiVisibility_CheckedChanged;
+		  checkBox.Checked = true;
+		  checkBox.CheckedChanged += ApiVisibility_CheckedChanged;
+		 }
 		}
 	}
 }
