@@ -170,7 +170,7 @@ namespace TrOCR
                         foreach (var asset in assets)
                         {
                             var name = asset["name"].Value<string>();
-                            if (name.EndsWith(".exe") || name.EndsWith(".zip") || name.EndsWith(".rar"))
+                            if (name.EndsWith(".exe") || name.EndsWith(".zip") || name.EndsWith(".rar") || name.EndsWith(".7z"))
                             {
                                 downloadUrl = asset["browser_download_url"].Value<string>();
                                 break;
