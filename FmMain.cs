@@ -1201,6 +1201,14 @@ namespace TrOCR
 				{
 					// 彩云小译2使用Token作为密钥
 					apiKey = IniHelper.GetValue(section, "Token");
+					// 如果发生错误，使用默认Token值
+					if (apiKey == "发生错误")
+					{
+						apiKey = "3975l6lr5pcbvidl6jl2"; // 默认Token值
+						// 保存默认Token到配置文件，避免下次启动时再次出现问题.
+						// 这一步导致进入设置页然后关闭设置页写入配置文件时此翻译接口和其他写入的翻译接口配置不在一个区域了，所以我注释掉它了
+						// IniHelper.SetValue(section, "Token", apiKey);
+					}
 				}
 				else
 				{
