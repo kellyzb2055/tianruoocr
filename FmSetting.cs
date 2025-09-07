@@ -1741,7 +1741,7 @@ namespace TrOCR
 		}
 
 		/// <summary>
-		/// 快速保存图片复选框状态改变事件处理函数
+		/// 截图自动保存复选框状态改变事件处理函数
 		/// </summary>
 		/// <param name="sender">事件发送者</param>
 		/// <param name="e">事件参数</param>
@@ -1866,34 +1866,46 @@ namespace TrOCR
 		{
 		    ResetControlLocations();
 
-		    // Determine which TabPage is ultimately visible.
-		    TabPage selectedPage = tab_标签.SelectedTab;
-		    if (selectedPage == Page_密钥)
-		    {
-		        selectedPage = tabControl2.SelectedTab;
-		    }
-		    else if (selectedPage == Page_翻译接口)
-		    {
-		        selectedPage = tabControl_Trans.SelectedTab;
-		    }
-		    if (selectedPage == null) return;
+			// Determine which TabPage is ultimately visible.
+			TabPage selectedPage = tab_标签.SelectedTab;
 
-		    // Calculate the bottom-most point of any visible control on that page.
-		    int maxBottom = 0;
-		    var visibleControls = selectedPage.Controls.OfType<Control>().Where(c => c.Visible).ToList();
-		    if (visibleControls.Any())
-		    {
-		        maxBottom = visibleControls.Max(c => c.Bottom);
-		    }
+			int newHeight;
+    		
+        	if (selectedPage == Page_密钥)
+        	{
+        		selectedPage = tabControl2.SelectedTab;
+        	}
+        	else if (selectedPage == Page_翻译接口)
+        	{
+        	    selectedPage = tabControl_Trans.SelectedTab;
+        	}
+	
+        	if (selectedPage == null) return;
 
-		    // This is the total height required for the content within the main TabControl area.
-		    int requiredContentHeight = maxBottom + 40; // Add 40px padding.
+			// Calculate the bottom-most point of any visible control on that page.
+			int maxBottom = 0;
+        	var visibleControls = selectedPage.Controls.OfType<Control>().Where(c => c.Visible).ToList();
+        	if (visibleControls.Any())
+        	{
+        	    maxBottom = visibleControls.Max(c => c.Bottom);
+        	}
+			int requiredContentHeight; 
 
-		    // The total form height is the position of the main TabControl plus the content height.
-		    int requiredFormHeight = tab_标签.Top + requiredContentHeight;
-		          
-		    const int minFormHeight = 435;
-		    int newHeight = Math.Max(requiredFormHeight, minFormHeight);
+			if (selectedPage == page_常规)
+			{
+				requiredContentHeight = maxBottom + 80; // Add 80px padding.
+
+			} else {
+				// This is the total height required for the content within the main TabControl area.
+			 	requiredContentHeight = maxBottom + 40; // Add 40px padding.
+			}
+			
+
+        	// The total form height is the position of the main TabControl plus the content height.
+        	int requiredFormHeight = tab_标签.Top + requiredContentHeight;
+	
+        	const int minFormHeight = 435;
+        	newHeight = Math.Max(requiredFormHeight, minFormHeight);
 
 		    // Apply DPI scaling and update the form's client size.
 		    int scaledHeight = (int)(newHeight / StaticValue.DpiFactor);

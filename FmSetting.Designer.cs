@@ -311,6 +311,13 @@ namespace TrOCR
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_静默识别)).BeginInit(); 
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.label19 = new System.Windows.Forms.Label();
+            this.groupBox_OcrWorkflow = new System.Windows.Forms.GroupBox();
+            this.groupBox_TranslateWorkflow = new System.Windows.Forms.GroupBox();
+            this.checkBox_AutoCopyOcrResult = new System.Windows.Forms.CheckBox();
+            this.checkBox_AutoTranslateOcrResult = new System.Windows.Forms.CheckBox();
+            this.checkBox_AutoCopyOcrTranslation = new System.Windows.Forms.CheckBox();
+            this.checkBox_AutoCopyInputTranslation = new System.Windows.Forms.CheckBox();
+
             //"更新"设置页
             this.Page_更新 = new System.Windows.Forms.TabPage();
             this.更新Button_check = new System.Windows.Forms.Button();
@@ -375,14 +382,16 @@ namespace TrOCR
             this.groupBox_Caiyun2_Source.SuspendLayout();
             this.groupBox_Caiyun2_Target.SuspendLayout();
             this.groupBox_Caiyun2_Key.SuspendLayout();
+            this.groupBox_OcrWorkflow.SuspendLayout(); // 暂停 GroupBox 布局
+            this.groupBox_TranslateWorkflow.SuspendLayout(); // 暂停 GroupBox 布局
             this.groupBox10.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numbox_记录)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.tab_标签.SuspendLayout();
             this.Page_更新.SuspendLayout();
             this.groupBox5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numbox_记录)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numbox_间隔时间)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pic_help)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_识别界面)).BeginInit();
@@ -1390,6 +1399,8 @@ namespace TrOCR
             this.page_常规.Controls.Add(this.常规Button);
             this.page_常规.Controls.Add(this.groupBox2);
             this.page_常规.Controls.Add(this.groupBox1);
+            this.page_常规.Controls.Add(this.groupBox_OcrWorkflow);
+            this.page_常规.Controls.Add(this.groupBox_TranslateWorkflow);
             this.page_常规.Location = new System.Drawing.Point(4, 22);
             this.page_常规.Name = "page_常规";
             this.page_常规.Padding = new System.Windows.Forms.Padding(3);
@@ -1406,7 +1417,7 @@ namespace TrOCR
             this.groupBox10.Controls.Add(this.btn_音效);
             this.groupBox10.Controls.Add(this.text_音效path);
             this.groupBox10.Controls.Add(this.label18);
-            this.groupBox10.Location = new System.Drawing.Point(6, 166);
+            this.groupBox10.Location = new System.Drawing.Point(6, 288);
             this.groupBox10.Name = "groupBox10";
             this.groupBox10.Size = new System.Drawing.Size(378, 86);
             this.groupBox10.TabIndex = 8;
@@ -1422,7 +1433,7 @@ namespace TrOCR
             this.chbox_save.Name = "chbox_save";
             this.chbox_save.Size = new System.Drawing.Size(96, 16);
             this.chbox_save.TabIndex = 10;
-            this.chbox_save.Text = "快速保存图片";
+            this.chbox_save.Text = "截图自动保存";
             this.chbox_save.UseVisualStyleBackColor = true;
             this.chbox_save.CheckedChanged += new System.EventHandler(this.chbox_save_CheckedChanged);
             // 
@@ -1433,7 +1444,7 @@ namespace TrOCR
             this.chbox_copy.Name = "chbox_copy";
             this.chbox_copy.Size = new System.Drawing.Size(96, 16);
             this.chbox_copy.TabIndex = 6;
-            this.chbox_copy.Text = "复制到粘贴板";
+            this.chbox_copy.Text = "截图到粘贴板";
             this.chbox_copy.UseVisualStyleBackColor = true;
             this.chbox_copy.CheckedChanged += new System.EventHandler(this.chbox_copy_CheckedChanged);
             // 
@@ -1475,6 +1486,80 @@ namespace TrOCR
             this.label18.Size = new System.Drawing.Size(41, 12);
             this.label18.TabIndex = 3;
             this.label18.Text = "文件：";
+
+            // 
+            // groupBox_OcrWorkflow
+            // 
+            this.groupBox_OcrWorkflow.Controls.Add(this.checkBox_AutoCopyOcrResult);
+            this.groupBox_OcrWorkflow.Controls.Add(this.checkBox_AutoTranslateOcrResult);
+            this.groupBox_OcrWorkflow.Location = new System.Drawing.Point(6, 166);
+            this.groupBox_OcrWorkflow.Name = "groupBox_OcrWorkflow";
+            this.groupBox_OcrWorkflow.Size = new System.Drawing.Size(378, 55);
+            this.groupBox_OcrWorkflow.TabIndex = 9;
+            this.groupBox_OcrWorkflow.TabStop = false;
+            this.groupBox_OcrWorkflow.Text = "识别后操作";
+
+            // 
+            // checkBox_AutoCopyOcrResult
+            // 
+            this.checkBox_AutoCopyOcrResult.AutoSize = true;
+            this.checkBox_AutoCopyOcrResult.Location = new System.Drawing.Point(17, 25);
+            this.checkBox_AutoCopyOcrResult.Name = "checkBox_AutoCopyOcrResult";
+            this.checkBox_AutoCopyOcrResult.Size = new System.Drawing.Size(180, 16);
+            this.checkBox_AutoCopyOcrResult.TabIndex = 0;
+            this.checkBox_AutoCopyOcrResult.Text = "自动复制识别结果到剪贴板";
+            this.checkBox_AutoCopyOcrResult.UseVisualStyleBackColor = true;
+            // this.checkBox_AutoCopyOcrResult.CheckedChanged += new System.EventHandler(this.checkBox_AutoCopyOcrResult_CheckedChanged);
+
+            // 
+            // checkBox_AutoTranslateOcrResult
+            // 
+            this.checkBox_AutoTranslateOcrResult.AutoSize = true;
+            this.checkBox_AutoTranslateOcrResult.Location = new System.Drawing.Point(204, 25);
+            this.checkBox_AutoTranslateOcrResult.Name = "checkBox_AutoTranslateOcrResult";
+            this.checkBox_AutoTranslateOcrResult.Size = new System.Drawing.Size(120, 16);
+            this.checkBox_AutoTranslateOcrResult.TabIndex = 1;
+            this.checkBox_AutoTranslateOcrResult.Text = "自动翻译识别结果";
+            this.checkBox_AutoTranslateOcrResult.UseVisualStyleBackColor = true;
+
+
+
+
+            // 
+            // groupBox_TranslateWorkflow
+            // 
+            this.groupBox_TranslateWorkflow.Controls.Add(this.checkBox_AutoCopyOcrTranslation);
+            this.groupBox_TranslateWorkflow.Controls.Add(this.checkBox_AutoCopyInputTranslation);
+            this.groupBox_TranslateWorkflow.Location = new System.Drawing.Point(6, 227);
+            this.groupBox_TranslateWorkflow.Name = "groupBox_TranslateWorkflow";
+            this.groupBox_TranslateWorkflow.Size = new System.Drawing.Size(378, 55);
+            this.groupBox_TranslateWorkflow.TabIndex = 10;
+            this.groupBox_TranslateWorkflow.TabStop = false;
+            this.groupBox_TranslateWorkflow.Text = "翻译后操作";
+
+            // 
+            // checkBox_AutoCopyOcrTranslation
+            // 
+            this.checkBox_AutoCopyOcrTranslation.AutoSize = true;
+            this.checkBox_AutoCopyOcrTranslation.Location = new System.Drawing.Point(17, 25);
+            this.checkBox_AutoCopyOcrTranslation.Name = "checkBox_AutoCopyOcrTranslation";
+            this.checkBox_AutoCopyOcrTranslation.Size = new System.Drawing.Size(192, 16);
+            this.checkBox_AutoCopyOcrTranslation.TabIndex = 0;
+            this.checkBox_AutoCopyOcrTranslation.Text = "OCR翻译后，自动复制翻译结果";
+            this.checkBox_AutoCopyOcrTranslation.UseVisualStyleBackColor = true;
+
+            // 
+            // checkBox_AutoCopyInputTranslation
+            // 
+            this.checkBox_AutoCopyInputTranslation.AutoSize = true;
+            this.checkBox_AutoCopyInputTranslation.Location = new System.Drawing.Point(204, 25);
+            this.checkBox_AutoCopyInputTranslation.Name = "checkBox_AutoCopyInputTranslation";
+            this.checkBox_AutoCopyInputTranslation.Size = new System.Drawing.Size(192, 16);
+            this.checkBox_AutoCopyInputTranslation.TabIndex = 1;
+            this.checkBox_AutoCopyInputTranslation.Text = "输入翻译后，自动复制翻译结果";
+            this.checkBox_AutoCopyInputTranslation.UseVisualStyleBackColor = true;
+
+
             //
             // tabControl_Trans
             //
@@ -2525,7 +2610,7 @@ namespace TrOCR
             this.groupBox6.Controls.Add(this.textBox_path);
             this.groupBox6.Controls.Add(this.label1);
             this.groupBox6.Controls.Add(this.cbBox_保存);
-            this.groupBox6.Location = new System.Drawing.Point(6, 257);
+            this.groupBox6.Location = new System.Drawing.Point(6, 379);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(378, 63);
             this.groupBox6.TabIndex = 6;
@@ -2575,7 +2660,7 @@ namespace TrOCR
             // 常规Button
             //
             this.常规Button.BackColor = System.Drawing.Color.White;
-            this.常规Button.Location = new System.Drawing.Point(309, 327);
+            this.常规Button.Location = new System.Drawing.Point(309, 449);
             this.常规Button.Name = "常规Button";
             this.常规Button.Size = new System.Drawing.Size(75, 23);
             this.常规Button.TabIndex = 6;
@@ -3111,6 +3196,10 @@ namespace TrOCR
             this.pictureBox_输入翻译.TabIndex = 14;
             this.pictureBox_输入翻译.TabStop = false;
 
+            this.groupBox_OcrWorkflow.ResumeLayout(false); // 恢复 GroupBox 布局
+            this.groupBox_OcrWorkflow.PerformLayout();
+            this.groupBox_TranslateWorkflow.ResumeLayout(false); // 恢复 GroupBox 布局
+            this.groupBox_TranslateWorkflow.PerformLayout();
             this.groupBox10.ResumeLayout(false);
             this.groupBox10.PerformLayout();
             this.groupBox6.ResumeLayout(false);
@@ -3462,5 +3551,11 @@ namespace TrOCR
         private System.Windows.Forms.Label label_tencent_accurate_secretid;
         private System.Windows.Forms.ComboBox comboBox_Tencent_Accurate_Language;
         private System.Windows.Forms.Label label_Tencent_Accurate_Language;
+        private System.Windows.Forms.GroupBox groupBox_OcrWorkflow;
+        private System.Windows.Forms.CheckBox checkBox_AutoCopyOcrResult;
+        private System.Windows.Forms.CheckBox checkBox_AutoTranslateOcrResult;
+        private System.Windows.Forms.GroupBox groupBox_TranslateWorkflow;
+        private System.Windows.Forms.CheckBox checkBox_AutoCopyOcrTranslation;
+        private System.Windows.Forms.CheckBox checkBox_AutoCopyInputTranslation;
     }
 }
