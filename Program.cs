@@ -262,6 +262,10 @@ namespace TrOCR
                 IniHelper.SetValue("配置", "自动保存", "True");
                 IniHelper.SetValue("配置", "截图位置", Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory));
                 IniHelper.SetValue("配置", "翻译接口", "谷歌");
+                IniHelper.SetValue("识别后操作", "AutoCopyOcrResult", "False");
+                IniHelper.SetValue("识别后操作", "AutoTranslateOcrResult", "False");
+                IniHelper.SetValue("翻译后操作", "AutoCopyOcrTranslation", "False");
+                IniHelper.SetValue("翻译后操作", "AutoCopyInputTranslation", "False");
                 IniHelper.SetValue("快捷键", "文字识别", "F4");
                 IniHelper.SetValue("快捷键", "翻译文本", "F9");
                 IniHelper.SetValue("快捷键", "记录界面", "请按下快捷键");
@@ -333,6 +337,26 @@ namespace TrOCR
             if (IniHelper.GetValue("配置", "自动保存") == "发生错误")
             {
                 IniHelper.SetValue("配置", "自动保存", "True");
+            }
+
+            if (IniHelper.GetValue("识别后操作", "AutoCopyOcrResult") == "发生错误")
+            {
+                IniHelper.SetValue("识别后操作", "AutoCopyOcrResult", "False");
+            }
+
+            if (IniHelper.GetValue("识别后操作", "AutoTranslateOcrResult") == "发生错误")
+            {
+                IniHelper.SetValue("识别后操作", "AutoTranslateOcrResult", "False");
+            }
+
+            if (IniHelper.GetValue("翻译后操作", "AutoCopyOcrTranslation") == "发生错误")
+            {
+                IniHelper.SetValue("翻译后操作", "AutoCopyOcrTranslation", "False");
+            }
+
+            if (IniHelper.GetValue("翻译后操作", "AutoCopyInputTranslation") == "发生错误")
+            {
+                IniHelper.SetValue("翻译后操作", "AutoCopyInputTranslation", "False");
             }
 
             if (IniHelper.GetValue("配置", "翻译接口") == "发生错误")

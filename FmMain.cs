@@ -429,6 +429,8 @@ namespace TrOCR
 		/// <param name="e">事件参数</param>
 		private void trayInputTranslateClick(object sender, EventArgs e)
 		{
+			isContentFromOcr = false; // 关键新增：这不是OCR流程
+
 			// 1. 始终重置翻译界面，确保只显示主输入窗口
 			transtalate_fla = "关闭";
 			RichBoxBody.Dock = DockStyle.Fill;
@@ -2020,6 +2022,41 @@ namespace TrOCR
 		{
 			RichBoxBody_T.Text = googleTranslate_txt;
 			googleTranslate_txt = "";
+
+    	// 翻译完成后的统一自动复制逻辑
+    	bool shouldCopy = false;
+    
+    	// isContentFromOcr 为 true 意味着当前是对OCR结果的翻译（无论是自动还是手动）
+    	if (isContentFromOcr) 
+    	{
+    	    // 检查“OCR翻译后复制”选项
+    	    shouldCopy = Convert.ToBoolean(IniHelper.GetValue("翻译后操作", "AutoCopyOcrTranslation"));
+    	}
+    	else // 这才是真正的“输入翻译”
+    	{
+    	    // 检查“输入翻译后复制”选项
+    	    shouldCopy = Convert.ToBoolean(IniHelper.GetValue("翻译后操作", "AutoCopyInputTranslation"));
+    	}
+
+    	if (shouldCopy && !string.IsNullOrEmpty(RichBoxBody_T.Text))
+    	{
+    	    try
+    	    {
+    	        Clipboard.SetDataObject(RichBoxBody_T.Text, true, 5, 100);
+    	    }
+    	    catch (Exception ex)
+    	    {
+    	        System.Diagnostics.Debug.WriteLine($"自动复制翻译结果失败: {ex.Message}");
+    	    }
+    	}
+
+			// 只有在完成一次OCR翻译流程后，才考虑重置标记。如果不清，连续手动翻译OCR结果也能持续享受自动复制。
+			// 如果希望每次OCR后只有第一次手动翻译能自动复制，可以在这里重置 isContentFromOcr = false;
+			// isContentFromOcr = false;
+
+
+    	isOcrTranslation = false; // 重置“自动”翻译标记
+
 		}
 
 		/// <summary>
@@ -3303,12 +3340,18 @@ namespace TrOCR
 			Size = new Size(form_width, form_height);
 			HelpWin32.SetForegroundWindow(Handle);
 			StaticValue.v_googleTranslate_txt = RichBoxBody.Text;
-			// 处理自动翻译功能
-			if (bool.Parse(IniHelper.GetValue("工具栏", "翻译")))
+			// 处理识别后自动复制
+			if (Convert.ToBoolean(IniHelper.GetValue("识别后操作", "AutoCopyOcrResult")))
+			{
+				Clipboard.SetText(RichBoxBody.Text);
+			}
+			// 处理识别后自动翻译功能
+			if (bool.Parse(IniHelper.GetValue("工具栏", "翻译")) || Convert.ToBoolean(IniHelper.GetValue("识别后操作", "AutoTranslateOcrResult")))
 			{
 				try
 				{
 					auto_fla = "";
+					isOcrTranslation = true;
 					Invoke(new Translate(TransClick));
 				}
 				catch
@@ -3328,6 +3371,7 @@ namespace TrOCR
 					//
 				}
 			}
+			 isContentFromOcr = true; // 关键新增：标记当前内容来源于OCR
 			// 重新设置热键
 			if (IniHelper.GetValue("快捷键", "翻译文本") != "请按下快捷键")
 			{
@@ -6693,9 +6737,13 @@ namespace TrOCR
 
 		/// 标识是否为静默识别模式，识别后不显示窗口，只复制结果
 		private bool isSilentMode = false;
+		/// 标识是ocr的翻译还是输入翻译
+		private bool isOcrTranslation = false;
+
+		private bool isContentFromOcr = false;
 #endregion
 
-// ====================================================================================================================
+		// ====================================================================================================================
 		// **内部类、委托与枚举**
 		//
 		// 包含了 FmMain 类内部使用的辅助类型定义。

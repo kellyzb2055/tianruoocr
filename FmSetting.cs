@@ -99,6 +99,63 @@ namespace TrOCR
 				cbBox_输入翻译剪贴板.Checked = false;
 			}
 			
+			var value_autoCopy = IniHelper.GetValue("识别后操作", "AutoCopyOcrResult");
+			if (value_autoCopy == "发生错误")
+			{
+				checkBox_AutoCopyOcrResult.Checked = false;
+			}
+			try
+			{
+				checkBox_AutoCopyOcrResult.Checked = Convert.ToBoolean(value_autoCopy);
+			}
+			catch
+			{
+				checkBox_AutoCopyOcrResult.Checked = false;
+			}
+			var value_autoTranslate = IniHelper.GetValue("识别后操作", "AutoTranslateOcrResult");
+			if (value_autoTranslate == "发生错误")
+			{
+				checkBox_AutoTranslateOcrResult.Checked = false;
+			}
+			try
+			{
+				checkBox_AutoTranslateOcrResult.Checked = Convert.ToBoolean(value_autoTranslate);
+			}
+			catch
+			{
+				checkBox_AutoTranslateOcrResult.Checked = false;
+			}
+
+			var value_autoCopyOcr = IniHelper.GetValue("翻译后操作", "AutoCopyOcrTranslation");
+			if (value_autoCopyOcr == "发生错误")
+			{
+				checkBox_AutoCopyOcrTranslation.Checked = false;
+			}
+			try
+			{
+				checkBox_AutoCopyOcrTranslation.Checked = Convert.ToBoolean(value_autoCopyOcr);
+			}
+			catch
+			{
+				checkBox_AutoCopyOcrTranslation.Checked = false;
+			}
+
+			var value_autoCopyInput = IniHelper.GetValue("翻译后操作", "AutoCopyInputTranslation");
+			if (value_autoCopyInput == "发生错误")
+			{
+				checkBox_AutoCopyInputTranslation.Checked = false;
+			}
+			try
+			{
+				checkBox_AutoCopyInputTranslation.Checked = Convert.ToBoolean(value_autoCopyInput);
+			}
+			catch
+			{
+				checkBox_AutoCopyInputTranslation.Checked = false;
+			}
+
+			
+
 			var value4 = IniHelper.GetValue("配置", "窗体动画");
 			cobBox_动画.Text = value4;
 			if (value4 == "发生错误")
@@ -695,7 +752,7 @@ namespace TrOCR
 			chbox_代理服务器.CheckedChanged += chbox_代理服务器_CheckedChanged;
 			更新Button_check.Click += 更新Button_check_Click;
 
-			StoreOriginalLocations(this);
+			         StoreOriginalLocations(this);
 			tab_标签.SelectedIndexChanged += AdjustPageSize;
 			tabControl2.SelectedIndexChanged += AdjustPageSize;
 			tabControl_Trans.SelectedIndexChanged += AdjustPageSize;
@@ -970,9 +1027,13 @@ namespace TrOCR
 			chbox_取色.Checked = false;
 			// 禁用输入翻译剪贴板功能
 			cbBox_输入翻译剪贴板.Checked = false;
-		}
+			         checkBox_AutoCopyOcrResult.Checked = false;
+			                  checkBox_AutoTranslateOcrResult.Checked = false;
+			                  checkBox_AutoCopyOcrTranslation.Checked = false;
+			                  checkBox_AutoCopyInputTranslation.Checked = false;
+			     }
 
-		/// <summary>
+			     /// <summary>
 		/// 文本框按键抬起事件处理函数，用于设置快捷键
 		/// </summary>
 		/// <param name="sender">事件发送者</param>
@@ -1492,6 +1553,10 @@ namespace TrOCR
 			IniHelper.SetValue("配置", "记录数目", numbox_记录.Text);
 			IniHelper.SetValue("配置", "自动保存", cbBox_保存.Checked.ToString());
 			IniHelper.SetValue("配置", "截图位置", textBox_path.Text);
+			IniHelper.SetValue("识别后操作", "AutoCopyOcrResult", checkBox_AutoCopyOcrResult.Checked.ToString());
+			IniHelper.SetValue("识别后操作", "AutoTranslateOcrResult", checkBox_AutoTranslateOcrResult.Checked.ToString());
+			IniHelper.SetValue("翻译后操作", "AutoCopyOcrTranslation", checkBox_AutoCopyOcrTranslation.Checked.ToString());
+			IniHelper.SetValue("翻译后操作", "AutoCopyInputTranslation", checkBox_AutoCopyInputTranslation.Checked.ToString());
 			
 			// 保存快捷键设置
 			IniHelper.SetValue("快捷键", "文字识别", txtBox_文字识别.Text);
