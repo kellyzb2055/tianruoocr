@@ -553,7 +553,6 @@ namespace TrOCR
 				{
 					tabControl_Trans.TabPages.Remove(tabPage);
 				}
-				IniHelper.SetValue("翻译接口显示", apiName, checkBox.Checked.ToString());
 			};
 
 			setTranVisibility("Google", checkBox_ShowGoogle, tabPage_Google);
@@ -586,7 +585,6 @@ namespace TrOCR
 				{
 					tabControl2.TabPages.Remove(tabPage);
 				}
-				IniHelper.SetValue("Ocr接口显示", apiName, checkBox.Checked.ToString());
 			};
 
 			setOcrVisibility("Baidu", checkBox_ShowOcrBaidu, inPage_百度接口);

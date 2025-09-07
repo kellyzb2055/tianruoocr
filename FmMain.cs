@@ -3254,10 +3254,10 @@ namespace TrOCR
 				RichBoxBody.Text = shupai_Left_txt;
 			}
 			// 处理粘贴板功能
-			if (IniHelper.GetValue("截图音效", "粘贴板") == "True")
-			{
-				Clipboard.SetDataObject(RichBoxBody.Text);
-			}
+			// if (IniHelper.GetValue("截图音效", "粘贴板") == "True")
+			// {
+			// 	Clipboard.SetDataObject(RichBoxBody.Text);
+			// }
 			// 处理百度搜索功能
 			if (baidu_flags == "百度")
 			{
