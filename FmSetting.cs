@@ -481,6 +481,20 @@ namespace TrOCR
 				numbox_间隔时间.Value = 24m;
 			}
 			
+			var value_pre_release = IniHelper.GetValue("更新", "CheckPreRelease");
+			if (value_pre_release == "发生错误")
+			{
+				checkBox_PreRelease.Checked = false;
+			}
+			try
+			{
+				checkBox_PreRelease.Checked = Convert.ToBoolean(value_pre_release);
+			}
+			catch
+			{
+				checkBox_PreRelease.Checked = false;
+			}
+
 			// 读取截图音效设置
 			var value23 = IniHelper.GetValue("截图音效", "粘贴板");
 			if (value23 == "发生错误")
@@ -1488,8 +1502,8 @@ namespace TrOCR
 		}
 
 		/// <summary>
-		/// 更新按钮点击事件处理函数
-		/// 当用户点击更新设置按钮时触发此事件
+		/// 更新设置页的恢复默认按钮点击事件处理函数
+		/// 当用户点击更新设置的恢复默认按钮时触发此事件
 		/// </summary>
 		/// <param name="sender">事件发送者</param>
 		/// <param name="e">事件参数</param>
@@ -1498,6 +1512,7 @@ namespace TrOCR
 			numbox_间隔时间.Value = 24m;
 			check_检查更新.Checked = true;
 			checkBox_更新间隔.Checked = true;
+			checkBox_PreRelease.Checked = false;
 		}
 
 		/// <summary>
@@ -1626,6 +1641,7 @@ namespace TrOCR
 			IniHelper.SetValue("更新", "检测更新", check_检查更新.Checked.ToString());
 			IniHelper.SetValue("更新", "更新间隔", checkBox_更新间隔.Checked.ToString());
 			IniHelper.SetValue("更新", "间隔时间", numbox_间隔时间.Value.ToString());
+			IniHelper.SetValue("更新", "CheckPreRelease", checkBox_PreRelease.Checked.ToString());
 			
 			// 保存截图音效设置
 			IniHelper.SetValue("截图音效", "自动保存", chbox_save.Checked.ToString());

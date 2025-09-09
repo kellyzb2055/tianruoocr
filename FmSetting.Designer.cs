@@ -328,6 +328,7 @@ namespace TrOCR
             this.numbox_间隔时间 = new System.Windows.Forms.NumericUpDown();
             this.checkBox_更新间隔 = new System.Windows.Forms.CheckBox();
             this.check_检查更新 = new System.Windows.Forms.CheckBox();
+            this.checkBox_PreRelease = new System.Windows.Forms.CheckBox();
             this.label_版本号 = new System.Windows.Forms.Label();
             this.label_更新日期 = new System.Windows.Forms.Label();
             this.pictureBox6 = new System.Windows.Forms.PictureBox();
@@ -2864,6 +2865,7 @@ namespace TrOCR
             this.groupBox5.Controls.Add(this.numbox_间隔时间);
             this.groupBox5.Controls.Add(this.checkBox_更新间隔);
             this.groupBox5.Controls.Add(this.check_检查更新);
+            this.groupBox5.Controls.Add(this.checkBox_PreRelease);
             this.groupBox5.Location = new System.Drawing.Point(6, 14);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(378, 65);
@@ -2909,7 +2911,18 @@ namespace TrOCR
             this.check_检查更新.Text = "启动时检查更新";
             this.check_检查更新.UseVisualStyleBackColor = false;
             this.check_检查更新.CheckedChanged += new System.EventHandler(this.check_检查更新_CheckedChanged);
-            // 
+            //
+            // checkBox_PreRelease
+            //
+            this.checkBox_PreRelease.AutoSize = true;
+            this.checkBox_PreRelease.BackColor = System.Drawing.Color.White;
+            this.checkBox_PreRelease.Location = new System.Drawing.Point(130, 31);
+            this.checkBox_PreRelease.Name = "checkBox_PreRelease";
+            this.checkBox_PreRelease.Size = new System.Drawing.Size(120, 16);
+            this.checkBox_PreRelease.TabIndex = 4;
+            this.checkBox_PreRelease.Text = "是否检查预览版更新";
+            this.checkBox_PreRelease.UseVisualStyleBackColor = true;
+            //
             // btn_音效
             // 
             this.btn_音效.BackColor = System.Drawing.Color.White;
@@ -3400,6 +3413,7 @@ namespace TrOCR
         private global::System.Windows.Forms.NumericUpDown numbox_间隔时间;
         private global::System.Windows.Forms.CheckBox checkBox_更新间隔;
         private global::System.Windows.Forms.CheckBox check_检查更新;
+        private System.Windows.Forms.CheckBox checkBox_PreRelease;
         private global::System.Windows.Forms.CheckBox cbBox_弹窗;
         private global::System.Windows.Forms.GroupBox groupBox6;
         private global::System.Windows.Forms.TextBox textBox_path;
