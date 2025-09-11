@@ -316,7 +316,7 @@ namespace TrOCR
 			// 读取腾讯OCR语言设置
 			var valueTencentLanguage = IniHelper.GetValue("密钥_腾讯", "language_code");
 			TencentOcrHelper.GetStandardLanguages().TryGetValue(valueTencentLanguage, out string tencentLangName);
-			comboBox_Tencent_Language.SelectedItem = string.IsNullOrEmpty(tencentLangName) ? "中英文混合" : tencentLangName;
+			comboBox_Tencent_Language.SelectedItem = string.IsNullOrEmpty(tencentLangName) ? "中英混合" : tencentLangName;
 	
 			// 读取腾讯高精度OCR密钥信息
 			var valueTencentAccurateId = IniHelper.GetValue("密钥_腾讯高精度", "secret_id");
@@ -770,7 +770,7 @@ namespace TrOCR
 			btnResetTencentLang.Text = "重置";
 			btnResetTencentLang.Size = new Size(50, 23);
 			btnResetTencentLang.Location = new Point(comboBox_Tencent_Language.Right + 6, comboBox_Tencent_Language.Top - 2);
-			btnResetTencentLang.Click += (s, ev) => { comboBox_Tencent_Language.SelectedItem = "中英文混合"; };
+			btnResetTencentLang.Click += (s, ev) => { comboBox_Tencent_Language.SelectedItem = "中英混合"; };
 			inPage_腾讯接口.Controls.Add(btnResetTencentLang);
 
 			readIniFile();
@@ -1001,7 +1001,7 @@ namespace TrOCR
     		    {
     		        BoxTencentId.Text = "";
     		        BoxTencentKey.Text = "";
-    		        comboBox_Tencent_Language.SelectedItem = "中英文混合";
+    		        comboBox_Tencent_Language.SelectedItem = "中英混合";
     		    }
     		    else if (tabControl_TXApiType.SelectedTab == inPage_腾讯高精度接口)
     		    {
