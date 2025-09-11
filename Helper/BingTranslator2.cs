@@ -86,8 +86,10 @@ namespace TrOCR.Helper
             };
 
             HttpClient = new HttpClient(handler);
-            HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", 
+            HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent",
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36 Edg/113.0.1774.42");
+             // 全局禁用 Expect: 100-continue
+            System.Net.ServicePointManager.Expect100Continue = false;
         }
 
         /// <summary>
@@ -101,6 +103,8 @@ namespace TrOCR.Helper
                 {
                     request.Headers.TryAddWithoutValidation("User-Agent",
                         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36 Edg/113.0.1774.42");
+
+                    request.Headers.TryAddWithoutValidation("Accept", "*/*");
 
                     using (var response = await HttpClient.SendAsync(request).ConfigureAwait(false))
                     {
@@ -128,8 +132,21 @@ namespace TrOCR.Helper
 
             try
             {
-                // 获取认证Token
-                var token = await GetAuthTokenAsync().ConfigureAwait(false);
+                string token = null;
+                for (int i = 0; i < 3; i++) // 最多尝试3次
+                {
+                    // 获取认证Token
+                    token = await GetAuthTokenAsync().ConfigureAwait(false);
+                    if (!string.IsNullOrEmpty(token))
+                    {
+                        break; // 成功获取Token，跳出循环
+                    }
+                    if (i < 2) // 如果不是最后一次尝试，则等待
+                    {
+                        await Task.Delay(200).ConfigureAwait(false);
+                    }
+                }
+                
                 if (string.IsNullOrEmpty(token))
                 {
                     return "获取认证Token失败";
@@ -164,6 +181,7 @@ namespace TrOCR.Helper
                     // 设置请求体
                     var bodyArray = new[] { new { Text = text } };
                     var json = Newtonsoft.Json.JsonConvert.SerializeObject(bodyArray);
+                    // request.Content = new StringContent(json, Encoding.UTF8, "application/json");
                     request.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
                     using (var response = await HttpClient.SendAsync(request).ConfigureAwait(false))
@@ -172,7 +190,7 @@ namespace TrOCR.Helper
                         {
                             var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                             var result = JArray.Parse(responseString);
-                            
+
                             if (result.Count > 0 && result[0]["translations"] != null)
                             {
                                 var translations = result[0]["translations"] as JArray;
@@ -207,8 +225,21 @@ namespace TrOCR.Helper
 
             try
             {
-                // 获取认证Token
-                var token = await GetAuthTokenAsync().ConfigureAwait(false);
+                string token = null;
+                for (int i = 0; i < 3; i++) // 最多尝试3次
+                {
+                    // 获取认证Token
+                    token = await GetAuthTokenAsync().ConfigureAwait(false);
+                    if (!string.IsNullOrEmpty(token))
+                    {
+                        break; // 成功获取Token，跳出循环
+                    }
+                    if (i < 2) // 如果不是最后一次尝试，则等待
+                    {
+                        await Task.Delay(200).ConfigureAwait(false);
+                    }
+                }
+        
                 if (string.IsNullOrEmpty(token))
                 {
                     return "en";
@@ -239,7 +270,9 @@ namespace TrOCR.Helper
                     // 设置请求体
                     var bodyArray = new[] { new { Text = text } };
                     var json = Newtonsoft.Json.JsonConvert.SerializeObject(bodyArray);
+                    // request.Content = new StringContent(json, Encoding.UTF8, "application/json");
                     request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
 
                     using (var response = await HttpClient.SendAsync(request).ConfigureAwait(false))
                     {
@@ -247,11 +280,11 @@ namespace TrOCR.Helper
                         {
                             var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                             var result = JArray.Parse(responseString);
-                            
+
                             if (result.Count > 0 && result[0]["language"] != null)
                             {
                                 var detectedLang = result[0]["language"].ToString();
-                                
+
                                 // 转换为我们的语言代码格式
                                 if (LanguageMap.ContainsKey(detectedLang))
                                 {
