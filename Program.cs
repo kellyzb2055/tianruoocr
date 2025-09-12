@@ -376,7 +376,7 @@ private static bool CheckVersion(string newVersionStr, string curVersionStr)
                 IniHelper.SetValue("配置", "记录数目", "20");
                 IniHelper.SetValue("配置", "自动保存", "True");
                 IniHelper.SetValue("配置", "截图位置", Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory));
-                IniHelper.SetValue("配置", "翻译接口", "谷歌");
+                IniHelper.SetValue("配置", "翻译接口", "Bing2");
                 IniHelper.SetValue("识别后操作", "AutoCopyOcrResult", "False");
                 IniHelper.SetValue("识别后操作", "AutoTranslateOcrResult", "False");
                 IniHelper.SetValue("翻译后操作", "AutoCopyOcrTranslation", "False");
@@ -477,7 +477,7 @@ private static bool CheckVersion(string newVersionStr, string curVersionStr)
 
             if (IniHelper.GetValue("配置", "翻译接口") == "发生错误")
             {
-                IniHelper.SetValue("配置", "翻译接口", "谷歌");
+                IniHelper.SetValue("配置", "翻译接口", "Bing2");
             }
 
             if (IniHelper.GetValue("配置", "截图位置") == "发生错误")

@@ -1312,10 +1312,10 @@ namespace TrOCR
 			OCR_foreach(interface_flag);
 			
 			// 初始化翻译接口配置
-			StaticValue.Translate_Current_API = GetConfigValueSafely("配置", "翻译接口", "谷歌");
+			StaticValue.Translate_Current_API = GetConfigValueSafely("配置", "翻译接口", "Bing2");
 			if (string.IsNullOrEmpty(StaticValue.Translate_Current_API))
 			{
-				StaticValue.Translate_Current_API = "谷歌";
+				StaticValue.Translate_Current_API = "Bing2";
 			}
 			Trans_foreach(StaticValue.Translate_Current_API);
 			LoadTranslateConfig();
@@ -1665,7 +1665,7 @@ namespace TrOCR
 				StaticValue.Translate_Current_API = IniHelper.GetValue("配置", "翻译接口");
 				if (StaticValue.Translate_Current_API == "发生错误")
 				{
-					StaticValue.Translate_Current_API = "谷歌";
+					StaticValue.Translate_Current_API = "Bing2";
 				}
 				LoadTranslateConfig();
 				InitializeApiMenus();

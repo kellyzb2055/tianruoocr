@@ -15,7 +15,7 @@ namespace TrOCR.Helper
 	           public string ApiKey { get; set; }
 	       }
 
-	       public static string Translate_Current_API = "谷歌";
+	       public static string Translate_Current_API = "Bing2";
 	       public static readonly Dictionary<string, TranslateConfig> Translate_Configs = new Dictionary<string, TranslateConfig>();
 
 	       public static string v_Split;
