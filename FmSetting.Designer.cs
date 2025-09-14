@@ -198,6 +198,12 @@ namespace TrOCR
             this.label_baidu_accurate_apikey = new System.Windows.Forms.Label();
             this.comboBox_Baidu_Accurate_Language = new System.Windows.Forms.ComboBox();
             this.label_Baidu_Accurate_Language = new System.Windows.Forms.Label();
+            this.inPage_百度表格 = new System.Windows.Forms.TabPage();
+            this.label24 = new System.Windows.Forms.Label();
+            this.label25 = new System.Windows.Forms.Label();
+            this.label23 = new System.Windows.Forms.Label();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.tabPage_腾讯OCR = new System.Windows.Forms.TabPage();
             this.tabControl_TXApiType = new System.Windows.Forms.TabControl();
             this.inPage_腾讯接口 = new System.Windows.Forms.TabPage();
@@ -214,6 +220,12 @@ namespace TrOCR
             this.label_tencent_accurate_secretid = new System.Windows.Forms.Label();
             this.comboBox_Tencent_Accurate_Language = new System.Windows.Forms.ComboBox();
             this.label_Tencent_Accurate_Language = new System.Windows.Forms.Label();
+            this.inPage_腾讯表格v3 = new System.Windows.Forms.TabPage();
+            this.label27 = new System.Windows.Forms.Label();
+            this.label28 = new System.Windows.Forms.Label();
+            this.label26 = new System.Windows.Forms.Label();
+            this.textBox4 = new System.Windows.Forms.TextBox();
+            this.textBox3 = new System.Windows.Forms.TextBox();
             this.Page_快捷键 = new System.Windows.Forms.TabPage();
             this.快捷键Button = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
@@ -272,6 +284,13 @@ namespace TrOCR
             this.checkBox_AutoCopyInputTranslation = new System.Windows.Forms.CheckBox();
             this.tab_标签 = new System.Windows.Forms.TabControl();
             this.Page_工具栏 = new System.Windows.Forms.TabPage();
+            this.groupBox_拆分文本 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel_拆分文本 = new System.Windows.Forms.TableLayoutPanel();
+            this.checkBox_拆分后自动复制 = new System.Windows.Forms.CheckBox();
+            this.groupBox_合并文本 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel_合并文本 = new System.Windows.Forms.TableLayoutPanel();
+            this.checkBox_合并自动复制 = new System.Windows.Forms.CheckBox();
+            this.checkBox_合并去除空格 = new System.Windows.Forms.CheckBox();
             this.Page_更新 = new System.Windows.Forms.TabPage();
             this.更新Button_check = new System.Windows.Forms.Button();
             this.更新Button = new System.Windows.Forms.Button();
@@ -291,13 +310,6 @@ namespace TrOCR
             this.label_更新日期 = new System.Windows.Forms.Label();
             this.pictureBox6 = new System.Windows.Forms.PictureBox();
             this.txt_更新说明 = new System.Windows.Forms.TextBox();
-            this.tableLayoutPanel_合并文本 = new System.Windows.Forms.TableLayoutPanel();
-            this.checkBox_合并去除空格 = new System.Windows.Forms.CheckBox();
-            this.checkBox_合并自动复制 = new System.Windows.Forms.CheckBox();
-            this.groupBox_合并文本 = new System.Windows.Forms.GroupBox();
-            this.groupBox_拆分文本 = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel_拆分文本 = new System.Windows.Forms.TableLayoutPanel();
-            this.checkBox_拆分后自动复制 = new System.Windows.Forms.CheckBox();
             this.Page_翻译接口.SuspendLayout();
             this.tabControl_Trans.SuspendLayout();
             this.tabPage_Google.SuspendLayout();
@@ -357,10 +369,12 @@ namespace TrOCR
             this.tabControl_BaiduApiType.SuspendLayout();
             this.inPage_百度接口.SuspendLayout();
             this.inPage_百度高精度接口.SuspendLayout();
+            this.inPage_百度表格.SuspendLayout();
             this.tabPage_腾讯OCR.SuspendLayout();
             this.tabControl_TXApiType.SuspendLayout();
             this.inPage_腾讯接口.SuspendLayout();
             this.inPage_腾讯高精度接口.SuspendLayout();
+            this.inPage_腾讯表格v3.SuspendLayout();
             this.Page_快捷键.SuspendLayout();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_静默识别)).BeginInit();
@@ -380,15 +394,15 @@ namespace TrOCR
             this.groupBox_TranslateWorkflow.SuspendLayout();
             this.tab_标签.SuspendLayout();
             this.Page_工具栏.SuspendLayout();
+            this.groupBox_拆分文本.SuspendLayout();
+            this.tableLayoutPanel_拆分文本.SuspendLayout();
+            this.groupBox_合并文本.SuspendLayout();
+            this.tableLayoutPanel_合并文本.SuspendLayout();
             this.Page_更新.SuspendLayout();
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numbox_间隔时间)).BeginInit();
             this.Page_反馈.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).BeginInit();
-            this.tableLayoutPanel_合并文本.SuspendLayout();
-            this.groupBox_合并文本.SuspendLayout();
-            this.groupBox_拆分文本.SuspendLayout();
-            this.tableLayoutPanel_拆分文本.SuspendLayout();
             this.SuspendLayout();
             // 
             // Page_翻译接口
@@ -2257,6 +2271,7 @@ namespace TrOCR
             // 
             this.tabControl_BaiduApiType.Controls.Add(this.inPage_百度接口);
             this.tabControl_BaiduApiType.Controls.Add(this.inPage_百度高精度接口);
+            this.tabControl_BaiduApiType.Controls.Add(this.inPage_百度表格);
             this.tabControl_BaiduApiType.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl_BaiduApiType.Location = new System.Drawing.Point(3, 3);
             this.tabControl_BaiduApiType.Name = "tabControl_BaiduApiType";
@@ -2417,6 +2432,70 @@ namespace TrOCR
             this.label_Baidu_Accurate_Language.TabIndex = 4;
             this.label_Baidu_Accurate_Language.Text = "识别语言：";
             // 
+            // inPage_百度表格
+            // 
+            this.inPage_百度表格.Controls.Add(this.label24);
+            this.inPage_百度表格.Controls.Add(this.label25);
+            this.inPage_百度表格.Controls.Add(this.label23);
+            this.inPage_百度表格.Controls.Add(this.textBox2);
+            this.inPage_百度表格.Controls.Add(this.textBox1);
+            this.inPage_百度表格.Location = new System.Drawing.Point(4, 25);
+            this.inPage_百度表格.Margin = new System.Windows.Forms.Padding(4);
+            this.inPage_百度表格.Name = "inPage_百度表格";
+            this.inPage_百度表格.Padding = new System.Windows.Forms.Padding(3);
+            this.inPage_百度表格.Size = new System.Drawing.Size(482, 124);
+            this.inPage_百度表格.TabIndex = 2;
+            this.inPage_百度表格.Text = "表格";
+            this.inPage_百度表格.UseVisualStyleBackColor = true;
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(9, 97);
+            this.label24.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(247, 15);
+            this.label24.TabIndex = 7;
+            this.label24.Text = "说明：留空则默认使用标准版的密钥";
+            // 
+            // label25
+            // 
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(9, 17);
+            this.label25.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(71, 15);
+            this.label25.TabIndex = 8;
+            this.label25.Text = "API Key:";
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(9, 57);
+            this.label23.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(95, 15);
+            this.label23.TabIndex = 6;
+            this.label23.Text = "Secret Key:";
+            // 
+            // textBox2
+            // 
+            this.textBox2.BackColor = System.Drawing.Color.White;
+            this.textBox2.Location = new System.Drawing.Point(107, 12);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(367, 25);
+            this.textBox2.TabIndex = 5;
+            // 
+            // textBox1
+            // 
+            this.textBox1.BackColor = System.Drawing.Color.White;
+            this.textBox1.Location = new System.Drawing.Point(107, 52);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(367, 25);
+            this.textBox1.TabIndex = 4;
+            // 
             // tabPage_腾讯OCR
             // 
             this.tabPage_腾讯OCR.Controls.Add(this.tabControl_TXApiType);
@@ -2432,6 +2511,7 @@ namespace TrOCR
             // 
             this.tabControl_TXApiType.Controls.Add(this.inPage_腾讯接口);
             this.tabControl_TXApiType.Controls.Add(this.inPage_腾讯高精度接口);
+            this.tabControl_TXApiType.Controls.Add(this.inPage_腾讯表格v3);
             this.tabControl_TXApiType.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl_TXApiType.Location = new System.Drawing.Point(3, 3);
             this.tabControl_TXApiType.Name = "tabControl_TXApiType";
@@ -2590,6 +2670,70 @@ namespace TrOCR
             this.label_Tencent_Accurate_Language.Size = new System.Drawing.Size(82, 15);
             this.label_Tencent_Accurate_Language.TabIndex = 4;
             this.label_Tencent_Accurate_Language.Text = "识别语言：";
+            // 
+            // inPage_腾讯表格v3
+            // 
+            this.inPage_腾讯表格v3.Controls.Add(this.label27);
+            this.inPage_腾讯表格v3.Controls.Add(this.label28);
+            this.inPage_腾讯表格v3.Controls.Add(this.label26);
+            this.inPage_腾讯表格v3.Controls.Add(this.textBox4);
+            this.inPage_腾讯表格v3.Controls.Add(this.textBox3);
+            this.inPage_腾讯表格v3.Location = new System.Drawing.Point(4, 25);
+            this.inPage_腾讯表格v3.Margin = new System.Windows.Forms.Padding(4);
+            this.inPage_腾讯表格v3.Name = "inPage_腾讯表格v3";
+            this.inPage_腾讯表格v3.Padding = new System.Windows.Forms.Padding(3);
+            this.inPage_腾讯表格v3.Size = new System.Drawing.Size(482, 124);
+            this.inPage_腾讯表格v3.TabIndex = 2;
+            this.inPage_腾讯表格v3.Text = "表格v3";
+            this.inPage_腾讯表格v3.UseVisualStyleBackColor = true;
+            // 
+            // label27
+            // 
+            this.label27.AutoSize = true;
+            this.label27.Location = new System.Drawing.Point(9, 17);
+            this.label27.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(79, 15);
+            this.label27.TabIndex = 11;
+            this.label27.Text = "SecretId:";
+            // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(9, 97);
+            this.label28.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(247, 15);
+            this.label28.TabIndex = 12;
+            this.label28.Text = "说明：留空则默认使用标准版的密钥";
+            // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Location = new System.Drawing.Point(9, 57);
+            this.label26.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(87, 15);
+            this.label26.TabIndex = 10;
+            this.label26.Text = "SecretKey:";
+            // 
+            // textBox4
+            // 
+            this.textBox4.BackColor = System.Drawing.Color.White;
+            this.textBox4.Location = new System.Drawing.Point(107, 52);
+            this.textBox4.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new System.Drawing.Size(367, 25);
+            this.textBox4.TabIndex = 9;
+            // 
+            // textBox3
+            // 
+            this.textBox3.BackColor = System.Drawing.Color.White;
+            this.textBox3.Location = new System.Drawing.Point(107, 12);
+            this.textBox3.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(367, 25);
+            this.textBox3.TabIndex = 8;
             // 
             // Page_快捷键
             // 
@@ -3308,6 +3452,98 @@ namespace TrOCR
             this.Page_工具栏.Text = "工具栏";
             this.Page_工具栏.UseVisualStyleBackColor = true;
             // 
+            // groupBox_拆分文本
+            // 
+            this.groupBox_拆分文本.Controls.Add(this.tableLayoutPanel_拆分文本);
+            this.groupBox_拆分文本.Location = new System.Drawing.Point(8, 109);
+            this.groupBox_拆分文本.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox_拆分文本.Name = "groupBox_拆分文本";
+            this.groupBox_拆分文本.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox_拆分文本.Size = new System.Drawing.Size(504, 98);
+            this.groupBox_拆分文本.TabIndex = 1;
+            this.groupBox_拆分文本.TabStop = false;
+            this.groupBox_拆分文本.Text = "拆分文本";
+            // 
+            // tableLayoutPanel_拆分文本
+            // 
+            this.tableLayoutPanel_拆分文本.ColumnCount = 2;
+            this.tableLayoutPanel_拆分文本.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 28.96825F));
+            this.tableLayoutPanel_拆分文本.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 71.03175F));
+            this.tableLayoutPanel_拆分文本.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel_拆分文本.Controls.Add(this.checkBox_拆分后自动复制, 0, 0);
+            this.tableLayoutPanel_拆分文本.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel_拆分文本.Location = new System.Drawing.Point(4, 22);
+            this.tableLayoutPanel_拆分文本.Name = "tableLayoutPanel_拆分文本";
+            this.tableLayoutPanel_拆分文本.RowCount = 2;
+            this.tableLayoutPanel_拆分文本.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel_拆分文本.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel_拆分文本.Size = new System.Drawing.Size(496, 72);
+            this.tableLayoutPanel_拆分文本.TabIndex = 0;
+            // 
+            // checkBox_拆分后自动复制
+            // 
+            this.checkBox_拆分后自动复制.AutoSize = true;
+            this.checkBox_拆分后自动复制.Location = new System.Drawing.Point(4, 4);
+            this.checkBox_拆分后自动复制.Margin = new System.Windows.Forms.Padding(4);
+            this.checkBox_拆分后自动复制.Name = "checkBox_拆分后自动复制";
+            this.checkBox_拆分后自动复制.Size = new System.Drawing.Size(134, 19);
+            this.checkBox_拆分后自动复制.TabIndex = 2;
+            this.checkBox_拆分后自动复制.Text = "拆分后自动复制";
+            this.checkBox_拆分后自动复制.UseVisualStyleBackColor = true;
+            // 
+            // groupBox_合并文本
+            // 
+            this.groupBox_合并文本.Controls.Add(this.tableLayoutPanel_合并文本);
+            this.groupBox_合并文本.Location = new System.Drawing.Point(8, 8);
+            this.groupBox_合并文本.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox_合并文本.Name = "groupBox_合并文本";
+            this.groupBox_合并文本.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox_合并文本.Size = new System.Drawing.Size(504, 98);
+            this.groupBox_合并文本.TabIndex = 0;
+            this.groupBox_合并文本.TabStop = false;
+            this.groupBox_合并文本.Text = "合并文本";
+            // 
+            // tableLayoutPanel_合并文本
+            // 
+            this.tableLayoutPanel_合并文本.ColumnCount = 2;
+            this.tableLayoutPanel_合并文本.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 28.96825F));
+            this.tableLayoutPanel_合并文本.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 71.03175F));
+            this.tableLayoutPanel_合并文本.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel_合并文本.Controls.Add(this.checkBox_合并自动复制, 0, 1);
+            this.tableLayoutPanel_合并文本.Controls.Add(this.checkBox_合并去除空格, 0, 0);
+            this.tableLayoutPanel_合并文本.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel_合并文本.Location = new System.Drawing.Point(4, 22);
+            this.tableLayoutPanel_合并文本.Name = "tableLayoutPanel_合并文本";
+            this.tableLayoutPanel_合并文本.RowCount = 2;
+            this.tableLayoutPanel_合并文本.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel_合并文本.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel_合并文本.Size = new System.Drawing.Size(496, 72);
+            this.tableLayoutPanel_合并文本.TabIndex = 0;
+            // 
+            // checkBox_合并自动复制
+            // 
+            this.checkBox_合并自动复制.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.checkBox_合并自动复制.AutoSize = true;
+            this.checkBox_合并自动复制.Location = new System.Drawing.Point(4, 44);
+            this.checkBox_合并自动复制.Margin = new System.Windows.Forms.Padding(4);
+            this.checkBox_合并自动复制.Name = "checkBox_合并自动复制";
+            this.checkBox_合并自动复制.Size = new System.Drawing.Size(134, 19);
+            this.checkBox_合并自动复制.TabIndex = 1;
+            this.checkBox_合并自动复制.Text = "合并后自动复制";
+            this.checkBox_合并自动复制.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_合并去除空格
+            // 
+            this.checkBox_合并去除空格.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.checkBox_合并去除空格.AutoSize = true;
+            this.checkBox_合并去除空格.Location = new System.Drawing.Point(4, 8);
+            this.checkBox_合并去除空格.Margin = new System.Windows.Forms.Padding(4);
+            this.checkBox_合并去除空格.Name = "checkBox_合并去除空格";
+            this.checkBox_合并去除空格.Size = new System.Drawing.Size(134, 19);
+            this.checkBox_合并去除空格.TabIndex = 2;
+            this.checkBox_合并去除空格.Text = "合并时去除空格";
+            this.checkBox_合并去除空格.UseVisualStyleBackColor = true;
+            // 
             // Page_更新
             // 
             this.Page_更新.BackColor = System.Drawing.Color.White;
@@ -3517,98 +3753,6 @@ namespace TrOCR
             this.txt_更新说明.Size = new System.Drawing.Size(366, 155);
             this.txt_更新说明.TabIndex = 4;
             // 
-            // tableLayoutPanel_合并文本
-            // 
-            this.tableLayoutPanel_合并文本.ColumnCount = 2;
-            this.tableLayoutPanel_合并文本.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 28.96825F));
-            this.tableLayoutPanel_合并文本.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 71.03175F));
-            this.tableLayoutPanel_合并文本.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel_合并文本.Controls.Add(this.checkBox_合并自动复制, 0, 1);
-            this.tableLayoutPanel_合并文本.Controls.Add(this.checkBox_合并去除空格, 0, 0);
-            this.tableLayoutPanel_合并文本.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel_合并文本.Location = new System.Drawing.Point(4, 22);
-            this.tableLayoutPanel_合并文本.Name = "tableLayoutPanel_合并文本";
-            this.tableLayoutPanel_合并文本.RowCount = 2;
-            this.tableLayoutPanel_合并文本.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel_合并文本.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel_合并文本.Size = new System.Drawing.Size(496, 72);
-            this.tableLayoutPanel_合并文本.TabIndex = 0;
-            // 
-            // checkBox_合并去除空格
-            // 
-            this.checkBox_合并去除空格.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.checkBox_合并去除空格.AutoSize = true;
-            this.checkBox_合并去除空格.Location = new System.Drawing.Point(4, 8);
-            this.checkBox_合并去除空格.Margin = new System.Windows.Forms.Padding(4);
-            this.checkBox_合并去除空格.Name = "checkBox_合并去除空格";
-            this.checkBox_合并去除空格.Size = new System.Drawing.Size(134, 19);
-            this.checkBox_合并去除空格.TabIndex = 2;
-            this.checkBox_合并去除空格.Text = "合并时去除空格";
-            this.checkBox_合并去除空格.UseVisualStyleBackColor = true;
-            // 
-            // checkBox_合并自动复制
-            // 
-            this.checkBox_合并自动复制.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.checkBox_合并自动复制.AutoSize = true;
-            this.checkBox_合并自动复制.Location = new System.Drawing.Point(4, 44);
-            this.checkBox_合并自动复制.Margin = new System.Windows.Forms.Padding(4);
-            this.checkBox_合并自动复制.Name = "checkBox_合并自动复制";
-            this.checkBox_合并自动复制.Size = new System.Drawing.Size(134, 19);
-            this.checkBox_合并自动复制.TabIndex = 1;
-            this.checkBox_合并自动复制.Text = "合并后自动复制";
-            this.checkBox_合并自动复制.UseVisualStyleBackColor = true;
-            // 
-            // groupBox_合并文本
-            // 
-            this.groupBox_合并文本.Controls.Add(this.tableLayoutPanel_合并文本);
-            this.groupBox_合并文本.Location = new System.Drawing.Point(8, 8);
-            this.groupBox_合并文本.Margin = new System.Windows.Forms.Padding(4);
-            this.groupBox_合并文本.Name = "groupBox_合并文本";
-            this.groupBox_合并文本.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox_合并文本.Size = new System.Drawing.Size(504, 98);
-            this.groupBox_合并文本.TabIndex = 0;
-            this.groupBox_合并文本.TabStop = false;
-            this.groupBox_合并文本.Text = "合并文本";
-            // 
-            // groupBox_拆分文本
-            // 
-            this.groupBox_拆分文本.Controls.Add(this.tableLayoutPanel_拆分文本);
-            this.groupBox_拆分文本.Location = new System.Drawing.Point(8, 109);
-            this.groupBox_拆分文本.Margin = new System.Windows.Forms.Padding(4);
-            this.groupBox_拆分文本.Name = "groupBox_拆分文本";
-            this.groupBox_拆分文本.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox_拆分文本.Size = new System.Drawing.Size(504, 98);
-            this.groupBox_拆分文本.TabIndex = 1;
-            this.groupBox_拆分文本.TabStop = false;
-            this.groupBox_拆分文本.Text = "拆分文本";
-            // 
-            // tableLayoutPanel_拆分文本
-            // 
-            this.tableLayoutPanel_拆分文本.ColumnCount = 2;
-            this.tableLayoutPanel_拆分文本.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 28.96825F));
-            this.tableLayoutPanel_拆分文本.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 71.03175F));
-            this.tableLayoutPanel_拆分文本.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel_拆分文本.Controls.Add(this.checkBox_拆分后自动复制, 0, 0);
-            this.tableLayoutPanel_拆分文本.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel_拆分文本.Location = new System.Drawing.Point(4, 22);
-            this.tableLayoutPanel_拆分文本.Name = "tableLayoutPanel_拆分文本";
-            this.tableLayoutPanel_拆分文本.RowCount = 2;
-            this.tableLayoutPanel_拆分文本.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel_拆分文本.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel_拆分文本.Size = new System.Drawing.Size(496, 72);
-            this.tableLayoutPanel_拆分文本.TabIndex = 0;
-            // 
-            // checkBox_拆分后自动复制
-            // 
-            this.checkBox_拆分后自动复制.AutoSize = true;
-            this.checkBox_拆分后自动复制.Location = new System.Drawing.Point(4, 4);
-            this.checkBox_拆分后自动复制.Margin = new System.Windows.Forms.Padding(4);
-            this.checkBox_拆分后自动复制.Name = "checkBox_拆分后自动复制";
-            this.checkBox_拆分后自动复制.Size = new System.Drawing.Size(134, 19);
-            this.checkBox_拆分后自动复制.TabIndex = 2;
-            this.checkBox_拆分后自动复制.Text = "拆分后自动复制";
-            this.checkBox_拆分后自动复制.UseVisualStyleBackColor = true;
-            // 
             // FmSetting
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -3724,12 +3868,16 @@ namespace TrOCR
             this.inPage_百度接口.PerformLayout();
             this.inPage_百度高精度接口.ResumeLayout(false);
             this.inPage_百度高精度接口.PerformLayout();
+            this.inPage_百度表格.ResumeLayout(false);
+            this.inPage_百度表格.PerformLayout();
             this.tabPage_腾讯OCR.ResumeLayout(false);
             this.tabControl_TXApiType.ResumeLayout(false);
             this.inPage_腾讯接口.ResumeLayout(false);
             this.inPage_腾讯接口.PerformLayout();
             this.inPage_腾讯高精度接口.ResumeLayout(false);
             this.inPage_腾讯高精度接口.PerformLayout();
+            this.inPage_腾讯表格v3.ResumeLayout(false);
+            this.inPage_腾讯表格v3.PerformLayout();
             this.Page_快捷键.ResumeLayout(false);
             this.Page_快捷键.PerformLayout();
             this.groupBox3.ResumeLayout(false);
@@ -3757,6 +3905,12 @@ namespace TrOCR
             this.groupBox_TranslateWorkflow.PerformLayout();
             this.tab_标签.ResumeLayout(false);
             this.Page_工具栏.ResumeLayout(false);
+            this.groupBox_拆分文本.ResumeLayout(false);
+            this.tableLayoutPanel_拆分文本.ResumeLayout(false);
+            this.tableLayoutPanel_拆分文本.PerformLayout();
+            this.groupBox_合并文本.ResumeLayout(false);
+            this.tableLayoutPanel_合并文本.ResumeLayout(false);
+            this.tableLayoutPanel_合并文本.PerformLayout();
             this.Page_更新.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
@@ -3764,12 +3918,6 @@ namespace TrOCR
             this.Page_反馈.ResumeLayout(false);
             this.Page_反馈.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).EndInit();
-            this.tableLayoutPanel_合并文本.ResumeLayout(false);
-            this.tableLayoutPanel_合并文本.PerformLayout();
-            this.groupBox_合并文本.ResumeLayout(false);
-            this.groupBox_拆分文本.ResumeLayout(false);
-            this.tableLayoutPanel_拆分文本.ResumeLayout(false);
-            this.tableLayoutPanel_拆分文本.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -4039,7 +4187,6 @@ namespace TrOCR
         private System.Windows.Forms.TabPage inPage_百度接口;
         private System.Windows.Forms.TabPage inPage_百度高精度接口;
         private System.Windows.Forms.ComboBox comboBox_Baidu_Language;
-        private System.Windows.Forms.Label label_Baidu_Language;
         private System.Windows.Forms.TextBox text_baidupassword;
         private System.Windows.Forms.TextBox text_baiduaccount;
         private System.Windows.Forms.Label label10;
@@ -4056,5 +4203,18 @@ namespace TrOCR
         private System.Windows.Forms.GroupBox groupBox_拆分文本;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_拆分文本;
         private System.Windows.Forms.CheckBox checkBox_拆分后自动复制;
+        private System.Windows.Forms.TabPage inPage_百度表格;
+        private System.Windows.Forms.Label label_Baidu_Language;
+        private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TabPage inPage_腾讯表格v3;
+        private System.Windows.Forms.Label label27;
+        private System.Windows.Forms.Label label28;
+        private System.Windows.Forms.Label label26;
+        private System.Windows.Forms.TextBox textBox4;
+        private System.Windows.Forms.TextBox textBox3;
     }
 }
