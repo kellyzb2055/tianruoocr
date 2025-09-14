@@ -378,7 +378,7 @@ private static bool CheckVersion(string newVersionStr, string curVersionStr)
                 IniHelper.SetValue("配置", "截图位置", Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory));
                 IniHelper.SetValue("配置", "翻译接口", "Bing2");
                 IniHelper.SetValue("识别后操作", "AutoCopyOcrResult", "False");
-                IniHelper.SetValue("识别后操作", "AutoTranslateOcrResult", "False");
+                // IniHelper.SetValue("识别后操作", "AutoTranslateOcrResult", "False");
                 IniHelper.SetValue("翻译后操作", "AutoCopyOcrTranslation", "False");
                 IniHelper.SetValue("翻译后操作", "AutoCopyInputTranslation", "False");
                 IniHelper.SetValue("快捷键", "文字识别", "F4");
@@ -460,10 +460,10 @@ private static bool CheckVersion(string newVersionStr, string curVersionStr)
                 IniHelper.SetValue("识别后操作", "AutoCopyOcrResult", "False");
             }
 
-            if (IniHelper.GetValue("识别后操作", "AutoTranslateOcrResult") == "发生错误")
-            {
-                IniHelper.SetValue("识别后操作", "AutoTranslateOcrResult", "False");
-            }
+            // if (IniHelper.GetValue("识别后操作", "AutoTranslateOcrResult") == "发生错误")
+            // {
+            //     IniHelper.SetValue("识别后操作", "AutoTranslateOcrResult", "False");
+            // }
 
             if (IniHelper.GetValue("翻译后操作", "AutoCopyOcrTranslation") == "发生错误")
             {

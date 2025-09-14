@@ -126,7 +126,7 @@ namespace TrOCR.Helper
         public static bool InputTranslateClipboard { get; set; }
         public static bool InputTranslateAutoTranslate { get; set; }
         public static bool AutoCopyOcrResult { get; set; }
-        public static bool AutoTranslateOcrResult { get; set; }
+        // public static bool AutoTranslateOcrResult { get; set; }
         public static bool AutoCopyOcrTranslation { get; set; }
         public static bool AutoCopyInputTranslation { get; set; }
 
@@ -144,7 +144,7 @@ namespace TrOCR.Helper
             InputTranslateClipboard = Convert.ToBoolean(GetValue("配置", "InputTranslateClipboard", "False"));
             InputTranslateAutoTranslate = Convert.ToBoolean(GetValue("配置", "InputTranslateAutoTranslate", "False"));
             AutoCopyOcrResult = Convert.ToBoolean(GetValue("识别后操作", "AutoCopyOcrResult", "False"));
-            AutoTranslateOcrResult = Convert.ToBoolean(GetValue("识别后操作", "AutoTranslateOcrResult", "False"));
+            // AutoTranslateOcrResult = Convert.ToBoolean(GetValue("工具栏", "翻译", "False"));
             AutoCopyOcrTranslation = Convert.ToBoolean(GetValue("翻译后操作", "AutoCopyOcrTranslation", "False"));
             AutoCopyInputTranslation = Convert.ToBoolean(GetValue("翻译后操作", "AutoCopyInputTranslation", "False"));
 

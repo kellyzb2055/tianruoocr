@@ -1669,6 +1669,9 @@ namespace TrOCR
 				}
 				LoadTranslateConfig();
 				InitializeApiMenus();
+				  // --- 【关键新增】刷新工具栏图标状态 ---
+        		this.RichBoxBody.readIniFile();
+        		this.RichBoxBody_T.readIniFile();
 			}
 		}
 
@@ -3380,7 +3383,7 @@ namespace TrOCR
 			bool shouldPerformCopy = false;
 			string textToCopy = "";
 
-			var autoTranslate = bool.Parse(IniHelper.GetValue("工具栏", "翻译")) || StaticValue.AutoTranslateOcrResult;
+			var autoTranslate = bool.Parse(IniHelper.GetValue("工具栏", "翻译")) ;
     		var autoCopyOcr = StaticValue.AutoCopyOcrResult;
     		var autoCopyTranslate = StaticValue.AutoCopyOcrTranslation;
 			// 处理文本拆分选项

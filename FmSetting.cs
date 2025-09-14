@@ -126,7 +126,7 @@ namespace TrOCR
 			{
 				checkBox_AutoCopyOcrResult.Checked = false;
 			}
-			var value_autoTranslate = IniHelper.GetValue("识别后操作", "AutoTranslateOcrResult");
+			var value_autoTranslate = IniHelper.GetValue("工具栏", "翻译");
 			if (value_autoTranslate == "发生错误")
 			{
 				checkBox_AutoTranslateOcrResult.Checked = false;
@@ -1635,7 +1635,7 @@ namespace TrOCR
 			IniHelper.SetValue("配置", "自动保存", cbBox_保存.Checked.ToString());
 			IniHelper.SetValue("配置", "截图位置", textBox_path.Text);
 			IniHelper.SetValue("识别后操作", "AutoCopyOcrResult", checkBox_AutoCopyOcrResult.Checked.ToString());
-			IniHelper.SetValue("识别后操作", "AutoTranslateOcrResult", checkBox_AutoTranslateOcrResult.Checked.ToString());
+			IniHelper.SetValue("工具栏", "翻译", checkBox_AutoTranslateOcrResult.Checked.ToString());
 			IniHelper.SetValue("翻译后操作", "AutoCopyOcrTranslation", checkBox_AutoCopyOcrTranslation.Checked.ToString());
 			IniHelper.SetValue("翻译后操作", "AutoCopyInputTranslation", checkBox_AutoCopyInputTranslation.Checked.ToString());
 
