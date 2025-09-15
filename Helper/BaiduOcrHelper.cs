@@ -757,7 +757,7 @@ namespace TrOCR.Helper
                             string cellHtml = "      <td";
                             if (rowSpan > 1) cellHtml += $" rowspan='{rowSpan}'";
                             if (colSpan > 1) cellHtml += $" colspan='{colSpan}'";
-                            cellHtml += $">{System.Web.HttpUtility.HtmlEncode(cellContent)}</td>";
+                            cellHtml += $">{System.Web.HttpUtility.HtmlEncode(cellContent).Replace("\n", "&#10;")}</td>";
                             
                             htmlTable.AppendLine(cellHtml);
                         }

@@ -498,7 +498,7 @@ namespace TrOCR.Helper
                                     string tag = (currentCell.Type == "header" && !headerTexts.Any()) ? "th" : "td";
                                     string rowspanAttr = currentCell.RowSpan > 1 ? $" rowspan='{currentCell.RowSpan}'" : "";
                                     string colspanAttr = currentCell.ColSpan > 1 ? $" colspan='{currentCell.ColSpan}'" : "";
-                                    string cellText = System.Web.HttpUtility.HtmlEncode(currentCell.Text);
+                                    string cellText = System.Web.HttpUtility.HtmlEncode(currentCell.Text).Replace("\n", "&#10;");
                                     
 
                                     finalHtml.AppendLine($"      <{tag}{rowspanAttr}{colspanAttr}>{cellText}</{tag}>");
