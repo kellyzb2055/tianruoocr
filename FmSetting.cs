@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using Microsoft.Win32;
 using TrOCR.Helper;
 using TrOCR.Properties;
+using System.Threading.Tasks;
 
 namespace TrOCR
 {
@@ -2177,5 +2178,131 @@ namespace TrOCR
 		  checkBox.CheckedChanged += ApiVisibility_CheckedChanged;
 		 }
 		}
-	}
+
+        private async void button1_Click(object sender, EventArgs e)
+        {
+            var button = sender as Button;
+            if (button == null) return;
+
+            // 禁用按钮，防止重复点击，并提示用户
+            button.Enabled = false;
+            button.Text = "测试中...";
+
+            try
+            {
+                string testImagePath = "test.png";
+
+                // 检查测试文件是否存在
+                if (!File.Exists(testImagePath))
+                {
+                    MessageBox.Show($"测试图片 '{testImagePath}' 未找到！\n\n请将一张图片放在程序的运行目录下（和.exe文件一起），并重命名为 test.png。", "测试文件缺失", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                string resultText = "";
+                // 使用 Task.Run 将耗时的OCR操作放到后台线程，避免UI卡死
+                //await Task.Run(() =>
+                //{
+                //	// 使用 using 语句确保从文件加载的图片资源能被正确释放
+                //	using (var localImage = new Bitmap(testImagePath))
+                //	{
+                //        // 这里我们直接调用我们之前优化好的静态PaddleOCRHelper
+                //        // 它内部已经处理了引擎的创建、使用和销毁
+                //        // resultText = PaddleOCRHelper.RecognizeText(localImage);
+
+                        
+                //    }
+                //});
+                await Task.Run(async() =>
+                {
+                    // 使用 using 语句确保从文件加载的图片资源能被正确释放
+                    using (var localImage = new Bitmap(testImagePath))
+                    {
+                        //  使用 await 关键字来异步等待识别结果
+                        // 调用 RecognizeTextAsync 方法，它会返回一个 Task<string>
+                        // await 会“暂停”这个方法，直到后台线程完成识别并将结果返回，期间UI不会卡死
+                        resultText = await PaddleOCRHelper.Instance.RecognizeTextAsync(localImage);
+
+                    }
+                });
+                //// 使用 Task.Run 将耗时的OCR操作放到后台线程，避免UI卡死
+                //await Task.Run(() =>
+                //{
+                //	// 使用 using 语句确保从文件加载的图片资源能被正确释放
+                //	using (var localImage = new Bitmap(testImagePath))
+                //	{
+                //		// --- 这里是修改的核心 ---
+                //		// 1. 获取搜狗OCR所需的图片（这里我们直接使用原图，不进行缩放）
+                //		// 依然建议创建一个克隆来传递，这是一个很好的隔离实践
+                //		using (var imageForOcr = new Bitmap(localImage))
+                //		{
+                //			try
+                //			{
+                //				// 2. 调用OcrHelper中的搜狗识别方法
+                //				// 这个方法在 FmMain.cs 的 SougouOCR 方法中被使用
+                //				var jsonResult = OcrHelper.SgBasicOpenOcr(imageForOcr);
+
+                //				// 3. 简单解析返回的JSON结果以获取文本
+                //				// 模仿 FmMain.cs 中对搜狗结果的处理
+                //				var jObject = Newtonsoft.Json.Linq.JObject.Parse(jsonResult);
+                //				var jArray = (Newtonsoft.Json.Linq.JArray)jObject["result"];
+
+                //				var sb = new System.Text.StringBuilder();
+                //				foreach (var item in jArray)
+                //				{
+                //					sb.AppendLine(item["content"].ToString());
+                //				}
+                //				resultText = sb.ToString().Trim();
+
+                //				if (string.IsNullOrEmpty(resultText))
+                //				{
+                //					resultText = "***搜狗OCR未识别到文本***";
+                //				}
+                //			}
+                //			catch (Exception ex)
+                //			{
+                //				resultText = $"搜狗OCR识别出错: {ex.Message}";
+                //			}
+                //		}
+                //	}
+                //});
+                // // 使用 Task.Run 将耗时的OCR操作放到后台线程，避免UI卡死
+                // await Task.Run(() =>
+                // {
+                //     // 使用 using 语句确保从文件加载的图片资源能被正确释放
+                //     using (var localImage = new Bitmap(testImagePath))
+                //     {
+                //         try
+                //         {
+                //             // --- 这里是修改的核心 ---
+                //             // 1. 调用OcrHelper中的方法，将图片转换为字节数组
+                //             byte[] imageBytes = OcrHelper.ImgToBytes(localImage);
+
+                //             // 2. 调用微信OCR的核心识别方法
+                //             // OcrHelper.WeChat 是一个异步方法，我们用 .GetAwaiter().GetResult() 在后台线程中同步等待它完成
+                //             string result = OcrHelper.WeChat(imageBytes).GetAwaiter().GetResult();
+
+                //             resultText = string.IsNullOrEmpty(result) ? "***微信OCR未识别到文本***" : result;
+                //         }
+                //         catch (Exception ex)
+                //         {
+                //             resultText = $"微信OCR识别出错: {ex.Message}";
+                //         }
+                //     }
+                // });
+                // 在UI线程上显示结果，确认测试已执行
+                MessageBox.Show($"paddle识别完成！\n\n识别结果（前50个字符）:\n{new string(resultText.Take(50).ToArray())}", "测试完成");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"测试过程中发生错误: {ex.Message}", "测试失败", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                // 无论成功与否，最后都恢复按钮状态
+                button.Enabled = true;
+                button.Text = "button1";
+            }
+        }
+    }
 }

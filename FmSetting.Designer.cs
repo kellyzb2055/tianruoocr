@@ -178,6 +178,7 @@ namespace TrOCR
             this.combox_代理 = new System.Windows.Forms.ComboBox();
             this.label11 = new System.Windows.Forms.Label();
             this.Page_密钥 = new System.Windows.Forms.TabPage();
+            this.button1 = new System.Windows.Forms.Button();
             this.百度_btn = new System.Windows.Forms.Button();
             this.密钥Button_apply = new System.Windows.Forms.Button();
             this.密钥Button = new System.Windows.Forms.Button();
@@ -289,8 +290,8 @@ namespace TrOCR
             this.checkBox_拆分后自动复制 = new System.Windows.Forms.CheckBox();
             this.groupBox_合并文本 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel_合并文本 = new System.Windows.Forms.TableLayoutPanel();
-            this.checkBox_合并自动复制 = new System.Windows.Forms.CheckBox();
             this.checkBox_合并去除空格 = new System.Windows.Forms.CheckBox();
+            this.checkBox_合并自动复制 = new System.Windows.Forms.CheckBox();
             this.Page_更新 = new System.Windows.Forms.TabPage();
             this.更新Button_check = new System.Windows.Forms.Button();
             this.更新Button = new System.Windows.Forms.Button();
@@ -2196,6 +2197,7 @@ namespace TrOCR
             // Page_密钥
             // 
             this.Page_密钥.BackColor = System.Drawing.Color.White;
+            this.Page_密钥.Controls.Add(this.button1);
             this.Page_密钥.Controls.Add(this.百度_btn);
             this.Page_密钥.Controls.Add(this.密钥Button_apply);
             this.Page_密钥.Controls.Add(this.密钥Button);
@@ -2207,6 +2209,16 @@ namespace TrOCR
             this.Page_密钥.Size = new System.Drawing.Size(523, 515);
             this.Page_密钥.TabIndex = 3;
             this.Page_密钥.Text = "密钥";
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(330, 203);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 11;
+            this.button1.Text = "内存测试";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // 百度_btn
             // 
@@ -3520,18 +3532,6 @@ namespace TrOCR
             this.tableLayoutPanel_合并文本.Size = new System.Drawing.Size(496, 72);
             this.tableLayoutPanel_合并文本.TabIndex = 0;
             // 
-            // checkBox_合并自动复制
-            // 
-            this.checkBox_合并自动复制.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.checkBox_合并自动复制.AutoSize = true;
-            this.checkBox_合并自动复制.Location = new System.Drawing.Point(4, 44);
-            this.checkBox_合并自动复制.Margin = new System.Windows.Forms.Padding(4);
-            this.checkBox_合并自动复制.Name = "checkBox_合并自动复制";
-            this.checkBox_合并自动复制.Size = new System.Drawing.Size(134, 19);
-            this.checkBox_合并自动复制.TabIndex = 1;
-            this.checkBox_合并自动复制.Text = "合并后自动复制";
-            this.checkBox_合并自动复制.UseVisualStyleBackColor = true;
-            // 
             // checkBox_合并去除空格
             // 
             this.checkBox_合并去除空格.Anchor = System.Windows.Forms.AnchorStyles.Left;
@@ -3543,6 +3543,18 @@ namespace TrOCR
             this.checkBox_合并去除空格.TabIndex = 2;
             this.checkBox_合并去除空格.Text = "合并时智能去除空格";
             this.checkBox_合并去除空格.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_合并自动复制
+            // 
+            this.checkBox_合并自动复制.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.checkBox_合并自动复制.AutoSize = true;
+            this.checkBox_合并自动复制.Location = new System.Drawing.Point(4, 44);
+            this.checkBox_合并自动复制.Margin = new System.Windows.Forms.Padding(4);
+            this.checkBox_合并自动复制.Name = "checkBox_合并自动复制";
+            this.checkBox_合并自动复制.Size = new System.Drawing.Size(134, 19);
+            this.checkBox_合并自动复制.TabIndex = 1;
+            this.checkBox_合并自动复制.Text = "合并后自动复制";
+            this.checkBox_合并自动复制.UseVisualStyleBackColor = true;
             // 
             // Page_更新
             // 
@@ -4216,5 +4228,6 @@ namespace TrOCR
         private System.Windows.Forms.Label label26;
         private System.Windows.Forms.TextBox textBox4;
         private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.Button button1;
     }
 }

@@ -4,140 +4,166 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Collections.Concurrent; // 引入线程安全集合
 using PaddleOCRSharp;
 
 namespace TrOCR.Helper
 {
     /// <summary>
     /// PaddleOCR离线识别帮助类
-    /// 采用单例模式和懒加载，支持资源回收
+    /// 采用带有专用线程的单例模式，确保引擎的创建、使用和销毁都在同一线程，避免跨线程资源泄漏。
     /// </summary>
     public sealed class PaddleOCRHelper : IDisposable
     {
+        // 懒加载单例
         private static readonly Lazy<PaddleOCRHelper> _instance = new Lazy<PaddleOCRHelper>(() => new PaddleOCRHelper());
-        private PaddleOCREngine _engine;
-        private readonly Architecture _architecture;
-        private bool _disposed = false;
-
         public static PaddleOCRHelper Instance => _instance.Value;
 
+        // 任务队列，用于从其他线程向专用线程传递识别任务
+        private readonly BlockingCollection<OcrTask> _taskQueue = new BlockingCollection<OcrTask>();
+        private readonly Thread _workerThread; // 专用的后台工作线程
+        private bool _disposed = false;
+
+        // 私有构造函数
         private PaddleOCRHelper()
         {
-            _architecture = RuntimeInformation.OSArchitecture;
-            
-            if (_architecture != Architecture.X64)
+            // 仅支持64位
+            if (RuntimeInformation.OSArchitecture != Architecture.X64)
                 return;
 
-            InitializeEngine();
+            // 创建并启动专用线程
+            _workerThread = new Thread(ProcessQueue)
+            {
+                IsBackground = true,
+                Name = "PaddleOCRWorker"
+            };
+            _workerThread.Start();
         }
 
-        private void InitializeEngine()
+        // 专用线程的工作循环
+        private void ProcessQueue()
         {
+            PaddleOCREngine engine = null;
+
             try
             {
-                // 1. 获取 paddleOCR 文件夹的根路径
-                string rootDir =Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "paddleOCR","win_x64");
-
-                // 2. 组合出 inference 模型文件夹的完整路径
-                string modelPath = Path.Combine(rootDir, "inference");
-
-                // 3. 创建模型配置对象，并明确指定每个模型文件的路径
-                // 注意：下面的路径请根据您实际的模型版本调整
-                 // OCRModelConfig config = null;
-                OCRModelConfig config = new OCRModelConfig();
-                config.det_infer = Path.Combine(modelPath, "PP-OCRv5_mobile_det_infer");
-                config.cls_infer = Path.Combine(modelPath, "ch_ppocr_mobile_v5.0_cls_infer");
-                config.rec_infer = Path.Combine(modelPath, "PP-OCRv5_mobile_rec_infer");
-                config.keys = Path.Combine(modelPath, "ppocr_keys.txt");
-               
-                 // 定义参数配置文件的路径
-                string configJsonPath = Path.Combine(modelPath, "PaddleOCR.config.json");
-
-                string ocrParamsJson = ""; // 如果文件不存在或为空，则使用引擎内部的默认参数
-
-                if (File.Exists(configJsonPath))
+                // 只要任务队列没有被标记为“完成”，就一直等待新任务
+                foreach (var task in _taskQueue.GetConsumingEnumerable())
                 {
-                    ocrParamsJson = File.ReadAllText(configJsonPath);
+                    try
+                    {
+                        // 1. 初始化引擎 (如果尚未初始化)
+                        // 所有操作都在这个线程内，非常安全
+                        if (engine == null)
+                        {
+                            string rootDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "paddleOCR", "win_x64");
+                            string modelPath = Path.Combine(rootDir, "inference");
+                            string configJsonPath = Path.Combine(modelPath, "PaddleOCR.config.json");
+                            string ocrParamsJson = File.Exists(configJsonPath) ? File.ReadAllText(configJsonPath) : "";
+                            engine = new PaddleOCREngine(null, ocrParamsJson);
+                        }
+
+                        // 2. 执行识别
+                        var ocrResult = engine.DetectText(task.ImageBytes);
+
+                        // 3. 处理结果并返回
+                        if (ocrResult?.TextBlocks == null || ocrResult.TextBlocks.Count == 0)
+                        {
+                            task.CompletionSource.TrySetResult("***该区域未发现文本***");
+                            continue;
+                        }
+
+                        var sb = new StringBuilder();
+                        foreach (var textBlock in ocrResult.TextBlocks)
+                        {
+                            if (!string.IsNullOrWhiteSpace(textBlock.Text))
+                                sb.AppendLine(textBlock.Text);
+                        }
+                        string result = sb.ToString().Trim();
+                        task.CompletionSource.TrySetResult(string.IsNullOrEmpty(result) ? "***该区域未发现文本***" : result);
+                    }
+                    catch (Exception ex)
+                    {
+                        // 如果任务执行失败，通知调用者
+                        task.CompletionSource.TrySetException(new Exception($"PaddleOCR识别失败: {ex.Message}"));
+                    }
                 }
-
-                _engine = new PaddleOCREngine(config, ocrParamsJson);
             }
-            catch (Exception ex)
+            finally
             {
-                
-                throw new Exception($"PaddleOCR引擎初始化失败: {ex.Message}");
+                // 队列结束后，确保引擎被销毁（仍然在这个专用线程内）
+                engine?.Dispose();
             }
         }
 
-        public static string RecognizeText(Image image)
+        // 公共的识别方法，现在是异步的
+        public Task<string> RecognizeTextAsync(Image image)
         {
-            return Instance.Execute(image);
-        }
+            if (_disposed)
+                throw new ObjectDisposedException(nameof(PaddleOCRHelper));
 
-        private string Execute(Image image)
-        {
-            try
-            {
-                if (_architecture != Architecture.X64)
-                    return "***PaddleOCR不支持32位系统，请使用64位系统***";
+            if (RuntimeInformation.OSArchitecture != Architecture.X64)
+                return Task.FromResult("***PaddleOCR不支持32位系统，请使用64位系统***");
 
-                if (_engine == null)
-                    return "***PaddleOCR引擎未初始化***";
+            if (image == null)
+                return Task.FromResult("***图像为空***");
 
-                if (image == null)
-                    return "***图像为空***";
-
-                byte[] imageBytes = ImageToBytes(image);
-                var ocrResult = _engine.DetectText(imageBytes);
-
-                if (ocrResult?.TextBlocks == null || ocrResult.TextBlocks.Count == 0)
-                    return "***该区域未发现文本***";
-
-                var sb = new StringBuilder();
-                foreach (var textBlock in ocrResult.TextBlocks)
-                {
-                    if (!string.IsNullOrWhiteSpace(textBlock.Text))
-                        sb.AppendLine(textBlock.Text);
-                }
-
-                string result = sb.ToString().Trim();
-                return string.IsNullOrEmpty(result) ? "***该区域未发现文本***" : result;
-            }
-            catch (Exception ex)
-            {
-                return $"***PaddleOCR识别失败: {ex.Message}***";
-            }
-        }
-
-        private byte[] ImageToBytes(Image image)
-        {
+            // 将图片转换为字节数组
+            byte[] imageBytes;
             using (var ms = new MemoryStream())
             {
                 image.Save(ms, ImageFormat.Png);
-                return ms.ToArray();
+                imageBytes = ms.ToArray();
             }
+            
+            // 创建一个任务，并将其放入队列
+            var tcs = new TaskCompletionSource<string>();
+            _taskQueue.Add(new OcrTask(imageBytes, tcs));
+
+            // 返回这个任务，调用者可以等待(await)它的结果
+            return tcs.Task;
         }
 
+        // 销毁单例的方法
         public void Dispose()
         {
             if (!_disposed)
             {
-                _engine?.Dispose();
-                _engine = null;
+                // 标记队列为“完成”，这将使专用线程的循环结束
+                _taskQueue.CompleteAdding();
+                // 等待专用线程执行完毕并退出
+                _workerThread?.Join();
+                _taskQueue.Dispose();
                 _disposed = true;
+                GC.SuppressFinalize(this);
             }
-            GC.SuppressFinalize(this);
         }
 
+        // 静态重置方法，用于外部调用
         public static void Reset()
         {
             if (_instance.IsValueCreated)
+            {
                 Instance.Dispose();
+                // 注意：因为Lazy<T>的实例一旦创建就无法重置，所以这里实际上是销毁了实例，
+                // 但应用生命周期内无法再创建新的了。这要求 Reset只在程序退出时调用。
+                // 如果需要在运行时重建，需要更复杂的单例模式。
+            }
         }
 
-        public static bool IsSupported()
+        // 内部类，用于在队列中传递任务数据
+        private class OcrTask
         {
-            return RuntimeInformation.OSArchitecture == Architecture.X64;
+            public byte[] ImageBytes { get; }
+            public TaskCompletionSource<string> CompletionSource { get; }
+
+            public OcrTask(byte[] imageBytes, TaskCompletionSource<string> tcs)
+            {
+                ImageBytes = imageBytes;
+                CompletionSource = tcs;
+            }
         }
     }
 }

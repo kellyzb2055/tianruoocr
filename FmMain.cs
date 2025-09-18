@@ -972,44 +972,36 @@ namespace TrOCR
 		/// PaddleOCR离线识别方法
 		/// 使用PaddleOCR引擎进行本地离线文字识别
 		/// </summary>
-		public void OCR_PaddleOCR()
-		{
-			split_txt = "";
-			try
-			{
-				var result = PaddleOCRHelper.RecognizeText(image_screen);
-				
-				if (!string.IsNullOrEmpty(result))
-				{
-					if (result.StartsWith("***") || result.Contains("错误") || result.Contains("失败"))
-					{
-						// 错误信息直接显示
-						if (esc != "退出")
-						{
-							// RichBoxBody.Text = result;//这里有bug，所以改为下面两行代码
-							typeset_txt = result;
-                    		split_txt = typeset_txt; // 必须也把这个变量设置一下
-						}
-						else
-						{
-							typeset_txt = "***该区域未发现文本***";
-							split_txt = typeset_txt;
-							esc = "";
-						}
-					}
-					else
-					{
-						// 处理识别结果
-						ProcessOcrResult(result);
-					}
-				}
-				else
-				{ //这里应该也要改，先标记一下，暂时不改
-					RichBoxBody.Text = "***PaddleOCR识别失败***";
-				}
-			}
-			catch (Exception ex)
-			{
+public void OCR_PaddleOCR()
+{
+  split_txt = "";
+    try
+    {
+        // 调用新的异步方法，并用 .GetAwaiter().GetResult() 同步等待结果
+        // 因为我们在一个后台线程(Main_OCR_Thread)中，所以这样同步等待是安全的
+        var result = PaddleOCRHelper.Instance.RecognizeTextAsync(image_screen).GetAwaiter().GetResult();
+
+        if (!string.IsNullOrEmpty(result))
+        {
+            if (result.StartsWith("***") || result.Contains("错误") || result.Contains("失败"))
+            {
+                typeset_txt = result;
+                split_txt = typeset_txt;
+            }
+            else
+            {
+                ProcessOcrResult(result);
+            }
+        }
+        else
+        { 
+            // 之前的代码在这里会显示UI，但在后台线程中不安全，我们改为设置文本
+            typeset_txt = "***PaddleOCR识别失败***";
+            split_txt = typeset_txt;
+        }
+    }
+    catch (Exception ex)
+    {
 				if (esc != "退出")
 				{
                     //RichBoxBody.Text = "***PaddleOCR识别失败: " + ex.Message + "***";这里有bug，所以改为下面两行代码
@@ -1019,11 +1011,11 @@ namespace TrOCR
 				else
 				{
                     typeset_txt = "***该区域未发现文本***";
-                    split_txt = typeset_txt;
+        			split_txt = typeset_txt;
                     esc = "";
                 }
-			}
-		}
+    }
+}
 		#endregion
 
 		/// <summary>
