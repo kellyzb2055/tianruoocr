@@ -14,12 +14,26 @@ namespace TrOCR.Helper
     /// </summary>
     public sealed class PaddleOCRHelper : IDisposable
     {
-        private static readonly Lazy<PaddleOCRHelper> _instance = new Lazy<PaddleOCRHelper>(() => new PaddleOCRHelper());
+        // 1. 修改：将 Lazy<T> 实例替换为可空的静态实例字段。
+        private static PaddleOCRHelper _instance;
+
         private PaddleOCREngine _engine;
         private readonly Architecture _architecture;
         private bool _disposed = false;
 
-        public static PaddleOCRHelper Instance => _instance.Value;
+        // 2. 修改：更改 Instance 属性的实现逻辑。
+        public static PaddleOCRHelper Instance
+        {
+            get
+            {
+                // 如果实例不存在，则创建一个新的。
+                if (_instance == null)
+                {
+                    _instance = new PaddleOCRHelper();
+                }
+                return _instance;
+            }
+        }
 
         private PaddleOCRHelper()
         {
@@ -66,7 +80,8 @@ namespace TrOCR.Helper
             }
             catch (Exception ex)
             {
-                
+                // 初始化失败时，确保 _engine 为 null，以便 Execute 方法能正确报告错误。
+                _engine = null; 
                 throw new Exception($"PaddleOCR引擎初始化失败: {ex.Message}");
             }
         }
@@ -82,7 +97,8 @@ namespace TrOCR.Helper
             {
                 if (_architecture != Architecture.X64)
                     return "***PaddleOCR不支持32位系统，请使用64位系统***";
-
+                
+                // 此处的检查现在可以捕获初始化失败的情况。
                 if (_engine == null)
                     return "***PaddleOCR引擎未初始化***";
 
@@ -131,10 +147,19 @@ namespace TrOCR.Helper
             GC.SuppressFinalize(this);
         }
 
+        // 3. 修改：Reset 方法现在会销毁实例，允许垃圾回收。
         public static void Reset()
         {
-            if (_instance.IsValueCreated)
-                Instance.Dispose();
+            if (_instance != null)
+            {
+                _instance.Dispose();
+                _instance = null; // 关键：移除静态引用，使对象可被回收。
+
+                // 新增：强制进行垃圾回收，以立即释放引擎占用的内存
+                // 这对于处理大型非托管资源（如OCR模型）非常有效
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+            }
         }
 
         public static bool IsSupported()

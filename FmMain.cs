@@ -6673,6 +6673,7 @@ namespace TrOCR
 			tx_table.Text = "腾讯";
 			ali_table.Text = "阿里";
 			Mathfuntion.Text = "公式";
+			paddleocr.Text="PaddleOCR";
 		}
 
 		/// <summary>
