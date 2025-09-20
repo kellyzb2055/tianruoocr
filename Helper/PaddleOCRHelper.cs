@@ -1,194 +1,145 @@
-// PaddleOCRHelper.cs
-using PaddleOCRSDK;
 using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
-using System.Reflection; // 关键：引入反射命名空间
+using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
+using PaddleOCRSharp;
 
-/// <summary>
-/// PaddleOCR引擎的帮助类，用于封装初始化、文本识别和资源管理等逻辑。
-/// 该类采用单例模式，确保引擎只被初始化一次。
-/// </summary>
-public sealed class PaddleOCRHelper
+namespace TrOCR.Helper
 {
-    #region 单例实现 (Singleton Implementation)
-
-    private static readonly Lazy<PaddleOCRHelper> lazyInstance = 
-        new Lazy<PaddleOCRHelper>(() => new PaddleOCRHelper());
-
     /// <summary>
-    /// 获取 PaddleOCRHelper 的唯一实例。
+    /// PaddleOCR离线识别帮助类
+    /// 采用单例模式和懒加载，支持资源回收
     /// </summary>
-    public static PaddleOCRHelper Instance => lazyInstance.Value;
-
-    private Lazy<IOCRService> ocrServiceLazy;
-
-    /// <summary>
-    /// 私有构造函数，防止外部直接创建实例。
-    /// </summary>
-    private PaddleOCRHelper()
+    public sealed class PaddleOCRHelper : IDisposable
     {
-        InitializeOcrService();
-    }
+        private static readonly Lazy<PaddleOCRHelper> _instance = new Lazy<PaddleOCRHelper>(() => new PaddleOCRHelper());
+        private PaddleOCREngine _engine;
+        private readonly Architecture _architecture;
+        private bool _disposed = false;
 
-    #endregion
+        public static PaddleOCRHelper Instance => _instance.Value;
 
-    #region 引擎初始化与重置 (Engine Initialization and Reset)
-
-    /// <summary>
-    /// 配置 IOCRService 的懒加载初始化逻辑。
-    /// </summary>
-    private void InitializeOcrService()
-    {
-        ocrServiceLazy = new Lazy<IOCRService>(() =>
+        private PaddleOCRHelper()
         {
-            IOCRService service = new OCRService();
-            string modelsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "models");
+            _architecture = RuntimeInformation.OSArchitecture;
+            
+            if (_architecture != Architecture.X64)
+                return;
 
-            if (!Directory.Exists(modelsPath) || !File.Exists(Path.Combine(modelsPath, "ppocr_keys.txt")))
-            {
-                throw new DirectoryNotFoundException(
-                    "PaddleOCR 模型目录未找到或不完整。" +
-                    $"请确保 'models' 目录存在于 '{modelsPath}'，并包含所需的模型文件和 ppocr_keys.txt。");
-            }
+            InitializeEngine();
+        }
 
-            var para = new InitParamater
-            {
-                det_infer = Path.Combine(modelsPath, "PP-OCRv4_mobile_det_infer"),
-                rec_infer = Path.Combine(modelsPath, "PP-OCRv4_mobile_rec_infer"),
-                cls_infer = Path.Combine(modelsPath, "ch_ppocr_mobile_v2.0_cls_infer"),
-                keyFile = Path.Combine(modelsPath, "ppocr_keys.txt"),
-                paraType = EnumParaType.Class,
-                ocrpara = new OCRParameter
-                {
-                    cpu_threads = 10,
-                    enable_mkldnn = false,//导致内存泄漏的罪魁祸首：enable_mkldnn = true，但是改成false后识别速度非常慢
-                    cls = false,
-                    use_angle_cls = false,
-                    use_gpu = false,
-                    det = true,
-                    rec = true
-                }
-            };
-
-            bool success = service.Init(para);
-            if (!success)
-            {
-                string error = service.GetError();
-                throw new Exception($"初始化 PaddleOCR 引擎失败。错误信息: {error}");
-            }
-
-            return service;
-        });
-    }
-
-    /// <summary>
-    /// 【已更新】释放由PaddleOCR引擎使用的原生资源。
-    /// 由于无法直接访问 internal 的 OCRSDK.FreeEngine() 方法，我们使用反射来调用它。
-    /// </summary>
-    public static void Reset()
-    {
-        if (lazyInstance.IsValueCreated && lazyInstance.Value.ocrServiceLazy.IsValueCreated)
+        private void InitializeEngine()
         {
             try
             {
-                // --- 使用反射调用 internal static 方法 ---
+                // 1. 获取 paddleOCR 文件夹的根路径
+                string rootDir =Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "paddleOCR","win_x64");
 
-                // 1. 获取SDK所在的程序集 (Assembly)
-                // 我们可以通过一个已知的 public 类型（如 OCRService）来定位它。
-                Assembly sdkAssembly = typeof(OCRService).Assembly;
+                // 2. 组合出 inference 模型文件夹的完整路径
+                string modelPath = Path.Combine(rootDir, "inference");
 
-                // 2. 从程序集中按名称查找 internal 的 OCRSDK 类型
-                // 需要提供完整的命名空间和类名。
-                Type ocrSdkType = sdkAssembly.GetType("PaddleOCRSDK.OCRSDK");
+                // 3. 创建模型配置对象，并明确指定每个模型文件的路径
+                // 注意：下面的路径请根据您实际的模型版本调整
+                //  OCRModelConfig config = null;
+                // OCRModelConfig config = new OCRModelConfig();
+                // config.det_infer = Path.Combine(modelPath, "PP-OCRv5_mobile_det_infer");
+                // config.cls_infer = Path.Combine(modelPath, "ch_ppocr_mobile_v5.0_cls_infer");
+                // config.rec_infer = Path.Combine(modelPath, "PP-OCRv5_mobile_rec_infer");
+                // config.keys = Path.Combine(modelPath, "ppocr_keys.txt");
+               
+                 // 定义参数配置文件的路径
+                // string configJsonPath = Path.Combine(modelPath, "PaddleOCR.config.json");
 
-                if (ocrSdkType != null)
-                {
-                    // 3. 查找名为 "FreeEngine" 的 static 和 non-public 方法
-                    MethodInfo freeEngineMethod = ocrSdkType.GetMethod("FreeEngine", BindingFlags.Static | BindingFlags.NonPublic);
+                // string ocrParamsJson = ""; // 如果文件不存在或为空，则使用引擎内部的默认参数
 
-                    if (freeEngineMethod != null)
-                    {
-                        // 4. 调用方法。对于静态方法，第一个参数是 null。
-                        freeEngineMethod.Invoke(null, null);
-                    }
-                    else
-                    {
-                        // 如果找不到方法，可能SDK版本有变动
-                        throw new MissingMethodException("在 PaddleOCRSDK.OCRSDK 中未找到 FreeEngine 方法。");
-                    }
-                }
-                else
-                {
-                    // 如果找不到类型，可能SDK结构发生了变化
-                    throw new TypeLoadException("无法从SDK程序集中加载 PaddleOCRSDK.OCRSDK 类型。");
-                }
+                // if (File.Exists(configJsonPath))
+                // {
+                //     ocrParamsJson = File.ReadAllText(configJsonPath);
+                // }
+                OCRParameter param = new OCRParameter();
+                param.enable_mkldnn = false;
+
+                _engine = new PaddleOCREngine(null, param);
             }
             catch (Exception ex)
             {
-                // 记录或处理释放引擎时可能发生的错误
-                System.Diagnostics.Debug.WriteLine($"通过反射释放 PaddleOCR 引擎时出错: {ex.Message}");
-            }
-            finally
-            {
-                // 无论成功与否，都重置初始化器，以便下次可以重新加载引擎
-                lazyInstance.Value.InitializeOcrService();
+                
+                throw new Exception($"PaddleOCR引擎初始化失败: {ex.Message}");
             }
         }
-    }
 
-    #endregion
-
-    #region 公共识别方法 (Public Recognition Method)
-
-    /// <summary>
-    /// 异步地从指定的图像中识别文本。
-    /// </summary>
-    /// <param name="image">要执行OCR的 System.Drawing.Image 对象。</param>
-    /// <returns>一个包含识别结果的字符串。如果识别失败，则返回格式化的错误信息。</returns>
-    public async Task<string> RecognizeTextAsync(Image image)
-    {
-        if (image == null)
+        public static string RecognizeText(Image image)
         {
-            return "***传入的图像为空***";
+            return Instance.Execute(image);
         }
 
-        try
+        private string Execute(Image image)
         {
-            IOCRService currentService = ocrServiceLazy.Value;
-
-            return await Task.Run(() =>
+            try
             {
-                byte[] imageBytes;
-                using (var ms = new MemoryStream())
-                {
-                    image.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-                    imageBytes = ms.ToArray();
-                }
+                if (_architecture != Architecture.X64)
+                    return "***PaddleOCR不支持32位系统，请使用64位系统***";
 
-                OCRResult ocrResult = currentService.Detect(imageBytes);
+                if (_engine == null)
+                    return "***PaddleOCR引擎未初始化***";
 
-                if (ocrResult == null || ocrResult.WordsResult.Count == 0)
-                {
-                    return string.Empty;
-                }
+                if (image == null)
+                    return "***图像为空***";
+
+                byte[] imageBytes = ImageToBytes(image);
+                var ocrResult = _engine.DetectText(imageBytes);
+
+                if (ocrResult?.TextBlocks == null || ocrResult.TextBlocks.Count == 0)
+                    return "***该区域未发现文本***";
 
                 var sb = new StringBuilder();
-                foreach (var item in ocrResult.WordsResult)
+                foreach (var textBlock in ocrResult.TextBlocks)
                 {
-                    sb.AppendLine(item.Words);
+                    if (!string.IsNullOrWhiteSpace(textBlock.Text))
+                        sb.AppendLine(textBlock.Text);
                 }
 
-                return sb.ToString().Trim();
-            });
+                string result = sb.ToString().Trim();
+                return string.IsNullOrEmpty(result) ? "***该区域未发现文本***" : result;
+            }
+            catch (Exception ex)
+            {
+                return $"***PaddleOCR识别失败: {ex.Message}***";
+            }
         }
-        catch (Exception ex)
+
+        private byte[] ImageToBytes(Image image)
         {
-            return $"***PaddleOCR 发生错误: {ex.Message}***";
+            using (var ms = new MemoryStream())
+            {
+                image.Save(ms, ImageFormat.Png);
+                return ms.ToArray();
+            }
+        }
+
+        public void Dispose()
+        {
+            if (!_disposed)
+            {
+                _engine?.Dispose();
+                _engine = null;
+                _disposed = true;
+            }
+            GC.SuppressFinalize(this);
+        }
+
+        public static void Reset()
+        {
+            if (_instance.IsValueCreated)
+                Instance.Dispose();
+        }
+
+        public static bool IsSupported()
+        {
+            return RuntimeInformation.OSArchitecture == Architecture.X64;
         }
     }
-
-    #endregion
 }

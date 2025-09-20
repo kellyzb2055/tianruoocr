@@ -23,6 +23,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ShareX.ScreenCaptureLib;
 using TrOCR.Helper;
+using PaddleOCRSharp;
 using ZXing;
 using ZXing.Common;
 using ZXing.QrCode;
@@ -971,42 +972,57 @@ namespace TrOCR
 		/// PaddleOCR离线识别方法
 		/// 使用PaddleOCR引擎进行本地离线文字识别
 		/// </summary>
-		public async System.Threading.Tasks.Task OCR_PaddleOCR()
+		public void OCR_PaddleOCR()
 		{
-		    // 每次调用前先清空旧的结果
-		    split_txt = "";
-		    typeset_txt = "";
-
-		    try
-		    {
-		        // 调用单例的异步识别方法，并等待结果
-		        var result = await PaddleOCRHelper.Instance.RecognizeTextAsync(image_screen);
-
-		        if (string.IsNullOrEmpty(result))
-		        {
-		            // 如果结果为空，说明没有识别到文本
-		            typeset_txt = "***该区域未发现文本***";
-		            split_txt = typeset_txt;
-		        }
-		        else if (result.StartsWith("***")) 
-		        {
-		            // 如果结果以"***"开头，说明是帮助类返回的错误信息
-		            typeset_txt = result;
-		            split_txt = result;
-		        }
-		        else
-		        {
-		            // 识别成功，调用您现有的结果处理方法
-		            // 这个方法会自动填充 typeset_txt 和 split_txt
-		            ProcessOcrResult(result);
-		        }
-		    }
-		    catch (Exception ex)
-		    {
-		        // 捕获预料之外的异常，提供友好的错误提示
-		        typeset_txt = "***PaddleOCR 识别失败: " + ex.Message + "***";
-		        split_txt = typeset_txt;
-		    }
+			split_txt = "";
+			try
+			{
+				var result = PaddleOCRHelper.RecognizeText(image_screen);
+				
+				if (!string.IsNullOrEmpty(result))
+				{
+					if (result.StartsWith("***") || result.Contains("错误") || result.Contains("失败"))
+					{
+						// 错误信息直接显示
+						if (esc != "退出")
+						{
+							// RichBoxBody.Text = result;//这里有bug，所以改为下面两行代码
+							typeset_txt = result;
+                    		split_txt = typeset_txt; // 必须也把这个变量设置一下
+						}
+						else
+						{
+							typeset_txt = "***该区域未发现文本***";
+							split_txt = typeset_txt;
+							esc = "";
+						}
+					}
+					else
+					{
+						// 处理识别结果
+						ProcessOcrResult(result);
+					}
+				}
+				else
+				{ //这里应该也要改，先标记一下，暂时不改
+					RichBoxBody.Text = "***PaddleOCR识别失败***";
+				}
+			}
+			catch (Exception ex)
+			{
+				if (esc != "退出")
+				{
+                    //RichBoxBody.Text = "***PaddleOCR识别失败: " + ex.Message + "***";这里有bug，所以改为下面两行代码
+                    typeset_txt = "***PaddleOCR识别失败: " + ex.Message + "***";
+                    split_txt = typeset_txt; // 必须也把这个变量设置一下
+                }
+				else
+				{
+                    typeset_txt = "***该区域未发现文本***";
+                    split_txt = typeset_txt;
+                    esc = "";
+                }
+			}
 		}
 		#endregion
 
@@ -3441,10 +3457,10 @@ namespace TrOCR
 			}
 			if (interface_flag == "PaddleOCR")
 			{
-				OCR_PaddleOCR().GetAwaiter().GetResult(); 
-    			fmloading.FmlClose = "窗体已关闭";
-    			Invoke(new OcrThread(Main_OCR_Thread_last));
-    			return;
+				OCR_PaddleOCR();
+				fmloading.FmlClose = "窗体已关闭";
+				Invoke(new OcrThread(Main_OCR_Thread_last));
+				return;
 			}
 			// 处理竖排文字识别（从左向右或从右向左）
 			if (interface_flag == "从左向右" || interface_flag == "从右向左")
