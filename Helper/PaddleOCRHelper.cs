@@ -5,6 +5,8 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using PaddleOCRSharp;
+using System.Diagnostics; // <--- 添加这个来解决 "Process" 不存在的问题
+using System.Runtime.InteropServices; // <--- 添加这个以支持 DllImport
 
 namespace TrOCR.Helper
 {
@@ -14,6 +16,12 @@ namespace TrOCR.Helper
     /// </summary>
     public sealed class PaddleOCRHelper : IDisposable
     {
+         //  在你的类内部，添加这个 Windows API 函数的声明
+        //    这部分代码告诉 C# 如何去调用 Windows 系统底层的 kernel32.dll 文件中的 SetProcessWorkingSetSize 函数
+        [DllImport("kernel32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool SetProcessWorkingSetSize(IntPtr process,
+            IntPtr minimumWorkingSetSize, IntPtr maximumWorkingSetSize);
         // 1. 修改：将 Lazy<T> 实例替换为可空的静态实例字段。
         private static PaddleOCRHelper _instance;
 
@@ -144,7 +152,7 @@ namespace TrOCR.Helper
                 _engine = null;
                 _disposed = true;
             }
-            GC.SuppressFinalize(this);
+           
         }
 
         // 3. 修改：Reset 方法现在会销毁实例，允许垃圾回收。
@@ -159,6 +167,10 @@ namespace TrOCR.Helper
                 // 这对于处理大型非托管资源（如OCR模型）非常有效
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
+                if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+                {
+                    SetProcessWorkingSetSize(Process.GetCurrentProcess().Handle, (IntPtr)(-1), (IntPtr)(-1));
+                }
             }
         }
 

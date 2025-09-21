@@ -277,6 +277,12 @@ namespace TrOCR
 			this.paddleocr = new global::System.Windows.Forms.ToolStripMenuItem();
 			this.paddleocr.Text = "PaddleOCR";
 			this.paddleocr.Click += new global::System.EventHandler(this.OCR_paddleocr_Click);
+			this.paddleocr2 = new global::System.Windows.Forms.ToolStripMenuItem();
+			this.paddleocr2.Text = "PaddleOCR2";
+			this.paddleocr2.Click += new global::System.EventHandler(this.OCR_paddleocr2_Click);
+			this.rapidocr = new global::System.Windows.Forms.ToolStripMenuItem();
+			this.rapidocr.Text = "RapidOCR";
+			this.rapidocr.Click += new global::System.EventHandler(this.OCR_rapidocr_Click);
 			this.ocr_table.Text = "表格";
 			this.baidu_table.Text = "百度";
 			this.baidu_table.Click += new global::System.EventHandler(this.OCR_baidutable_Click);
@@ -331,6 +337,8 @@ namespace TrOCR
 				this.baidu,
 				this.baidu_accurate,
 				this.paddleocr,
+				this.paddleocr2,
+				this.rapidocr,
 				this.toolStripSeparator1,
 				this.Mathfuntion,
 				this.ocr_table,
@@ -506,6 +514,16 @@ namespace TrOCR
 		/// 接口 - PaddleOCR
 		/// </summary>
 		public global::System.Windows.Forms.ToolStripItem paddleocr;
+
+		/// <summary>
+		/// 接口 - PaddleOCR2
+		/// </summary>
+		public global::System.Windows.Forms.ToolStripItem paddleocr2;
+
+		/// <summary>
+		/// 接口 - RapidOCR
+		/// </summary>
+		public global::System.Windows.Forms.ToolStripItem rapidocr;
 
 		/// <summary>
 		/// 接口 - 竖排

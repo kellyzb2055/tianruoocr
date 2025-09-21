@@ -549,6 +549,7 @@ namespace TrOCR
 			saveIniFile();
 			OcrHelper.Dispose();
 			PaddleOCRHelper.Reset();
+			PaddleOCR2Helper.Reset();
 			Process.GetCurrentProcess().Kill();
 		}
 		#endregion
@@ -978,8 +979,12 @@ namespace TrOCR
 			try
 			{
 				var result = PaddleOCRHelper.RecognizeText(image_screen);
-				
-				if (!string.IsNullOrEmpty(result))
+				image_screen?.Dispose();
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+
+
+                if (!string.IsNullOrEmpty(result))
 				{
 					if (result.StartsWith("***") || result.Contains("错误") || result.Contains("失败"))
 					{
@@ -1014,6 +1019,119 @@ namespace TrOCR
 				{
                     //RichBoxBody.Text = "***PaddleOCR识别失败: " + ex.Message + "***";这里有bug，所以改为下面两行代码
                     typeset_txt = "***PaddleOCR识别失败: " + ex.Message + "***";
+                    split_txt = typeset_txt; // 必须也把这个变量设置一下
+                }
+				else
+				{
+                    typeset_txt = "***该区域未发现文本***";
+                    split_txt = typeset_txt;
+                    esc = "";
+                }
+			}
+		}
+
+		/// <summary>
+		/// PaddleOCR2离线识别方法
+		/// 使用Sdcb.PaddleOCR引擎进行本地离线文字识别
+		/// </summary>
+		public void OCR_PaddleOCR2()
+		{
+			split_txt = "";
+			try
+			{
+				var result = PaddleOCR2Helper.RecognizeText(image_screen);
+				image_screen?.Dispose();
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+
+                if (!string.IsNullOrEmpty(result))
+				{
+					if (result.StartsWith("***") || result.Contains("错误") || result.Contains("失败"))
+					{
+						// 错误信息直接显示
+						if (esc != "退出")
+						{
+							typeset_txt = result;
+                    		split_txt = typeset_txt;
+						}
+						else
+						{
+							typeset_txt = "***该区域未发现文本***";
+							split_txt = typeset_txt;
+							esc = "";
+						}
+					}
+					else
+					{
+						// 处理识别结果
+						ProcessOcrResult(result);
+					}
+				}
+				else
+				{
+					RichBoxBody.Text = "***PaddleOCR2识别失败***";
+				}
+			}
+			catch (Exception ex)
+			{
+				if (esc != "退出")
+				{
+                    typeset_txt = "***PaddleOCR2识别失败: " + ex.Message + "***";
+                    split_txt = typeset_txt;
+                }
+				else
+				{
+                    typeset_txt = "***该区域未发现文本***";
+                    split_txt = typeset_txt;
+                    esc = "";
+                }
+			}
+		}
+
+		/// <summary>
+		/// RapidOCR离线识别方法
+		/// 使用RapidOCR引擎进行本地离线文字识别
+		/// </summary>
+		public void OCR_RapidOCR()
+		{
+			split_txt = "";
+			try
+			{
+				var result = RapidOCRHelper.RecognizeText(image_screen);
+				
+				if (!string.IsNullOrEmpty(result))
+				{
+					if (result.StartsWith("***") || result.Contains("错误") || result.Contains("失败"))
+					{
+						// 错误信息直接显示
+						if (esc != "退出")
+						{
+							typeset_txt = result;
+                    		split_txt = typeset_txt; // 必须也把这个变量设置一下
+						}
+						else
+						{
+							typeset_txt = "***该区域未发现文本***";
+							split_txt = typeset_txt;
+							esc = "";
+						}
+					}
+					else
+					{
+						// 处理识别结果
+						ProcessOcrResult(result);
+					}
+				}
+				else
+				{
+					RichBoxBody.Text = "***RapidOCR识别失败***";
+				}
+			}
+			catch (Exception ex)
+			{
+				if (esc != "退出")
+				{
+                    typeset_txt = "***RapidOCR识别失败: " + ex.Message + "***";
                     split_txt = typeset_txt; // 必须也把这个变量设置一下
                 }
 				else
@@ -1224,6 +1342,26 @@ namespace TrOCR
 		private void OCR_paddleocr_Click(object sender, EventArgs e)
 		{
 			OCR_foreach("PaddleOCR");
+		}
+
+		/// <summary>
+		/// PaddleOCR2菜单点击事件处理
+		/// </summary>
+		/// <param name="sender">事件发送者</param>
+		/// <param name="e">事件参数</param>
+		private void OCR_paddleocr2_Click(object sender, EventArgs e)
+		{
+			OCR_foreach("PaddleOCR2");
+		}
+
+		/// <summary>
+		/// RapidOCR菜单点击事件处理
+		/// </summary>
+		/// <param name="sender">事件发送者</param>
+		/// <param name="e">事件参数</param>
+		private void OCR_rapidocr_Click(object sender, EventArgs e)
+		{
+			OCR_foreach("RapidOCR");
 		}
 		#endregion
 // ====================================================================================================================
@@ -3117,7 +3255,7 @@ namespace TrOCR
 				
 				// 设置截图状态为进行中
 				StaticValue.IsCapture = true;
-				
+				image_screen?.Dispose();
 				// 调用截图功能获取屏幕图像
 				image_screen = RegionCaptureTasks.GetRegionImage_Mo(new RegionCaptureOptions
 				{
@@ -3458,6 +3596,20 @@ namespace TrOCR
 			if (interface_flag == "PaddleOCR")
 			{
 				OCR_PaddleOCR();
+				fmloading.FmlClose = "窗体已关闭";
+				Invoke(new OcrThread(Main_OCR_Thread_last));
+				return;
+			}
+			if (interface_flag == "PaddleOCR2")
+			{
+				OCR_PaddleOCR2();
+				fmloading.FmlClose = "窗体已关闭";
+				Invoke(new OcrThread(Main_OCR_Thread_last));
+				return;
+			}
+			if (interface_flag == "RapidOCR")
+			{
+				OCR_RapidOCR();
 				fmloading.FmlClose = "窗体已关闭";
 				Invoke(new OcrThread(Main_OCR_Thread_last));
 				return;
@@ -4220,6 +4372,36 @@ namespace TrOCR
         		}
 			}
 			
+			// 当切换到其他OCR接口时，释放PaddleOCR2资源
+			if (interface_flag == "PaddleOCR2" && name != "PaddleOCR2")
+			{
+				// 如果是从 PaddleOCR2 切换到其他接口，就调用 Reset 释放资源
+        		try
+        		{
+        		    PaddleOCR2Helper.Reset();
+        		}
+        		catch (Exception ex)
+        		{
+        		    // 记录可能发生的释放错误
+        		    CommonHelper.AddLog($"释放 PaddleOCR2 引擎时出错: {ex.Message}");
+        		}
+			}
+			
+			// 当切换到其他OCR接口时，释放RapidOCR资源
+			if (interface_flag == "RapidOCR" && name != "RapidOCR")
+			{
+				// 如果是从 RapidOCR 切换到其他接口，就调用 Reset 释放资源
+        		try
+        		{
+        		    RapidOCRHelper.Reset();
+        		}
+        		catch (Exception ex)
+        		{
+        		    // 记录可能发生的释放错误
+        		    CommonHelper.AddLog($"释放 RapidOCR 引擎时出错: {ex.Message}");
+        		}
+			}
+			
 			var filePath = AppDomain.CurrentDomain.BaseDirectory + "Data\\config.ini";
 			switch (name)
 			{
@@ -4303,6 +4485,16 @@ namespace TrOCR
 					interface_flag = "PaddleOCR";
 					Refresh();
 					paddleocr.Text = "PaddleOCR√";
+					break;
+				case "PaddleOCR2":
+					interface_flag = "PaddleOCR2";
+					Refresh();
+					paddleocr2.Text = "PaddleOCR2√";
+					break;
+				case "RapidOCR":
+					interface_flag = "RapidOCR";
+					Refresh();
+					rapidocr.Text = "RapidOCR√";
 					break;
 				case "从左向右" when !File.Exists("cvextern.dll"):
 					MessageBox.Show("请从蓝奏网盘中下载cvextern.dll大小约25m，点击确定自动弹出网页。\r\n将下载后的文件与 天若OCR文字识别.exe 这个文件放在一起。");
@@ -6674,6 +6866,8 @@ namespace TrOCR
 			ali_table.Text = "阿里";
 			Mathfuntion.Text = "公式";
 			paddleocr.Text="PaddleOCR";
+			paddleocr2.Text="PaddleOCR2";
+			rapidocr.Text="RapidOCR";
 		}
 
 		/// <summary>
