@@ -17,19 +17,12 @@ namespace TrOCR.Helper
     /// </summary>
     public sealed class PaddleOCRHelper : IDisposable
     {
-         //  在你的类内部，添加这个 Windows API 函数的声明
-        //    这部分代码告诉 C# 如何去调用 Windows 系统底层的 kernel32.dll 文件中的 SetProcessWorkingSetSize 函数
-        [DllImport("kernel32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool SetProcessWorkingSetSize(IntPtr process,
-            IntPtr minimumWorkingSetSize, IntPtr maximumWorkingSetSize);
 
-        // --- 修改点 1: 使用 Lazy<T> 实现单例 ---
+        // --- 修改点 : 使用 Lazy<T> 实现单例 ---
         // 替换掉原来的 _instance 和 _lock 字段
         private static Lazy<PaddleOCRHelper> _lazyInstance =
             new Lazy<PaddleOCRHelper>(() => new PaddleOCRHelper(), LazyThreadSafetyMode.ExecutionAndPublication);
 
-        // --- 修改点 2: Instance 属性变得极其简单 ---
         public static PaddleOCRHelper Instance => _lazyInstance.Value;
 
         // --- 新增: 为 Reset 方法的原子性操作保留一个锁 ---
@@ -129,10 +122,9 @@ namespace TrOCR.Helper
                 // byte[] imageBytes = ImageToBytes(image);
                 // var ocrResult = _engine.DetectText(imageBytes);
                 var ocrResult = _engine.DetectText((Bitmap)image);
-
+                Debug.WriteLine($"paddleOCR识别结果：{ocrResult}");
                 if (ocrResult?.TextBlocks == null || ocrResult.TextBlocks.Count == 0)
-                    return "***该区域未发现文本***";
-                Debug.WriteLine($"识别结果：{ocrResult}");
+                    return "***该区域未发现文本***"; 
                 var sb = new StringBuilder();
                 foreach (var textBlock in ocrResult.TextBlocks)
                 {

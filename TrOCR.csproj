@@ -120,12 +120,12 @@
       <Private>False</Private>
       <Private Condition="'$(Platform)' == 'x64'">True</Private>
     </Reference>
-    <Reference Include="Sdcb.PaddleOCR.Models.Local, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+    <!-- <Reference Include="Sdcb.PaddleOCR.Models.Local, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Sdcb.PaddleOCR.Models.Local.3.0.1\lib\netstandard2.0\Sdcb.PaddleOCR.Models.Local.dll</HintPath>
       <Private>False</Private>
       <Private Condition="'$(Platform)' == 'x64'">True</Private>
-    </Reference>
-    <Reference Include="Sdcb.PaddleOCR.Models.LocalV3, Version=2.7.0.1, Culture=neutral, processorArchitecture=MSIL">
+    </Reference> -->
+    <!-- <Reference Include="Sdcb.PaddleOCR.Models.LocalV3, Version=2.7.0.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Sdcb.PaddleOCR.Models.LocalV3.2.7.0.1\lib\netstandard2.0\Sdcb.PaddleOCR.Models.LocalV3.dll</HintPath>
       <Private>False</Private>
       <Private Condition="'$(Platform)' == 'x64'">True</Private>
@@ -140,12 +140,12 @@
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
       <Private Condition="'$(Platform)' == 'x64'">True</Private>
-    </Reference>
+    </Reference> -->
     <Reference Include="Sdcb.PaddleOCR.Models.Online, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Sdcb.PaddleOCR.Models.Online.3.0.1\lib\netstandard2.0\Sdcb.PaddleOCR.Models.Online.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
-      <Private Condition="'$(Platform)' == 'x64'">False</Private>
+      <Private Condition="'$(Platform)' == 'x64'">True</Private>
     </Reference>
     <Reference Include="Sdcb.PaddleOCR.Models.Shared, Version=2.7.0.1, Culture=neutral, processorArchitecture=MSIL" Condition="'$(Platform)' == 'x64'">
       <HintPath>packages\Sdcb.PaddleOCR.Models.Shared.2.7.0.1\lib\netstandard2.0\Sdcb.PaddleOCR.Models.Shared.dll</HintPath>
