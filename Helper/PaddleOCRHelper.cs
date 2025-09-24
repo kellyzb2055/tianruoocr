@@ -77,7 +77,7 @@ namespace TrOCR.Helper
                 config.keys = keysPath;
 
                 // --- 加载用户指定的高级参数JSON文件 ---
-                string ocrParamsJson = ""; // 默认为空，引擎将使用内部默认参数
+                string ocrParamsJson = ""; // 默认为空，引擎将使用内部默认参数(exe所在目录+\inference\PaddleOCR.config.json)，如果这文件不存在就报错，所以我要修改默认文件路径
 
                 // 检查用户是否配置了高级参数文件路径，并且该文件确实存在
                 if (!string.IsNullOrEmpty(advancedConfigPath) && File.Exists(advancedConfigPath))
@@ -94,8 +94,13 @@ namespace TrOCR.Helper
                         Debug.WriteLine($"读取高级配置文件 '{advancedConfigPath}' 失败: {ex.Message}");
                     }
                 }
-
-                // 使用模型配置和高级参数（可能为空）初始化引擎
+                else
+                {
+                    ocrParamsJson=Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PaddleOCR_data", "win_x64", "inference", "PaddleOCR.config.json");
+                    Debug.WriteLine($"高级配置文件为空，使用默认配置文件目录: {ocrParamsJson}");
+                }
+                
+                // 使用模型配置和高级参数初始化引擎
                 _engine = new PaddleOCREngine(config, ocrParamsJson);
             }
             catch (Exception ex)

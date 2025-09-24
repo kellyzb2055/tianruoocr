@@ -453,4 +453,19 @@
   </Target>
   <!-- <Import Project="packages\PaddleOCRSharp.5.1.0\build\PaddleOCRSharp.targets" Condition="Exists('packages\PaddleOCRSharp.5.1.0\build\PaddleOCRSharp.targets') And '$(Platform)' == 'x64'" /> -->
   <Import Project="packages\System.ValueTuple.4.6.1\build\net471\System.ValueTuple.targets" Condition="Exists('packages\System.ValueTuple.4.6.1\build\net471\System.ValueTuple.targets')" />
+  <PropertyGroup>
+    <PostBuildEvent>if /I "$(PlatformName)" == "x86" (
+    echo Deleting x64-only WeChatOcr components for x86 build...
+
+    rem 删除 WeChatOcr 的托管DLL
+    if exist "$(TargetDir)WeChatOcr.dll" (
+        del /F /Q "$(TargetDir)WeChatOcr.dll"
+    )
+
+    rem 删除 WeChatOcr 依赖的 wco_data 文件夹
+    if exist "$(TargetDir)wco_data" (
+        rmdir /S /Q "$(TargetDir)wco_data"
+    )
+)</PostBuildEvent>
+  </PropertyGroup>
 </Project>
