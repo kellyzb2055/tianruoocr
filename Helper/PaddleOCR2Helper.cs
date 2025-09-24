@@ -69,13 +69,7 @@ namespace TrOCR.Helper
                 ModelVersion clsVersion = ParseModelVersion(clsVersionStr);
                 ModelVersion recVersion = ParseModelVersion(recVersionStr);
 
-                // --- 步骤3：创建并组合模型对象 ---
-                DetectionModel detModel = DetectionModel.FromDirectory(detModelPath, detVersion);
-                ClassificationModel clsModel = ClassificationModel.FromDirectory(clsModelPath, clsVersion);
-                RecognizationModel recModel = RecognizationModel.FromDirectory(recModelPath, keysPath, recVersion);
-                FullOcrModel customModel = new FullOcrModel(detModel, clsModel, recModel);
-
-                // --- 步骤4：读取并解析JSON文件 (只执行一次) ---
+                // --- 步骤3：读取并解析JSON文件 (只执行一次) ---
                 JToken paddleConfig = null;
                 if (!string.IsNullOrEmpty(advancedConfigPath) && File.Exists(advancedConfigPath))
                 {
@@ -89,14 +83,53 @@ namespace TrOCR.Helper
                         Debug.WriteLine($"解析高级配置文件 '{advancedConfigPath}' 失败: {ex.Message}");
                     }
                 }
-                // --- 步骤5：根据解析结果创建设备动作 ---
+                // --- 步骤4：根据解析结果创建设备动作 ---
                 Action<PaddleConfig> device = CreateDeviceAction(paddleConfig);
 
-                // --- 步骤6：初始化引擎 (只执行一次) ---
-                _ocrEngine = new PaddleOcrAll(customModel, device);
+                 // --- 步骤5：手动创建三个核心组件，并在创建时应用高级参数 ---
 
-                // --- 步骤7：应用高级算法参数 ---
-                ApplyAdvancedParameters(_ocrEngine, paddleConfig);
+                // 5.1 创建检测器 (Detector)
+                DetectionModel detModel = DetectionModel.FromDirectory(detModelPath, detVersion);
+                PaddleOcrDetector detector = new PaddleOcrDetector(detModel, device);
+                // 应用检测器参数 (这些是set属性, 可以在创建后修改)
+                if (paddleConfig?["Detector"] != null)
+                {
+                    var detConfig = paddleConfig["Detector"];
+                    detector.MaxSize = (int?)detConfig["MaxSize"] ?? detector.MaxSize;
+                    detector.BoxScoreThreahold = (float?)detConfig["BoxScoreThreahold"] ?? detector.BoxScoreThreahold;
+                    detector.BoxThreshold = (float?)detConfig["BoxThreshold"] ?? detector.BoxThreshold;
+                    detector.MinSize = (int?)detConfig["MinSize"] ?? detector.MinSize;
+                    detector.UnclipRatio = (float?)detConfig["UnclipRatio"] ?? detector.UnclipRatio;
+                }
+
+                // 5.2 创建分类器 (Classifier)，并在初始化时设置init-only属性
+                ClassificationModel clsModel = ClassificationModel.FromDirectory(clsModelPath, clsVersion);
+                // 读取JSON中的阈值，如果不存在则使用库的默认值0.75
+                double rotateThreshold = (double?)paddleConfig?["Classifier"]?["RotateThreshold"] ?? 0.75;
+                PaddleOcrClassifier classifier = new PaddleOcrClassifier(clsModel, device)
+                {
+                    // 在对象初始化器中为 init-only 属性赋值
+                    RotateThreshold = rotateThreshold 
+                };
+
+                // 5.3 创建识别器 (Recognizer)
+                RecognizationModel recModel = RecognizationModel.FromDirectory(recModelPath, keysPath, recVersion);
+                PaddleOcrRecognizer recognizer = new PaddleOcrRecognizer(recModel, device);
+
+                // --- 步骤6：使用创建好的三个组件组装最终的引擎 ---
+                _ocrEngine = new PaddleOcrAll(detector, classifier, recognizer);
+
+             
+
+                // --- 步骤7：应用引擎顶层的参数 ---
+                if (paddleConfig?["TopLevel"] != null)
+                {
+                    var topLevelConfig = paddleConfig["TopLevel"];
+                    _ocrEngine.Enable180Classification = (bool?)topLevelConfig["Enable180Classification"] ?? _ocrEngine.Enable180Classification;
+                    _ocrEngine.AllowRotateDetection = (bool?)topLevelConfig["AllowRotateDetection"] ?? _ocrEngine.AllowRotateDetection;
+                }
+
+                Debug.WriteLine("PaddleOCR2引擎及所有参数成功初始化。");
             }
             catch (Exception ex)
             {
@@ -116,7 +149,7 @@ namespace TrOCR.Helper
                     string deviceType = deviceConfig["Type"]?.Value<string>() ?? "CpuBlas";
 
                     switch (deviceType)
-                    {   //其实不起作用，因为运行时依赖不是Mkldnn，这里保留为了后续功能开发
+                    {   //其实不起作用，因为使用的运行时依赖不是Mkldnn，这里保留为了后续功能开发
                         case "CpuMkldnn":
                             var mkldnnParams = deviceConfig["CpuMkldnn"];
                             int cacheCapacity = mkldnnParams?["cacheCapacity"]?.Value<int>() ?? 10;
@@ -149,42 +182,7 @@ namespace TrOCR.Helper
             return PaddleDevice.Blas();
         }
 
-        // --- 新增辅助方法2：应用高级算法参数 ---
-        private void ApplyAdvancedParameters(PaddleOcrAll engine, JToken paddleConfig)
-        {
-            if (paddleConfig == null) return;
-
-            try
-            {
-                // 应用顶层参数
-                engine.Enable180Classification = paddleConfig["TopLevel"]?["Enable180Classification"]?.Value<bool>() ?? engine.Enable180Classification;
-                engine.AllowRotateDetection = paddleConfig["TopLevel"]?["AllowRotateDetection"]?.Value<bool>() ?? engine.AllowRotateDetection;
-
-                // 应用检测器参数
-                var detConfig = paddleConfig["Detector"];
-                if (detConfig != null)
-                {
-                    engine.Detector.MaxSize = detConfig["MaxSize"]?.Value<int>() ?? engine.Detector.MaxSize;
-                    engine.Detector.BoxScoreThreahold = detConfig["BoxScoreThreahold"]?.Value<float>() ?? engine.Detector.BoxScoreThreahold;
-                    engine.Detector.BoxThreshold = detConfig["BoxThreshold"]?.Value<float>() ?? engine.Detector.BoxThreshold;
-                    engine.Detector.MinSize = detConfig["MinSize"]?.Value<int>() ?? engine.Detector.MinSize;
-                    engine.Detector.UnclipRatio = detConfig["UnclipRatio"]?.Value<float>() ?? engine.Detector.UnclipRatio;
-                }
-
-                // 应用分类器参数
-                // var clsConfig = paddleConfig["Classifier"];
-                // if (clsConfig != null && engine.Classifier != null)
-                // {
-                //     engine.Classifier.RotateThreshold = clsConfig["RotateThreshold"]?.Value<double>() ?? engine.Classifier.RotateThreshold;
-                // }
-                Debug.WriteLine("成功应用高级算法参数。");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"应用高级算法参数失败: {ex.Message}");
-                // 即使JSON解析失败，引擎也已经用默认参数初始化好了，程序可以继续运行
-            }
-        }
+       
         // --- 3. 公共方法恢复同步，调用更简单 ---
         /// <summary>
         /// 识别图像中的文字

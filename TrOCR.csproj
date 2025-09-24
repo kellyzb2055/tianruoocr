@@ -14,6 +14,7 @@
     <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+	<LangVersion>9.0</LangVersion>
     <ApplicationIcon>天若OCR文字识别.ico</ApplicationIcon>
     <StartupObject>TrOCR.Program</StartupObject>
     <PublishUrl>publish\</PublishUrl>
