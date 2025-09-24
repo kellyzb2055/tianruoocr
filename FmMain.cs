@@ -2444,11 +2444,12 @@ namespace TrOCR
 		/// </summary>
 		private void translate_child()
 		{
+			RichBoxBody_T.Visible = false; // 先隐藏
+			
 			RichBoxBody_T.Text = googleTranslate_txt;
 			googleTranslate_txt = "";
 
-			// --- 【关键修复】在设置文本后，强制控件重绘 ---
-    		RichBoxBody_T.Refresh();
+			RichBoxBody_T.Visible = true; // 再显示
 
     		// 翻译完成后的统一自动复制逻辑
     		bool shouldCopy = false;
@@ -3770,6 +3771,10 @@ namespace TrOCR
 			Show();
 			WindowState = FormWindowState.Normal;
 			HelpWin32.SetForegroundWindow(Handle);
+			// ====================【核心修改开始】====================
+    
+    		// 1. 隐藏控件，暂停渲染
+    		RichBoxBody.Visible = false;
 
 			// b. 在窗口稳定后，再填充文本内容
 			RichBoxBody.richTextBox1.TextChanged -= RichBoxBody_TextChanged;
@@ -3785,9 +3790,16 @@ namespace TrOCR
 			{
 				RichBoxBody.Text = shupai_Left_txt; 
 			}
+			 // (可选) 强制滚动到底部或顶部，有助于解决滚动条问题
+    		// RichBoxBody.SelectionStart = 0;
+    		// RichBoxBody.ScrollToCaret();
 
-			// d. （可选，但强烈推荐）添加最终的刷新保障
-			RichBoxBody.Refresh();
+    		// 3. 再次显示控件，强制进行一次完整的、干净的重绘
+    		RichBoxBody.Visible = true;
+
+			// ====================【核心修改结束】====================
+    
+    		// 原有的 RichBoxBody.Refresh() 不再需要，可以删除
 
 			// --- 步骤 3: 在UI完全稳定后，才执行所有可能阻塞的操作（如剪贴板） ---
 
