@@ -16,6 +16,7 @@ using TrOCR.Helper;
 using TrOCR.Properties;
 using System.Threading.Tasks;
 
+
 namespace TrOCR
 {
     // 设置窗口类，用于管理OCR和翻译接口的各种配置选项
@@ -2438,15 +2439,19 @@ namespace TrOCR
         /// </summary>
         private void BrowseModelFile(TextBox textBox, string description)
         {
-            using (var folderBrowserDialog = new FolderBrowserDialog())
-            {
-                folderBrowserDialog.Description = $"请选择{description}路径";
-                
-                if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
-                {
-                    textBox.Text = folderBrowserDialog.SelectedPath;
-                }
-            }
+			// 1. 创建 VistaFolderBrowserDialog 实例
+    		using (var vistaFolderDialog = new Ookii.Dialogs.WinForms.VistaFolderBrowserDialog())
+    		{
+    		    // 2. 设置属性，它和新版文件选择框的体验一致
+    		    vistaFolderDialog.Description = description;
+    		    vistaFolderDialog.UseDescriptionForTitle = true; // 将描述作为标题
+
+        		// 3. 显示对话框并获取结果
+        		if (vistaFolderDialog.ShowDialog() == DialogResult.OK)
+        		{
+        		    textBox.Text = vistaFolderDialog.SelectedPath;
+        		}
+    		}
         }
 		/// <summary>
         /// 浏览模型字典文件的通用方法
