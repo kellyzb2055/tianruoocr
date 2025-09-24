@@ -2240,20 +2240,24 @@ namespace TrOCR
 		 else if (checkBox == checkBox_ShowOcrShupai && (new[] { "从左向右", "从右向左" }).Contains(currentOcrApi)) isInUse = true;
 		 else if (checkBox == checkBox_ShowOcrTableBaidu && currentOcrApi == "百度表格") isInUse = true;
 		 else if (checkBox == checkBox_ShowOcrTableAli && currentOcrApi == "阿里表格") isInUse = true;
+		 else if (checkBox == checkBox_ShowOcrTableTencent && currentOcrApi == "腾讯表格") isInUse = true;
 		 else if (checkBox == checkBox_ShowOcrShupaiLR && currentOcrApi == "从左向右") isInUse = true;
 		 else if (checkBox == checkBox_ShowOcrShupaiRL && currentOcrApi == "从右向左") isInUse = true;
-		 // 翻译 API 检查
-		 else if (checkBox == checkBox_ShowGoogle && currentTranslateApi == "谷歌") isInUse = true;
-		 else if (checkBox == checkBox_ShowBaidu && currentTranslateApi == "百度") isInUse = true;
-		 else if (checkBox == checkBox_ShowTencent && currentTranslateApi == "腾讯") isInUse = true;
-		 else if (checkBox == checkBox_ShowBing && currentTranslateApi == "Bing") isInUse = true;
-		 else if (checkBox == checkBox_ShowBing2 && currentTranslateApi == "Bing2") isInUse = true;
-		 else if (checkBox == checkBox_ShowMicrosoft && currentTranslateApi == "Microsoft") isInUse = true;
-		 else if (checkBox == checkBox_ShowYandex && currentTranslateApi == "Yandex") isInUse = true;
-		 else if (checkBox == checkBox_ShowTencentInteractive && currentTranslateApi == "腾讯交互翻译") isInUse = true;
-		 else if (checkBox == checkBox_ShowCaiyun && currentTranslateApi == "彩云小译") isInUse = true;
-		 else if (checkBox == checkBox_ShowVolcano && currentTranslateApi == "火山翻译") isInUse = true;
-		 else if (checkBox == checkBox_ShowCaiyun2 && currentTranslateApi == "彩云小译2") isInUse = true;
+		 else if (checkBox == checkBox_ShowOcrPaddleOCR && currentOcrApi == "PaddleOCR") isInUse = true;
+		 else if (checkBox == checkBox_ShowOcrPaddleOCR2 && currentOcrApi == "PaddleOCR2") isInUse = true;
+		 else if (checkBox == checkBox_ShowOcrRapidOCR && currentOcrApi == "RapidOCR") isInUse = true;
+			// 翻译 API 检查
+			else if (checkBox == checkBox_ShowGoogle && currentTranslateApi == "谷歌") isInUse = true;
+			else if (checkBox == checkBox_ShowBaidu && currentTranslateApi == "百度") isInUse = true;
+			else if (checkBox == checkBox_ShowTencent && currentTranslateApi == "腾讯") isInUse = true;
+			else if (checkBox == checkBox_ShowBing && currentTranslateApi == "Bing") isInUse = true;
+			else if (checkBox == checkBox_ShowBing2 && currentTranslateApi == "Bing2") isInUse = true;
+			else if (checkBox == checkBox_ShowMicrosoft && currentTranslateApi == "Microsoft") isInUse = true;
+			else if (checkBox == checkBox_ShowYandex && currentTranslateApi == "Yandex") isInUse = true;
+			else if (checkBox == checkBox_ShowTencentInteractive && currentTranslateApi == "腾讯交互翻译") isInUse = true;
+			else if (checkBox == checkBox_ShowCaiyun && currentTranslateApi == "彩云小译") isInUse = true;
+			else if (checkBox == checkBox_ShowVolcano && currentTranslateApi == "火山翻译") isInUse = true;
+			else if (checkBox == checkBox_ShowCaiyun2 && currentTranslateApi == "彩云小译2") isInUse = true;
 		//如果接口正在使用，弹出提示
 		 if (isInUse)
 		 {

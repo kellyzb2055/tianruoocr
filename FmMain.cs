@@ -7061,10 +7061,13 @@ namespace TrOCR
 			SetMenuItemVisibility(Mathfuntion, "Ocr接口显示", "Mathfuntion");
 			SetMenuItemVisibility(ocr_table, "Ocr接口显示", "Table");
 			SetMenuItemVisibility(shupai, "Ocr接口显示", "Shupai");
+			SetMenuItemVisibility(paddleocr, "Ocr接口显示", "PaddleOCR");
+			SetMenuItemVisibility(paddleocr2, "Ocr接口显示", "PaddleOCR2");
+			SetMenuItemVisibility(rapidocr, "Ocr接口显示", "RapidOCR");
 
 			// OCR 子菜单接口可见性设置
 			SetMenuItemVisibility(baidu_table, "Ocr接口显示", "TableBaidu");
-			SetMenuItemVisibility(tx_table, "Ocr接口显示", "TableTx");
+			SetMenuItemVisibility(tx_table, "Ocr接口显示", "TencentTable");
 			SetMenuItemVisibility(ali_table, "Ocr接口显示", "TableAli");
 			SetMenuItemVisibility(left_right, "Ocr接口显示", "ShupaiLR");
 			SetMenuItemVisibility(righ_left, "Ocr接口显示", "ShupaiRL");
