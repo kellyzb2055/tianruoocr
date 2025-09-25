@@ -42,6 +42,7 @@ namespace TrOCR
 	/// </summary>
 	public sealed partial class FmMain
 	{
+		private Size lastNormalSize; // 用于在整个会话中跟踪“基础”窗口大小
 // ====================================================================================================================
 		// **构造函数与窗体事件**
 		//
@@ -63,11 +64,11 @@ namespace TrOCR
 			StaticValue.IsCapture = false;
 			pinyin_flag = false;
 			tranclick = false;
-			
+
 			// 初始化同步事件和图像列表
 			are = new AutoResetEvent(false);
 			imagelist = new List<Image>();
-			
+
 			// 从配置文件读取记录数目并初始化笔记数组
 			StaticValue.NoteCount = Convert.ToInt32(IniHelper.GetValue("配置", "记录数目"));
 			baidu_flags = "";
@@ -81,17 +82,20 @@ namespace TrOCR
 			}
 			StaticValue.v_note = pubnote;
 			StaticValue.mainHandle = Handle;
-			
+
 			// 设置字体大小
 			Font = new Font(Font.Name, 9f / StaticValue.DpiFactor, Font.Style, Font.Unit, Font.GdiCharSet, Font.GdiVerticalFont);
 			googleTranslate_txt = "";
 			num_ok = 0;
 			F_factor = Program.Factor;
 			components = null;
-			
+
 			// 初始化组件和系统设置
 			InitializeComponent();
-
+			// ====================【新增代码开始】====================
+			// 加载并应用记忆的窗口大小
+			LoadWindowState();
+			// ====================【新增代码结束】====================
 			translationTimer = new Timer();
 			translationTimer.Interval = 800;
 			translationTimer.Tick += TranslationTimer_Tick;
@@ -100,14 +104,16 @@ namespace TrOCR
 			nextClipboardViewer = (IntPtr)HelpWin32.SetClipboardViewer((int)Handle);
 			InitMinimize();
 			InitConfig();
-			
+
 			// 设置窗口初始状态为最小化并隐藏
 			WindowState = FormWindowState.Minimized;
 			Visible = false;
 			split_txt = "";
-			MinimumSize = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
+			// MinimumSize = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
+			// 可以调整可拖拽的最小窗口宽高,暂时先不加最小size限制
+			// MinimumSize = new Size((int)(200 * F_factor), (int)(200 * F_factor));
 			speak_copy = false;
-			
+
 			// 初始化OCR功能
 			OCR_foreach("");
 		}
@@ -122,12 +128,59 @@ namespace TrOCR
 			WindowState = FormWindowState.Minimized;
 			Visible = false;
 		}
-
 		/// <summary>
-		/// 重写Windows窗体的消息处理方法，用于处理发送到窗口的各种消息
+		/// 从配置文件加载并应用窗口的基础尺寸
 		/// </summary>
-		/// <param name="m">包含Windows消息信息的Message结构体引用</param>
-		protected override void WndProc(ref Message m)
+		private void LoadWindowState()
+		{
+			try
+			{
+					
+				// 步骤 1: 尝试从 ini 文件读取上次保存的“逻辑尺寸”
+		        bool widthParsed = int.TryParse(IniHelper.GetValue("WindowState", "Width"), out int savedLogicalWidth);
+		        bool heightParsed = int.TryParse(IniHelper.GetValue("WindowState", "Height"), out int savedLogicalHeight);
+
+		        if (widthParsed && heightParsed)
+		        {
+		            // 步骤 2: 将读取的逻辑尺寸，乘以当前的缩放因子，得到最终的物理像素尺寸
+		            int finalWidth = (int)(savedLogicalWidth * F_factor);
+		            int finalHeight = (int)(savedLogicalHeight * F_factor);
+
+		            // 步骤 3: 【健壮性检查】确保最终的像素尺寸不会过小或超出屏幕,这里最小宽高不一样,是长方形窗口,改成最小宽高一样是正方形也行
+		            int minWidth = (int)(18f * F_factor * 13);
+		            int minHeight = (int)(17f * F_factor * 14);
+
+		            finalWidth = Math.Max(finalWidth, minWidth);
+		            finalHeight = Math.Max(finalHeight, minHeight);
+
+		            finalWidth = Math.Min(finalWidth, Screen.PrimaryScreen.WorkingArea.Width);
+		            finalHeight = Math.Min(finalHeight, Screen.PrimaryScreen.WorkingArea.Height);
+
+		            // 步骤 4: 将计算出的最终像素尺寸应用给当前窗口
+		            this.Size = new Size(finalWidth, finalHeight);
+		        }
+		    }
+			catch (Exception ex)
+			{
+				// 如果发生意外错误，打印日志，防止程序崩溃
+				System.Diagnostics.Debug.WriteLine($"加载窗口大小失败: {ex.Message}");
+			}
+		}
+        private void SaveWindowState()
+        {
+            // 我们一直跟踪的 lastNormalSize 是像素尺寸，这里需要将它转换为逻辑尺寸再保存
+            // 将像素尺寸除以缩放因子，得到DPI无关的逻辑尺寸
+            int logicalWidth = (int)(this.lastNormalSize.Width / F_factor);
+            int logicalHeight = (int)(this.lastNormalSize.Height / F_factor);
+
+            IniHelper.SetValue("WindowState", "Width", logicalWidth.ToString());
+            IniHelper.SetValue("WindowState", "Height", logicalHeight.ToString());
+        }
+        /// <summary>
+        /// 重写Windows窗体的消息处理方法，用于处理发送到窗口的各种消息
+        /// </summary>
+        /// <param name="m">包含Windows消息信息的Message结构体引用</param>
+        protected override void WndProc(ref Message m)
 		{
 			if (m.Msg == 953)
 			{
@@ -240,7 +293,7 @@ namespace TrOCR
 			}
 			if (m.Msg == 786 && m.WParam.ToInt32() == 511)
 			{
-				MinimumSize = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
+				// MinimumSize = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
 				transtalate_fla = "关闭";
 				RichBoxBody.Dock = DockStyle.Fill;
 				RichBoxBody_T.Visible = false;
@@ -250,7 +303,8 @@ namespace TrOCR
 				{
 					WindowState = FormWindowState.Normal;
 				}
-				Size = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
+				// Size = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
+				Size = this.lastNormalSize;
 			}
 			if (m.Msg == 786 && m.WParam.ToInt32() == 512)
 			{
@@ -360,11 +414,12 @@ namespace TrOCR
 				}
 				if (m.Msg == 786 && m.WParam.ToInt32() == 250)
 				{
-				    traySilentOcrClick(null, null);
+					traySilentOcrClick(null, null);
 				}
 				base.WndProc(ref m);
 				return;
 			}
+			//下面是双击标题栏的事件处理
 			if (transtalate_fla == "开启")
 			{
 				WindowState = FormWindowState.Normal;
@@ -452,11 +507,12 @@ namespace TrOCR
 		    {
 		        WindowState = FormWindowState.Normal;
 		    }
-		    MinimumSize = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
-		    Size = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
+			// MinimumSize = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
+			// Size = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
+			this.Size = this.lastNormalSize;
 
 		    // 3. 准备文本内容
-		    bool hasContentToTranslate = false;
+			bool hasContentToTranslate = false;
 		    RichBoxBody.richTextBox1.TextChanged -= RichBoxBody_TextChanged; // 关键：在设置文本前，先断开事件处理，避免触发不必要的逻辑
 		    try
 		    {
@@ -547,6 +603,7 @@ namespace TrOCR
 		{
 			minico.Dispose();
 			saveIniFile();
+			SaveWindowState();
 			OcrHelper.Dispose();
 			PaddleOCRHelper.Reset();
 			PaddleOCR2Helper.Reset();
@@ -2057,9 +2114,10 @@ namespace TrOCR
 			RichBoxBody.Focus();
 			if (num_ok == 0)
 			{
-				RichBoxBody.Size = new Size(ClientRectangle.Width, ClientRectangle.Height);
-				Size = new Size(RichBoxBody.Width * 2, RichBoxBody.Height);
-				RichBoxBody_T.Size = new Size(RichBoxBody.Width, RichBoxBody.Height);
+				// RichBoxBody.Size = new Size(ClientRectangle.Width, ClientRectangle.Height);
+				// Size = new Size(RichBoxBody.Width * 2, RichBoxBody.Height);
+				this.Size = new Size(this.lastNormalSize.Width * 2, this.lastNormalSize.Height);
+				RichBoxBody_T.Size = new Size(lastNormalSize.Width, lastNormalSize.Height);
 				RichBoxBody_T.Location = (Point)new Size(RichBoxBody.Width, 0);
 				RichBoxBody_T.Name = "rich_trans";
 				RichBoxBody_T.TabIndex = 1;
@@ -2068,8 +2126,9 @@ namespace TrOCR
 			num_ok++;
 			PictureBox1.Visible = true;
 			PictureBox1.BringToFront();
-			MinimumSize = new Size((int)font_base.Width * 23 * 2, (int)font_base.Height * 24);
-			Size = new Size((int)font_base.Width * 23 * 2, (int)font_base.Height * 24);
+			// MinimumSize = new Size((int)font_base.Width * 23 * 2, (int)font_base.Height * 24);
+			// Size = new Size((int)font_base.Width * 23 * 2, (int)font_base.Height * 24);
+			this.Size = new Size(this.lastNormalSize.Width * 2, this.lastNormalSize.Height);
 			CheckForIllegalCrossThreadCalls = false;
 			trans_Calculate();
 		}
@@ -2081,7 +2140,21 @@ namespace TrOCR
 		/// <param name="e">事件参数</param>
 		private void Form_Resize(object sender, EventArgs e)
 		{
-			// 当RichBoxBody未设置停靠样式时调整大小
+			// 只要窗口是“正常”状态（非最大化/最小化），就更新尺寸记忆
+    		if (WindowState == FormWindowState.Normal)
+    		{
+    		    if (transtalate_fla == "开启")
+    		    {
+    		        // 如果是双栏模式，则将当前宽度除以2，作为新的“基础尺寸”记下来
+    		        this.lastNormalSize = new Size(this.Size.Width / 2, this.Size.Height);
+    		    }
+    		    else
+    		    {
+    		        // 如果是单栏模式，直接将当前尺寸记下来
+    		        this.lastNormalSize = this.Size;
+    		    }
+    		}
+            // 当RichBoxBody未设置停靠样式时调整大小
 			if (RichBoxBody.Dock != DockStyle.Fill)
 			{
 				RichBoxBody.Size = new Size(ClientRectangle.Width / 2, ClientRectangle.Height);
@@ -2326,7 +2399,7 @@ namespace TrOCR
 		/// <param name="e">事件参数</param>
 		public void Trans_close_Click(object sender, EventArgs e)
 		{
-			MinimumSize = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
+			// MinimumSize = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
 			transtalate_fla = "关闭";
 			RichBoxBody.Dock = DockStyle.Fill;
 			RichBoxBody_T.Visible = false;
@@ -2336,7 +2409,10 @@ namespace TrOCR
 			{
 				WindowState = FormWindowState.Normal;
 			}
-			Size = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
+			// Size = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
+			 // ==============【核心修改：恢复到记忆中的基础尺寸】==============
+    		this.Size = this.lastNormalSize;
+    // =================================================================
 		}
 
 		/// <summary>
@@ -3269,7 +3345,7 @@ namespace TrOCR
 				}
 				
 				// 重置窗口大小和边框样式
-				Size = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
+				// Size = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
 				FormBorderStyle = FormBorderStyle.Sizable;
 				
 				// 设置截图状态为进行中
@@ -3757,7 +3833,8 @@ namespace TrOCR
 			// a. 先让窗口框架稳定
 			Text = "耗时：" + str;
 			FormBorderStyle = FormBorderStyle.Sizable;
-			Size = new Size(form_width, form_height);
+			// Size = new Size(form_width, form_height);
+			this.Size = this.lastNormalSize;
 			if (StaticValue.v_topmost)
 			{
 				TopMost = true;
@@ -3821,7 +3898,8 @@ namespace TrOCR
 			if (baidu_flags == "百度")
 			{
 				FormBorderStyle = FormBorderStyle.Sizable;
-				Size = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
+				// Size = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
+				this.Size = this.lastNormalSize;
 				Visible = false;
 				WindowState = FormWindowState.Minimized;
 				Show();
@@ -3841,7 +3919,8 @@ namespace TrOCR
 			if (IniHelper.GetValue("配置", "识别弹窗") == "False")
 			{ 
 				FormBorderStyle = FormBorderStyle.Sizable;
-				Size = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
+				// Size = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
+				this.Size = this.lastNormalSize;
 				Visible = false;
 				if (RichBoxBody.Text != "***该区域未发现文本***" && !string.IsNullOrWhiteSpace(RichBoxBody.Text))
 				{
@@ -6779,7 +6858,8 @@ namespace TrOCR
 			Visible = true;
 			Show();
 			WindowState = FormWindowState.Normal;
-			Size = new Size(form_width, form_height);
+			// Size = new Size(form_width, form_height);
+			this.Size = this.lastNormalSize;
 			HelpWin32.SetForegroundWindow(Handle);
 			if (interface_flag == "阿里表格")
 			{
@@ -8122,9 +8202,9 @@ namespace TrOCR
 		    return sb.ToString();
 		}
 
-		#endregion
-	}
-	public class Rootobject
+        #endregion
+    }
+    public class Rootobject
 	{
 		public string from { get; set; }
 		public string to { get; set; }
