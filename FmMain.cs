@@ -529,9 +529,10 @@ namespace TrOCR
 
 		        // 2. 显示原文窗口
 		        RichBoxBody.Visible = true;
+				panelSeparator.Visible = true; // 别忘了显示分隔条
 
 		        // 3. 恢复双栏布局
-		        RichBoxBody.Width = this.ClientRectangle.Width / 2;
+				RichBoxBody.Width = this.ClientRectangle.Width / 2;
 		        RichBoxBody_T.Left = RichBoxBody.Width;
 		        RichBoxBody_T.Width = RichBoxBody.Width;
 
@@ -546,9 +547,10 @@ namespace TrOCR
 		        Debug.WriteLine($"原文是显示的，隐藏它，lastNormalSize为{lastNormalSize}");
 		        // 1. 隐藏原文窗口
 		        RichBoxBody.Visible = false;
+				panelSeparator.Visible = false; // 也要隐藏分隔条
 
 		        // 2. 【核心修正】在这里将主窗口的尺寸恢复为单栏大小
-		        this.Size = this.lastNormalSize;
+				this.Size = this.lastNormalSize;
 		        Debug.WriteLine($"原文是显示的，隐藏它，改变size为{Size}，改变后lastNormalSize为{lastNormalSize}");
 
 		        // 3. 现在，在正确的窗口宽度下，让译文窗口填满整个空间
@@ -564,12 +566,21 @@ namespace TrOCR
 		    // 恢复窗体的布局逻辑，并强制立即应用所有更改
 		    this.ResumeLayout(true);
 		}
+		private void btnToggleOriginalText_MouseUp(object sender, MouseEventArgs e)
+		{
+		    // 检查是否是右键单击
+		    if (e.Button == MouseButtons.Right)
+		    {
+		        // 如果是，则隐藏按钮
+		        btnToggleOriginalText.Visible = false;
+		    }
+		}
 		/// <summary>
 		/// 托盘菜单"静默识别"选项点击事件处理函数
 		/// </summary>
 		private void traySilentOcrClick(object sender, EventArgs e)
 		{
-		    MainSilentOcr();
+			MainSilentOcr();
 		}
 
 		/// <summary>
@@ -2250,6 +2261,11 @@ namespace TrOCR
 				RichBoxBody_T.Text_flag = "我是翻译文本框";
 			}
 			num_ok++;
+			// ====================【新增代码】====================
+    		panelSeparator.Visible = true;
+    		panelSeparator.Dock = DockStyle.Left; // 临时停靠以调整高度
+    		panelSeparator.Dock = DockStyle.None; // 恢复手动布局
+    		// ===============================================
 			PictureBox1.Visible = true;
 			PictureBox1.BringToFront();
 		 // ====================【核心修正区域】====================
@@ -2289,20 +2305,35 @@ namespace TrOCR
 		/// <param name="e">事件参数</param>
 		private void Form_Resize(object sender, EventArgs e)
 		{
+			// ====================【核心修正开始】====================
+        	if (transtalate_fla == "开启")
+        	{
+        	    // 【关键】只有当原文窗口是可见的时候，才更新 lastNormalSize
+        	    // 这样，在隐藏原文导致窗口变窄时，就不会错误地更新这个基准尺寸了
+        	    if (!isOriginalTextHidden)
+        	    {
+        	        this.lastNormalSize = new Size(this.Size.Width / 2, this.Size.Height);
+        	    }
+        	}
+        	else
+        	{
+        	    this.lastNormalSize = this.Size;
+        	}
+        // ====================【核心修正结束】====================
 			// --- 在这里添加 ---
-		    if (btnToggleOriginalText.Visible)
-		    {
-		        if (!isOriginalTextHidden) // 只有在原文可见时才根据它定位
-		        {
-		            btnToggleOriginalText.Left = RichBoxBody.Right - btnToggleOriginalText.Width;
-		            btnToggleOriginalText.Top = 5;
-		        }
-		        else // 原文隐藏时，按钮保持在中间
-		        {
-		             btnToggleOriginalText.Left = (this.ClientRectangle.Width / 2) - (btnToggleOriginalText.Width / 2);
-		             btnToggleOriginalText.Top = 5;
-		        }
-		    }
+			if (btnToggleOriginalText.Visible)
+			{
+				if (!isOriginalTextHidden) // 只有在原文可见时才根据它定位
+				{
+					btnToggleOriginalText.Left = RichBoxBody.Right - btnToggleOriginalText.Width;
+					btnToggleOriginalText.Top = 5;
+				}
+				else // 原文隐藏时，按钮保持在中间
+				{
+					btnToggleOriginalText.Left = (this.ClientRectangle.Width / 2) - (btnToggleOriginalText.Width / 2);
+					btnToggleOriginalText.Top = 5;
+				}
+			}
 			// 只要窗口是“正常”状态（非最大化/最小化），就更新尺寸记忆
 			if (WindowState == FormWindowState.Normal)
 			{
@@ -2320,9 +2351,23 @@ namespace TrOCR
             // 当RichBoxBody未设置停靠样式时调整大小
 			if (RichBoxBody.Dock != DockStyle.Fill)
 			{
-				RichBoxBody.Size = new Size(ClientRectangle.Width / 2, ClientRectangle.Height);
-				RichBoxBody_T.Size = new Size(RichBoxBody.Width, ClientRectangle.Height);
-				RichBoxBody_T.Location = (Point)new Size(RichBoxBody.Width, 0);
+				
+				// --- 替换为带分隔条的布局逻辑 ---
+        		// 1. 计算每个文本框的理想宽度
+        		int panelWidth = (this.ClientRectangle.Width - panelSeparator.Width) / 2;
+
+        		// 2. 设置左侧文本框的位置和大小
+        		RichBoxBody.Location = new Point(0, 0);
+        		RichBoxBody.Size = new Size(panelWidth, this.ClientRectangle.Height);
+
+        		// 3. 设置分隔条的位置和高度
+        		panelSeparator.Location = new Point(RichBoxBody.Right, 0);
+        		panelSeparator.Height = this.ClientRectangle.Height;
+
+        		// 4. 设置右侧文本框的位置和大小
+        		RichBoxBody_T.Location = new Point(panelSeparator.Right, 0);
+        		RichBoxBody_T.Size = new Size(this.ClientRectangle.Width - panelSeparator.Right, this.ClientRectangle.Height);
+        		// ====================【核心修改结束】====================
 			}
 		}
 
@@ -2562,14 +2607,18 @@ namespace TrOCR
 		/// <param name="e">事件参数</param>
 		public void Trans_close_Click(object sender, EventArgs e)
 		{
-			// --- 在这里添加 ---
+			 // 重置隐藏/显示按钮和相关状态
     		btnToggleOriginalText.Visible = false;
     		isOriginalTextHidden = false;
+			RichBoxBody.Visible = true; // 确保原文窗口总是恢复可见
     		// --- 添加结束 ---
 			// MinimumSize = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
 			transtalate_fla = "关闭";
 			RichBoxBody.Dock = DockStyle.Fill;
 			RichBoxBody_T.Visible = false;
+			 // ====================【新增代码】====================
+    		panelSeparator.Visible = false;
+    		// ===============================================
 			PictureBox1.Visible = false;
 			RichBoxBody_T.Text = "";
 			if (WindowState == FormWindowState.Maximized)

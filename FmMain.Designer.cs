@@ -20,21 +20,36 @@ namespace TrOCR
 			// 组件容器
 			this.components = new global::System.ComponentModel.Container();
 			// 
-// btnToggleOriginalText
-// 
-this.btnToggleOriginalText = new System.Windows.Forms.Button();
-this.btnToggleOriginalText.Location = new System.Drawing.Point(250, 5); // 这是一个临时的初始位置，后续代码会控制它
-this.btnToggleOriginalText.Name = "btnToggleOriginalText";
-this.btnToggleOriginalText.Size = new System.Drawing.Size(28, 28);
-this.btnToggleOriginalText.TabIndex = 201; // 使用一个较高的TabIndex避免冲突
-this.btnToggleOriginalText.Text = "◀";
-this.btnToggleOriginalText.UseVisualStyleBackColor = true;
-this.btnToggleOriginalText.Visible = false; // 初始状态为不可见
-this.btnToggleOriginalText.Click += new System.EventHandler(this.btnToggleOriginalText_Click);
+			// btnToggleOriginalText
+			// 
+			this.btnToggleOriginalText = new System.Windows.Forms.Button();
+			this.btnToggleOriginalText.Location = new System.Drawing.Point(250, 5); // 这是一个临时的初始位置，后续代码会控制它
+			this.btnToggleOriginalText.Name = "btnToggleOriginalText";
+			this.btnToggleOriginalText.Size = new System.Drawing.Size(28, 28);
+			this.btnToggleOriginalText.TabIndex = 201; // 使用一个较高的TabIndex避免冲突
+			this.btnToggleOriginalText.Text = "◀";
+			this.btnToggleOriginalText.UseVisualStyleBackColor = true;
+			this.btnToggleOriginalText.Visible = false; // 初始状态为不可见
+			this.btnToggleOriginalText.Click += new System.EventHandler(this.btnToggleOriginalText_Click);
+			this.btnToggleOriginalText.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnToggleOriginalText_MouseUp);
 			global::System.ComponentModel.ComponentResourceManager componentResourceManager = new global::System.ComponentModel.ComponentResourceManager(typeof(global::TrOCR.FmMain));
 			
 			// 托盘图标控件
 			this.minico = new global::System.Windows.Forms.NotifyIcon(this.components);
+			// ====================【在此处添加代码块】====================
+            // 
+            // panelSeparator
+            // 
+            this.panelSeparator = new System.Windows.Forms.Panel();
+            this.panelSeparator.SuspendLayout(); // 这是一个好习惯，虽然对于Panel来说不是必须的
+            this.panelSeparator.Location = new System.Drawing.Point(350, 0); // 任意临时位置
+            this.panelSeparator.Name = "panelSeparator";
+            this.panelSeparator.Size = new System.Drawing.Size(1, 400); // 任意临时大小
+            this.panelSeparator.TabIndex = 202; // 确保TabIndex不与其他控件冲突
+            this.panelSeparator.Visible = false; // 默认不可见
+            this.panelSeparator.BackColor = System.Drawing.Color.Gainsboro;
+            this.panelSeparator.ResumeLayout(false);
+            // ==========================================================
 			
 			// 分隔符
 			this.toolStripSeparator1 = new global::System.Windows.Forms.ToolStripSeparator();
@@ -396,6 +411,8 @@ this.btnToggleOriginalText.Click += new System.EventHandler(this.btnToggleOrigin
 			base.Location = (global::System.Drawing.Point)new global::System.Drawing.Size(global::System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width / 2 - global::System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width / 10, global::System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height / 2 - global::System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height / 6);
 			base.Size = new global::System.Drawing.Size((int)this.font_base.Width * 23, (int)this.font_base.Height * 24);
 			base.Controls.Add(this.RichBoxBody_T);
+			  // 将 panelSeparator 添加到两个 RichTextBox 之间
+            base.Controls.Add(this.panelSeparator); 
 			base.Controls.Add(this.PictureBox1);
 			base.Controls.Add(this.RichBoxBody);
 			base.Controls.Add(this.btnToggleOriginalText);
@@ -719,6 +736,7 @@ this.btnToggleOriginalText.Click += new System.EventHandler(this.btnToggleOrigin
 
 		private global::System.IntPtr nextClipboardViewer;
 		private global::System.Windows.Forms.Button btnToggleOriginalText;
+		private global::System.Windows.Forms.Panel panelSeparator;
 
 		#endregion
 
