@@ -109,8 +109,9 @@ namespace TrOCR
 			// ====================【新增代码开始】====================
 			// 加载并应用记忆的窗口大小
 			LoadWindowState();
-			// ====================【新增代码结束】====================
-			translationTimer = new Timer();
+            LogState("Constructor End (Initial State)"); // <--- 添加这一行
+                                                         // ====================【新增代码结束】====================
+            translationTimer = new Timer();
 			translationTimer.Interval = 800;
 			translationTimer.Tick += TranslationTimer_Tick;
 			RichBoxBody.richTextBox1.TextChanged += RichBoxBody_TextChanged;
@@ -334,18 +335,33 @@ namespace TrOCR
 			}
 			if (m.Msg == 786 && m.WParam.ToInt32() == 511)
 			{
+				//这里的代码和Trans_close_Click一模一样，可以直接调用Trans_close_Click
+				// 【核心优化】在执行任何关闭操作前，先检查原文是否被隐藏
+    			if (isOriginalTextHidden)
+    			{
+    			    // 如果原文是隐藏的，则弹出提示，并阻止后续的关闭操作
+    			    MessageBox.Show("请先点击 ▶ 按钮恢复原文，再关闭翻译窗口。", "操作提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+    			    return; // 直接返回，不执行关闭
+    			}
+				btnToggleOriginalText.Visible = false;
+				isOriginalTextHidden = false;
 				// MinimumSize = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
-				transtalate_fla = "关闭";
-				RichBoxBody.Dock = DockStyle.Fill;
 				RichBoxBody_T.Visible = false;
+				panelSeparator.Visible = false;
 				PictureBox1.Visible = false;
 				RichBoxBody_T.Text = "";
 				if (WindowState == FormWindowState.Maximized)
 				{
 					WindowState = FormWindowState.Normal;
 				}
+				//3. 设置模式标志
+                transtalate_fla = "关闭";
+				// 4. 【关键】先恢复窗口尺寸
 				// Size = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
-				Size = this.lastNormalSize;
+                Size = this.lastNormalSize;
+				// 5. 【关键】最后再修改Dock属性
+                RichBoxBody.Dock = DockStyle.Fill;
+               
 			}
 			if (m.Msg == 786 && m.WParam.ToInt32() == 512)
 			{
@@ -536,8 +552,10 @@ namespace TrOCR
 		        RichBoxBody_T.Left = RichBoxBody.Width;
 		        RichBoxBody_T.Width = RichBoxBody.Width;
 
-		        // 4. 更新按钮文本和状态
-		        btnToggleOriginalText.Text = "◀";
+                // 4. 更新按钮文本和状态
+                //btnToggleOriginalText.Left = RichBoxBody.Right - btnToggleOriginalText.Width;
+				btnToggleOriginalText.Left= panelSeparator.Left - btnToggleOriginalText.Width - 10;
+                btnToggleOriginalText.Text = "◀";
 		        isOriginalTextHidden = false;
 				lastNormalSize = oldLastNormalSize;
 
@@ -551,17 +569,22 @@ namespace TrOCR
 
 		        // 2. 【核心修正】在这里将主窗口的尺寸恢复为单栏大小
 				this.Size = this.lastNormalSize;
-		        Debug.WriteLine($"原文是显示的，隐藏它，改变size为{Size}，改变后lastNormalSize为{lastNormalSize}");
+                // 【关键日志1】在设置尺寸之后，立刻记录下当时的状态
+                LogState("Click - HIDE - AFTER RESIZE");
+                Debug.WriteLine($"原文是显示的，隐藏它，改变size为{Size}，改变后lastNormalSize为{lastNormalSize}");
 
 		        // 3. 现在，在正确的窗口宽度下，让译文窗口填满整个空间
 		        RichBoxBody_T.Left = 0;
 		        RichBoxBody_T.Width = this.ClientRectangle.Width;
 
-		        // 4. 更新按钮文本和状态
-		        btnToggleOriginalText.Text = "▶";
+                // 4. 更新按钮文本和状态
+				btnToggleOriginalText.Left = RichBoxBody_T.Right - btnToggleOriginalText.Width;
+                btnToggleOriginalText.Text = "▶";
 		        isOriginalTextHidden = true;
 		        lastNormalSize = oldLastNormalSize;
-		    }
+                // 【关键日志2】在所有操作的最后，再次记录状态
+                LogState("Click - HIDE - END of block");
+            }
 
 		    // 恢复窗体的布局逻辑，并强制立即应用所有更改
 		    this.ResumeLayout(true);
@@ -593,14 +616,15 @@ namespace TrOCR
 		}
 		private void InitiateTranslationUI(string textToShow)
 		{
-		
-		    transtalate_fla = "关闭";
-		    RichBoxBody.Dock = DockStyle.Fill;
+				
 		    RichBoxBody_T.Visible = false;
 		    RichBoxBody_T.Text = "";
 
 		    if (WindowState == FormWindowState.Maximized) WindowState = FormWindowState.Normal;
-		    this.Size = this.lastNormalSize;
+            transtalate_fla = "关闭";
+            this.Size = this.lastNormalSize;
+            RichBoxBody.Dock = DockStyle.Fill;
+  
 
 		    RichBoxBody.richTextBox1.TextChanged -= RichBoxBody_TextChanged;
 		    RichBoxBody.Text = textToShow;
@@ -631,9 +655,7 @@ namespace TrOCR
 			isContentFromOcr = false;
 			isFromClipboardListener = false;
 
-			// 1. 重置翻译界面，确保只显示主输入窗口
-			transtalate_fla = "关闭";
-			RichBoxBody.Dock = DockStyle.Fill;
+			// 1. 重置翻译界面，确保只显示主输入窗口			
 			RichBoxBody_T.Visible = false;
 			PictureBox1.Visible = false;
 			RichBoxBody_T.Text = "";
@@ -643,9 +665,11 @@ namespace TrOCR
 			{
 				WindowState = FormWindowState.Normal;
 			}
+            transtalate_fla = "关闭";
 			// MinimumSize = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
-			// Size = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
-			this.Size = this.lastNormalSize;
+            // Size = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
+            this.Size = this.lastNormalSize;
+            RichBoxBody.Dock = DockStyle.Fill;          
 
 			// 3. 准备文本内容
 			bool hasContentToTranslate = false;
@@ -2239,8 +2263,9 @@ namespace TrOCR
 		/// 启动翻译功能，调整窗体和控件布局以显示翻译界面
 		/// </summary>
 		public void TransClick()
-		{
-			typeset_txt = RichBoxBody.Text;
+        {
+            LogState("TransClick Start"); // <--- 添加这一行
+            typeset_txt = RichBoxBody.Text;
 			RichBoxBody_T.Visible = true;
 			WindowState = FormWindowState.Normal;
 			transtalate_fla = "开启";
@@ -2285,7 +2310,8 @@ namespace TrOCR
 		    btnToggleOriginalText.BringToFront();
 		    isOriginalTextHidden = false; 
 		    btnToggleOriginalText.Text = "◀";
-		    btnToggleOriginalText.Left = RichBoxBody.Right - btnToggleOriginalText.Width;
+		    // btnToggleOriginalText.Left = RichBoxBody.Right - btnToggleOriginalText.Width - 10;
+		    btnToggleOriginalText.Left =  panelSeparator.Left - btnToggleOriginalText.Width - 10;
 		    btnToggleOriginalText.Top = 5;
 
 		    // 4. 恢复窗体布局，并强制应用所有更改。此时按钮会和文本框一起被正确绘制出来。
@@ -2296,7 +2322,8 @@ namespace TrOCR
 			// this.Size = new Size(this.lastNormalSize.Width * 2, this.lastNormalSize.Height);
 			CheckForIllegalCrossThreadCalls = false;
 			trans_Calculate();
-		}
+            LogState("TransClick End");
+        }
 
 		/// <summary>
 		/// 处理窗体大小调整事件，当翻译功能开启时调整文本框大小和位置
@@ -2305,51 +2332,41 @@ namespace TrOCR
 		/// <param name="e">事件参数</param>
 		private void Form_Resize(object sender, EventArgs e)
 		{
-			// ====================【核心修正开始】====================
-        	if (transtalate_fla == "开启")
-        	{
-        	    // 【关键】只有当原文窗口是可见的时候，才更新 lastNormalSize
-        	    // 这样，在隐藏原文导致窗口变窄时，就不会错误地更新这个基准尺寸了
-        	    if (!isOriginalTextHidden)
-        	    {
-        	        this.lastNormalSize = new Size(this.Size.Width / 2, this.Size.Height);
-        	    }
-        	}
-        	else
-        	{
-        	    this.lastNormalSize = this.Size;
-        	}
-        // ====================【核心修正结束】====================
-			// --- 在这里添加 ---
-			if (btnToggleOriginalText.Visible)
-			{
-				if (!isOriginalTextHidden) // 只有在原文可见时才根据它定位
-				{
-					btnToggleOriginalText.Left = RichBoxBody.Right - btnToggleOriginalText.Width;
-					btnToggleOriginalText.Top = 5;
-				}
-				else // 原文隐藏时，按钮保持在中间
-				{
-					btnToggleOriginalText.Left = (this.ClientRectangle.Width / 2) - (btnToggleOriginalText.Width / 2);
-					btnToggleOriginalText.Top = 5;
-				}
-			}
-			// 只要窗口是“正常”状态（非最大化/最小化），就更新尺寸记忆
-			if (WindowState == FormWindowState.Normal)
-			{
-				if (transtalate_fla == "开启")
-				{
-					// 如果是双栏模式，则将当前宽度除以2，作为新的“基础尺寸”记下来
-					this.lastNormalSize = new Size(this.Size.Width / 2, this.Size.Height);
-				}
-				else
-				{
-					// 如果是单栏模式，直接将当前尺寸记下来
-					this.lastNormalSize = this.Size;
-				}
-			}
+            LogState("Form_Resize Start");
+            // --- 步骤 1: 更新窗口尺寸记忆（状态管理，保持在最前） ---
+            // 仅当窗口处于“正常”状态时，才考虑更新尺寸记忆
+            if (WindowState == FormWindowState.Normal)
+            {
+                if (transtalate_fla == "开启")
+                {
+                    // 双栏模式：记录一半的宽度为基础尺寸
+                    if (!isOriginalTextHidden)
+                    {
+                        this.lastNormalSize = new Size(this.Size.Width / 2, this.Size.Height);
+                    }
+                }
+                else // 单栏模式 (transtalate_fla == "关闭")
+                {
+                    // 【核心防御逻辑】
+                    // 检查这是否是一次可疑的Resize：即在单栏模式下，窗口宽度突然变得接近之前基础宽度的两倍。
+                    // 我们用1.8倍作为阈值，以允许一些误差。
+                    if (this.lastNormalSize.Width > 0 && this.Size.Width > this.lastNormalSize.Width * 1.8)
+                    {
+                        // 如果是，则判定为“幽灵事件”，拒绝更新lastNormalSize，并强制将窗口尺寸改回正确的值。
+                        System.Diagnostics.Debug.WriteLine($"  REJECTED suspicious resize. Forcing size back to {this.lastNormalSize}");
+                        this.Size = this.lastNormalSize;
+                    }
+                    else
+                    {
+                        // 如果不是可疑的Resize（例如用户正常拖动边框），则正常更新尺寸记忆
+                        this.lastNormalSize = this.Size;
+                    }
+                }
+            }
+
+            // --- 步骤 2: 布局主容器（文本框和分隔条）---
             // 当RichBoxBody未设置停靠样式时调整大小
-			if (RichBoxBody.Dock != DockStyle.Fill)
+            if (RichBoxBody.Dock != DockStyle.Fill)
 			{
 				
 				// --- 替换为带分隔条的布局逻辑 ---
@@ -2367,9 +2384,26 @@ namespace TrOCR
         		// 4. 设置右侧文本框的位置和大小
         		RichBoxBody_T.Location = new Point(panelSeparator.Right, 0);
         		RichBoxBody_T.Size = new Size(this.ClientRectangle.Width - panelSeparator.Right, this.ClientRectangle.Height);
-        		// ====================【核心修改结束】====================
+                // ====================【核心修改结束】====================
+            }
+            if ((WindowState == FormWindowState.Normal )||( WindowState==FormWindowState.Maximized))
+			{
+				if (transtalate_fla == "开启")
+				{
+					
+                    btnToggleOriginalText.Left = panelSeparator.Left - btnToggleOriginalText.Width - 10;
+                    
+				}
+				else
+				{
+                  
+                    btnToggleOriginalText.Left = RichBoxBody_T.Right - btnToggleOriginalText.Width;
+                    
+                }
 			}
-		}
+
+                LogState("Form_Resize End"); // <--- 添加这一行
+        }
 
 		/// <summary>
 		/// 处理翻译文本框复制操作的事件
@@ -2607,14 +2641,20 @@ namespace TrOCR
 		/// <param name="e">事件参数</param>
 		public void Trans_close_Click(object sender, EventArgs e)
 		{
-			 // 重置隐藏/显示按钮和相关状态
-    		btnToggleOriginalText.Visible = false;
+            LogState("Trans_close_Click Start"); // <--- 添加这一行
+			// 【核心优化】在执行任何关闭操作前，先检查原文是否被隐藏
+    		if (isOriginalTextHidden)
+    		{
+    		    // 如果原文是隐藏的，则弹出提示，并阻止后续的关闭操作
+    		    MessageBox.Show("请先点击 ▶ 按钮恢复原文，再关闭翻译窗口。", "操作提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+    		    return; // 直接返回，不执行关闭
+    		}
+             // 重置隐藏/显示按钮和相关状态
+            btnToggleOriginalText.Visible = false;
     		isOriginalTextHidden = false;
-			RichBoxBody.Visible = true; // 确保原文窗口总是恢复可见
+			//RichBoxBody.Visible = true; // 确保原文窗口总是恢复可见，不加这一行也行，我注释了
     		// --- 添加结束 ---
-			// MinimumSize = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
-			transtalate_fla = "关闭";
-			RichBoxBody.Dock = DockStyle.Fill;
+			// MinimumSize = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);			
 			RichBoxBody_T.Visible = false;
 			 // ====================【新增代码】====================
     		panelSeparator.Visible = false;
@@ -2625,11 +2665,13 @@ namespace TrOCR
 			{
 				WindowState = FormWindowState.Normal;
 			}
-			// Size = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
-			 // ==============【核心修改：恢复到记忆中的基础尺寸】==============
-    		this.Size = this.lastNormalSize;
-    		// =================================================================
-		}
+            transtalate_fla = "关闭";
+            // Size = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
+            this.Size = this.lastNormalSize;
+            RichBoxBody.Dock = DockStyle.Fill;
+            LogState("Trans_close_Click End"); 
+            // =================================================================
+        }
         /// <summary>
         /// 使用“限时状态锁”安全地将数据对象设置到剪贴板，以防止无限循环。
         /// </summary>
@@ -4090,9 +4132,10 @@ namespace TrOCR
 		/// OCR识别完成后的处理函数，负责处理识别结果、格式化文本、更新界面和执行后续操作
 		/// </summary>
 		public void Main_OCR_Thread_last()
-		{
-			// --- 新增的静默模式处理逻辑 ---
-			if (isSilentMode)
+        {
+            LogState("Main_OCR_Thread_last Start"); 
+             // --- 新增的静默模式处理逻辑 ---
+            if (isSilentMode)
 			{
 				isSilentMode = false; // 为下一次操作重置标志
 
@@ -4188,9 +4231,14 @@ namespace TrOCR
 			// a. 先让窗口框架稳定
 			Text = "耗时：" + str;
 			FormBorderStyle = FormBorderStyle.Sizable;
-			// Size = new Size(form_width, form_height);
+            // 在设置尺寸之前记录一次，这是看到 Bug 的关键
+            System.Diagnostics.Debug.WriteLine("Main_OCR_Thread_last: About to set final size.");
+            LogState("Main_OCR_Thread_last Before Set Size");
+            //Size = new Size(form_width, form_height);
 			this.Size = this.lastNormalSize;
-			if (StaticValue.v_topmost)
+            // 在设置尺寸之后再记录一次
+            LogState("Main_OCR_Thread_last After Set Size");
+            if (StaticValue.v_topmost)
 			{
 				TopMost = true;
 			}
@@ -4335,14 +4383,26 @@ namespace TrOCR
 			}
 			HelpWin32.UnregisterHotKey(Handle, 222);
 		}
-
-		/// <summary>
-		/// 百度OCR中英文识别选项点击事件处理函数
-		/// 设置百度OCR语言为中英文混合识别模式，并更新界面显示
-		/// </summary>
-		/// <param name="sender">事件发送者</param>
-		/// <param name="e">事件参数</param>
-		private void OCR_baidu_Ch_and_En_Click(object sender, EventArgs e)
+		private void LogState(string eventName)
+		{
+			// C# 6.0+ string interpolation, simpler
+			System.Diagnostics.Debug.WriteLine($"--- {eventName} ---");
+			System.Diagnostics.Debug.WriteLine($"  Timestamp: {DateTime.Now:HH:mm:ss.fff}");
+			System.Diagnostics.Debug.WriteLine($"  WindowState: {this.WindowState}");
+			System.Diagnostics.Debug.WriteLine($"  Size: {this.Size}");
+			System.Diagnostics.Debug.WriteLine($"  ClientRectangle.Size: {this.ClientRectangle.Size}");
+			System.Diagnostics.Debug.WriteLine($"  transtalate_fla: {this.transtalate_fla ?? "null"}");
+			System.Diagnostics.Debug.WriteLine($"  isOriginalTextHidden: {this.isOriginalTextHidden}");
+			System.Diagnostics.Debug.WriteLine($"  lastNormalSize: {this.lastNormalSize}");
+			System.Diagnostics.Debug.WriteLine("--------------------");
+		}
+        /// <summary>
+        /// 百度OCR中英文识别选项点击事件处理函数
+        /// 设置百度OCR语言为中英文混合识别模式，并更新界面显示
+        /// </summary>
+        /// <param name="sender">事件发送者</param>
+        /// <param name="e">事件参数</param>
+        private void OCR_baidu_Ch_and_En_Click(object sender, EventArgs e)
 		{
 			IniHelper.SetValue("密钥_百度", "language_code", "CHN_ENG");
 			OCR_foreach("中英");
