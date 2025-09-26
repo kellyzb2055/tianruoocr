@@ -2319,10 +2319,17 @@ namespace TrOCR
     		// ===============================================
 			PictureBox1.Visible = true;
 			PictureBox1.BringToFront();
+			// ====================【新增代码：动态居中PictureBox1】====================
+			// 计算X坐标，使其水平居中：(窗口宽度 - 图片框宽度) / 2
+			int centerX = (this.ClientSize.Width - PictureBox1.Width) / 2;
+			// 计算Y坐标，使其垂直居中：(窗口高度 - 图片框高度) / 2
+			int centerY = (this.ClientSize.Height - PictureBox1.Height) / 2;
+			// 应用新的坐标
+			PictureBox1.Location = new Point(Math.Max(0, centerX), Math.Max(0, centerY));
 		 // ====================【核心修正区域】====================
 
-		    // 1. 暂停窗体布局，防止在调整多个控件时发生闪烁
-		    this.SuspendLayout();
+			// 1. 暂停窗体布局，防止在调整多个控件时发生闪烁
+			this.SuspendLayout();
 
 		    // 2. 恢复原文窗口为可见状态，并设置双栏布局
 		    RichBoxBody.Visible = true;
