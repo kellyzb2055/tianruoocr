@@ -2594,22 +2594,22 @@ namespace TrOCR
 			try
 			{
 				// 检查标志位，只重置那些配置被修改过的引擎
-    			if (this.paddleOcrConfigChanged)
-    			{
-    			    PaddleOCRHelper.Reset();
-    			    Debug.WriteLine("PaddleOCR configuration changed, engine has been reset.");
-    			}
+				if (this.paddleOcrConfigChanged)
+				{
+					PaddleOCRHelper.Reset();
+					Debug.WriteLine("PaddleOCR configuration changed, engine has been reset.");
+				}
 
-    			if (this.paddleOcr2ConfigChanged)
-    			{
-    			    PaddleOCR2Helper.Reset();
-    			    Debug.WriteLine("PaddleOCR2 configuration changed, engine has been reset.");
-    			}
+				if (this.paddleOcr2ConfigChanged)
+				{
+					PaddleOCR2Helper.Reset();
+					Debug.WriteLine("PaddleOCR2 configuration changed, engine has been reset.");
+				}
 
-    			if (this.rapidOcrConfigChanged)
-    			{
-    			    RapidOCRHelper.Reset();
-    			    Debug.WriteLine("RapidOCR configuration changed, engine has been reset.");
+				if (this.rapidOcrConfigChanged)
+				{
+					RapidOCRHelper.Reset();
+					Debug.WriteLine("RapidOCR configuration changed, engine has been reset.");
     			}
 
 			}
@@ -2618,7 +2618,7 @@ namespace TrOCR
 				// 处理重置异常，避免影响用户体验
 				System.Diagnostics.Debug.WriteLine($"重置引擎时发生异常: {ex.Message}");
 				MessageBox.Show($"重置引擎时发生异常: {ex.Message}");
-            }
+			}
         }
 
       

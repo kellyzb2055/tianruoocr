@@ -237,6 +237,7 @@ namespace TrOCR.Helper
                 }
                 // 关键：创建全新的Lazy实例以备下次使用
                 _lazyInstance = new Lazy<PaddleOCR2Helper>(() => new PaddleOCR2Helper(), LazyThreadSafetyMode.ExecutionAndPublication);
+                TrOCRUtils.CleanMemory();
             }
         }
 
