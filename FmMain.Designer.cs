@@ -19,6 +19,18 @@ namespace TrOCR
 		{
 			// 组件容器
 			this.components = new global::System.ComponentModel.Container();
+			// 
+// btnToggleOriginalText
+// 
+this.btnToggleOriginalText = new System.Windows.Forms.Button();
+this.btnToggleOriginalText.Location = new System.Drawing.Point(250, 5); // 这是一个临时的初始位置，后续代码会控制它
+this.btnToggleOriginalText.Name = "btnToggleOriginalText";
+this.btnToggleOriginalText.Size = new System.Drawing.Size(28, 28);
+this.btnToggleOriginalText.TabIndex = 201; // 使用一个较高的TabIndex避免冲突
+this.btnToggleOriginalText.Text = "◀";
+this.btnToggleOriginalText.UseVisualStyleBackColor = true;
+this.btnToggleOriginalText.Visible = false; // 初始状态为不可见
+this.btnToggleOriginalText.Click += new System.EventHandler(this.btnToggleOriginalText_Click);
 			global::System.ComponentModel.ComponentResourceManager componentResourceManager = new global::System.ComponentModel.ComponentResourceManager(typeof(global::TrOCR.FmMain));
 			
 			// 托盘图标控件
@@ -386,6 +398,7 @@ namespace TrOCR
 			base.Controls.Add(this.RichBoxBody_T);
 			base.Controls.Add(this.PictureBox1);
 			base.Controls.Add(this.RichBoxBody);
+			base.Controls.Add(this.btnToggleOriginalText);
 			base.Load += new global::System.EventHandler(this.Load_Click);
 			base.Resize += new global::System.EventHandler(this.Form_Resize);
 			base.Name = "Form1";
@@ -705,6 +718,7 @@ namespace TrOCR
 		private global::TrOCR.AdvRichTextBox RichBoxBody;
 
 		private global::System.IntPtr nextClipboardViewer;
+		private global::System.Windows.Forms.Button btnToggleOriginalText;
 
 		#endregion
 

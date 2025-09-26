@@ -54,9 +54,10 @@ namespace TrOCR
 		private bool isAutoCopying = false;     // 【新增】标志位，表示程序正在进行自动复制
 		private Timer autoCopyLockTimer;        // 【新增】用于自动复制后创建静默期的定时器
 
+ 		private bool isOriginalTextHidden = false; // 新增：用于跟踪原文窗口的显隐状态
 
 
-// ====================================================================================================================
+		// ====================================================================================================================
 		// **构造函数与窗体事件**
 		//
 		// 负责窗体的初始化、加载、关闭以及核心窗口消息处理（WndProc）。
@@ -115,18 +116,18 @@ namespace TrOCR
 			RichBoxBody.richTextBox1.TextChanged += RichBoxBody_TextChanged;
 
 			// ====================【新增代码开始】====================
-    		clipboardDebounceTimer = new Timer();
-    		clipboardDebounceTimer.Interval = 150; // 设置一个较短的延迟，150毫秒足够
-    		clipboardDebounceTimer.Tick += ClipboardDebounceTimer_Tick;
-			  autoCopyLockTimer = new Timer();
-    		autoCopyLockTimer.Interval = 500; // 500毫秒的静默期，足以忽略所有连锁反应
-    		autoCopyLockTimer.Tick += (sender, e) => 
-    		{
-    		    autoCopyLockTimer.Stop();
-    		    isAutoCopying = false; // 静默期结束，解锁
-    		    Debug.WriteLine("--- 自动复制锁已解除 ---");
-    		};
-    		// ====================【新增代码结束】====================
+			clipboardDebounceTimer = new Timer();
+			clipboardDebounceTimer.Interval = 150; // 设置一个较短的延迟，150毫秒足够
+			clipboardDebounceTimer.Tick += ClipboardDebounceTimer_Tick;
+			autoCopyLockTimer = new Timer();
+			autoCopyLockTimer.Interval = 500; // 500毫秒的静默期，足以忽略所有连锁反应
+			autoCopyLockTimer.Tick += (sender, e) =>
+			{
+				autoCopyLockTimer.Stop();
+				isAutoCopying = false; // 静默期结束，解锁
+				Debug.WriteLine("--- 自动复制锁已解除 ---");
+			};
+			// ====================【新增代码结束】====================
 
 			nextClipboardViewer = (IntPtr)HelpWin32.SetClipboardViewer((int)Handle);
 			InitMinimize();
@@ -507,7 +508,62 @@ namespace TrOCR
 				MessageBox.Show("InitMinimize()" + ex.Message);
 			}
 		}
+		private void btnToggleOriginalText_Click(object sender, EventArgs e)
+		{	
+			if (!(transtalate_fla == "开启"))
+			{
+				return;
+			}
+			// 暂停窗体的布局逻辑，防止在调整多个控件时发生闪烁
+		    this.SuspendLayout();
+		    Size oldLastNormalSize = lastNormalSize;
+		    Debug.WriteLine($"现在的size：{Size}");
+		    if (isOriginalTextHidden) // 如果当前原文是隐藏的，那么点击后就要【显示】它
+		    {
 
+		    	Debug.WriteLine($"原文是隐藏的，恢复它，lastNormalSize为{lastNormalSize}");
+
+		                // 1. 先将主窗口的宽度恢复为双栏大小
+		                this.Size = new Size(this.lastNormalSize.Width * 2, this.lastNormalSize.Height);
+				Debug.WriteLine($"原文是隐藏的，恢复它，改变size为{Size}，改变后lastNormalSize为{lastNormalSize}");
+
+		        // 2. 显示原文窗口
+		        RichBoxBody.Visible = true;
+
+		        // 3. 恢复双栏布局
+		        RichBoxBody.Width = this.ClientRectangle.Width / 2;
+		        RichBoxBody_T.Left = RichBoxBody.Width;
+		        RichBoxBody_T.Width = RichBoxBody.Width;
+
+		        // 4. 更新按钮文本和状态
+		        btnToggleOriginalText.Text = "◀";
+		        isOriginalTextHidden = false;
+				lastNormalSize = oldLastNormalSize;
+
+		    }
+		    else // 如果当前原文是显示的，那么点击后就要【隐藏】它
+		    {
+		        Debug.WriteLine($"原文是显示的，隐藏它，lastNormalSize为{lastNormalSize}");
+		        // 1. 隐藏原文窗口
+		        RichBoxBody.Visible = false;
+
+		        // 2. 【核心修正】在这里将主窗口的尺寸恢复为单栏大小
+		        this.Size = this.lastNormalSize;
+		        Debug.WriteLine($"原文是显示的，隐藏它，改变size为{Size}，改变后lastNormalSize为{lastNormalSize}");
+
+		        // 3. 现在，在正确的窗口宽度下，让译文窗口填满整个空间
+		        RichBoxBody_T.Left = 0;
+		        RichBoxBody_T.Width = this.ClientRectangle.Width;
+
+		        // 4. 更新按钮文本和状态
+		        btnToggleOriginalText.Text = "▶";
+		        isOriginalTextHidden = true;
+		        lastNormalSize = oldLastNormalSize;
+		    }
+
+		    // 恢复窗体的布局逻辑，并强制立即应用所有更改
+		    this.ResumeLayout(true);
+		}
 		/// <summary>
 		/// 托盘菜单"静默识别"选项点击事件处理函数
 		/// </summary>
@@ -2196,9 +2252,32 @@ namespace TrOCR
 			num_ok++;
 			PictureBox1.Visible = true;
 			PictureBox1.BringToFront();
+		 // ====================【核心修正区域】====================
+
+		    // 1. 暂停窗体布局，防止在调整多个控件时发生闪烁
+		    this.SuspendLayout();
+
+		    // 2. 恢复原文窗口为可见状态，并设置双栏布局
+		    RichBoxBody.Visible = true;
+		    this.Size = new Size(this.lastNormalSize.Width * 2, this.lastNormalSize.Height);
+		    RichBoxBody.Width = this.ClientRectangle.Width / 2;
+		    RichBoxBody_T.Left = RichBoxBody.Width;
+		    RichBoxBody_T.Width = RichBoxBody.Width;
+
+		    // 3. 【关键】设置按钮的可见性、状态和初始位置
+		    btnToggleOriginalText.Visible = true;
+		    btnToggleOriginalText.BringToFront();
+		    isOriginalTextHidden = false; 
+		    btnToggleOriginalText.Text = "◀";
+		    btnToggleOriginalText.Left = RichBoxBody.Right - btnToggleOriginalText.Width;
+		    btnToggleOriginalText.Top = 5;
+
+		    // 4. 恢复窗体布局，并强制应用所有更改。此时按钮会和文本框一起被正确绘制出来。
+		    this.ResumeLayout(true);
+
+		    // ========================================================
 			// MinimumSize = new Size((int)font_base.Width * 23 * 2, (int)font_base.Height * 24);
-			// Size = new Size((int)font_base.Width * 23 * 2, (int)font_base.Height * 24);
-			this.Size = new Size(this.lastNormalSize.Width * 2, this.lastNormalSize.Height);
+			// this.Size = new Size(this.lastNormalSize.Width * 2, this.lastNormalSize.Height);
 			CheckForIllegalCrossThreadCalls = false;
 			trans_Calculate();
 		}
@@ -2210,20 +2289,34 @@ namespace TrOCR
 		/// <param name="e">事件参数</param>
 		private void Form_Resize(object sender, EventArgs e)
 		{
+			// --- 在这里添加 ---
+		    if (btnToggleOriginalText.Visible)
+		    {
+		        if (!isOriginalTextHidden) // 只有在原文可见时才根据它定位
+		        {
+		            btnToggleOriginalText.Left = RichBoxBody.Right - btnToggleOriginalText.Width;
+		            btnToggleOriginalText.Top = 5;
+		        }
+		        else // 原文隐藏时，按钮保持在中间
+		        {
+		             btnToggleOriginalText.Left = (this.ClientRectangle.Width / 2) - (btnToggleOriginalText.Width / 2);
+		             btnToggleOriginalText.Top = 5;
+		        }
+		    }
 			// 只要窗口是“正常”状态（非最大化/最小化），就更新尺寸记忆
-    		if (WindowState == FormWindowState.Normal)
-    		{
-    		    if (transtalate_fla == "开启")
-    		    {
-    		        // 如果是双栏模式，则将当前宽度除以2，作为新的“基础尺寸”记下来
-    		        this.lastNormalSize = new Size(this.Size.Width / 2, this.Size.Height);
-    		    }
-    		    else
-    		    {
-    		        // 如果是单栏模式，直接将当前尺寸记下来
-    		        this.lastNormalSize = this.Size;
-    		    }
-    		}
+			if (WindowState == FormWindowState.Normal)
+			{
+				if (transtalate_fla == "开启")
+				{
+					// 如果是双栏模式，则将当前宽度除以2，作为新的“基础尺寸”记下来
+					this.lastNormalSize = new Size(this.Size.Width / 2, this.Size.Height);
+				}
+				else
+				{
+					// 如果是单栏模式，直接将当前尺寸记下来
+					this.lastNormalSize = this.Size;
+				}
+			}
             // 当RichBoxBody未设置停靠样式时调整大小
 			if (RichBoxBody.Dock != DockStyle.Fill)
 			{
@@ -2469,6 +2562,10 @@ namespace TrOCR
 		/// <param name="e">事件参数</param>
 		public void Trans_close_Click(object sender, EventArgs e)
 		{
+			// --- 在这里添加 ---
+    		btnToggleOriginalText.Visible = false;
+    		isOriginalTextHidden = false;
+    		// --- 添加结束 ---
 			// MinimumSize = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
 			transtalate_fla = "关闭";
 			RichBoxBody.Dock = DockStyle.Fill;
