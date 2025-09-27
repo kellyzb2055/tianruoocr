@@ -327,6 +327,8 @@ namespace TrOCR
 			{
 			    cbBox_ListenHideOriginal.Checked = false;
 			}
+            //【新增】加载“全局禁用显示/隐藏原文按钮”设置
+            cbBox_禁用隐藏原文按钮.Checked = TrOCRUtils.LoadSetting("配置", "DisableToggleOriginalButton", false);
 
 			var value_input_translate = IniHelper.GetValue("快捷键", "输入翻译");
 			txtBox_输入翻译.Text = value_input_translate;
@@ -1794,6 +1796,7 @@ namespace TrOCR
 			IniHelper.SetValue("配置", "ListenClipboard", cbBox_ListenClipboard.Checked.ToString());
 			IniHelper.SetValue("配置", "AutoCopyListenClipboardTranslation", cbBox_AutoCopyListenClipboardTranslation.Checked.ToString());
 			IniHelper.SetValue("配置", "ListenClipboardTranslationHideOriginal", cbBox_ListenHideOriginal.Checked.ToString());
+			IniHelper.SetValue("配置", "DisableToggleOriginalButton", cbBox_禁用隐藏原文按钮.Checked.ToString());
 			
 			// 保存百度OCR密钥和语言设置
 			IniHelper.SetValue("密钥_百度", "secret_id", text_baiduaccount.Text);

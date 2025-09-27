@@ -1893,7 +1893,7 @@ namespace TrOCR
 			// --- 加载白描OCR凭据 ---
 			StaticValue.BaimiaoUsername = TrOCRUtils.LoadSetting("密钥_白描", "username","");
 			StaticValue.BaimiaoPassword = TrOCRUtils.LoadSetting("密钥_白描", "password","");
-			
+
 
 			// 加载持久化的token信息
 			string savedToken = IniHelper.GetValue("密钥_白描", "token");
@@ -2289,18 +2289,24 @@ namespace TrOCR
 		    RichBoxBody_T.Left = RichBoxBody.Width;
 		    RichBoxBody_T.Width = RichBoxBody.Width;
 
-		    // 3. 【关键】设置按钮的可见性、状态和初始位置
-		    btnToggleOriginalText.Visible = true;
-		    btnToggleOriginalText.BringToFront();
-		    isOriginalTextHidden = false; 
-		    btnToggleOriginalText.Text = "◀";
-		    // btnToggleOriginalText.Left = RichBoxBody.Right - btnToggleOriginalText.Width - 10;
-		    btnToggleOriginalText.Left =  panelSeparator.Left - btnToggleOriginalText.Width - 10;
-		    btnToggleOriginalText.Top = 5;
+			// 3. 【关键】设置按钮的可见性、状态和初始位置
+			// 【核心修改】只有在全局开关未开启时，才显示和设置按钮
+			if (!StaticValue.DisableToggleOriginalButton)
+			{
+			    btnToggleOriginalText.Visible = true;
+			    btnToggleOriginalText.BringToFront();
+			    isOriginalTextHidden = false;
+			    btnToggleOriginalText.Text = "◀";
+			    // btnToggleOriginalText.Left = RichBoxBody.Right - btnToggleOriginalText.Width - 10;
+			    btnToggleOriginalText.Left = panelSeparator.Left - btnToggleOriginalText.Width - 10;
+			    btnToggleOriginalText.Top = 5;
+			}
+
 
 			// ====================【新增的核心逻辑】====================
 			// 如果参数要求默认隐藏原文，则在显示窗口前，提前模拟一次“隐藏”操作
-			if (hideOriginalDefault)
+			// 【核心修改】增加判断：必须在“显隐按钮”没有被全局禁用的前提下，才执行自动隐藏
+			if (hideOriginalDefault && !StaticValue.DisableToggleOriginalButton)
 			{
 				// 更新状态
 				isOriginalTextHidden = true;

@@ -55,6 +55,23 @@ namespace TrOCR.Helper
             }
             return value;
         }
+        public static bool LoadSetting(string section, string key, bool defaultValue)
+        {
+            string value = IniHelper.GetValue(section, key);
+            // 判断是否获取失败
+            if (value == "发生错误")
+            {
+                return defaultValue;
+            }
+            try
+            {
+                return Convert.ToBoolean(value);
+            }
+            catch
+            {
+                return defaultValue;
+            }
+        }
 
 
     }

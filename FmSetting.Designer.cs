@@ -234,6 +234,8 @@ namespace TrOCR
             this.label26 = new System.Windows.Forms.Label();
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.textBox3 = new System.Windows.Forms.TextBox();
+            this.inPage_腾讯手写 = new System.Windows.Forms.TabPage();
+            this.label33 = new System.Windows.Forms.Label();
             this.inPage_PaddleOCR = new System.Windows.Forms.TabPage();
             this.button2 = new System.Windows.Forms.Button();
             this.textBox5 = new System.Windows.Forms.TextBox();
@@ -387,8 +389,8 @@ namespace TrOCR
             this.label_更新日期 = new System.Windows.Forms.Label();
             this.pictureBox6 = new System.Windows.Forms.PictureBox();
             this.txt_更新说明 = new System.Windows.Forms.TextBox();
-            this.inPage_腾讯手写 = new System.Windows.Forms.TabPage();
-            this.label33 = new System.Windows.Forms.Label();
+            this.groupBox11 = new System.Windows.Forms.GroupBox();
+            this.cbBox_禁用隐藏原文按钮 = new System.Windows.Forms.CheckBox();
             this.Page_翻译接口.SuspendLayout();
             this.tabControl_Trans.SuspendLayout();
             this.tabPage_Google.SuspendLayout();
@@ -456,6 +458,7 @@ namespace TrOCR
             this.inPage_腾讯接口.SuspendLayout();
             this.inPage_腾讯高精度接口.SuspendLayout();
             this.inPage_腾讯表格v3.SuspendLayout();
+            this.inPage_腾讯手写.SuspendLayout();
             this.inPage_PaddleOCR.SuspendLayout();
             this.inPage_PaddleOCR2.SuspendLayout();
             this.inPage_RapidOCR.SuspendLayout();
@@ -490,7 +493,7 @@ namespace TrOCR
             ((System.ComponentModel.ISupportInitialize)(this.numbox_间隔时间)).BeginInit();
             this.Page_反馈.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).BeginInit();
-            this.inPage_腾讯手写.SuspendLayout();
+            this.groupBox11.SuspendLayout();
             this.SuspendLayout();
             // 
             // Page_翻译接口
@@ -2919,6 +2922,26 @@ namespace TrOCR
             this.textBox3.Size = new System.Drawing.Size(367, 25);
             this.textBox3.TabIndex = 8;
             // 
+            // inPage_腾讯手写
+            // 
+            this.inPage_腾讯手写.Controls.Add(this.label33);
+            this.inPage_腾讯手写.Location = new System.Drawing.Point(4, 25);
+            this.inPage_腾讯手写.Name = "inPage_腾讯手写";
+            this.inPage_腾讯手写.Padding = new System.Windows.Forms.Padding(3);
+            this.inPage_腾讯手写.Size = new System.Drawing.Size(482, 136);
+            this.inPage_腾讯手写.TabIndex = 3;
+            this.inPage_腾讯手写.Text = "手写";
+            this.inPage_腾讯手写.UseVisualStyleBackColor = true;
+            // 
+            // label33
+            // 
+            this.label33.AutoSize = true;
+            this.label33.Location = new System.Drawing.Point(3, 16);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(457, 45);
+            this.label33.TabIndex = 1;
+            this.label33.Text = "腾讯手写识别已合并至高精度版，请使用腾讯高精度接口（支持手写\r\n识别）\r\n\r\n";
+            // 
             // inPage_PaddleOCR
             // 
             this.inPage_PaddleOCR.Controls.Add(this.button2);
@@ -4206,6 +4229,7 @@ namespace TrOCR
             // 
             // Page_常规2
             // 
+            this.Page_常规2.Controls.Add(this.groupBox11);
             this.Page_常规2.Controls.Add(this.groupBox9);
             this.Page_常规2.Location = new System.Drawing.Point(4, 25);
             this.Page_常规2.Name = "Page_常规2";
@@ -4612,25 +4636,25 @@ namespace TrOCR
             this.txt_更新说明.Size = new System.Drawing.Size(366, 155);
             this.txt_更新说明.TabIndex = 4;
             // 
-            // inPage_腾讯手写
+            // groupBox11
             // 
-            this.inPage_腾讯手写.Controls.Add(this.label33);
-            this.inPage_腾讯手写.Location = new System.Drawing.Point(4, 25);
-            this.inPage_腾讯手写.Name = "inPage_腾讯手写";
-            this.inPage_腾讯手写.Padding = new System.Windows.Forms.Padding(3);
-            this.inPage_腾讯手写.Size = new System.Drawing.Size(482, 136);
-            this.inPage_腾讯手写.TabIndex = 3;
-            this.inPage_腾讯手写.Text = "手写";
-            this.inPage_腾讯手写.UseVisualStyleBackColor = true;
+            this.groupBox11.Controls.Add(this.cbBox_禁用隐藏原文按钮);
+            this.groupBox11.Location = new System.Drawing.Point(6, 113);
+            this.groupBox11.Name = "groupBox11";
+            this.groupBox11.Size = new System.Drawing.Size(511, 100);
+            this.groupBox11.TabIndex = 1;
+            this.groupBox11.TabStop = false;
+            this.groupBox11.Text = "其他";
             // 
-            // label33
+            // cbBox_禁用隐藏原文按钮
             // 
-            this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(3, 16);
-            this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(457, 45);
-            this.label33.TabIndex = 1;
-            this.label33.Text = "腾讯手写识别已合并至高精度版，请使用腾讯高精度接口（支持手写\r\n识别）\r\n\r\n";
+            this.cbBox_禁用隐藏原文按钮.AutoSize = true;
+            this.cbBox_禁用隐藏原文按钮.Location = new System.Drawing.Point(3, 24);
+            this.cbBox_禁用隐藏原文按钮.Name = "cbBox_禁用隐藏原文按钮";
+            this.cbBox_禁用隐藏原文按钮.Size = new System.Drawing.Size(217, 19);
+            this.cbBox_禁用隐藏原文按钮.TabIndex = 1;
+            this.cbBox_禁用隐藏原文按钮.Text = "全局禁用显示/隐藏原文按钮";
+            this.cbBox_禁用隐藏原文按钮.UseVisualStyleBackColor = true;
             // 
             // FmSetting
             // 
@@ -4760,6 +4784,8 @@ namespace TrOCR
             this.inPage_腾讯高精度接口.PerformLayout();
             this.inPage_腾讯表格v3.ResumeLayout(false);
             this.inPage_腾讯表格v3.PerformLayout();
+            this.inPage_腾讯手写.ResumeLayout(false);
+            this.inPage_腾讯手写.PerformLayout();
             this.inPage_PaddleOCR.ResumeLayout(false);
             this.inPage_PaddleOCR.PerformLayout();
             this.inPage_PaddleOCR2.ResumeLayout(false);
@@ -4810,8 +4836,8 @@ namespace TrOCR
             this.Page_反馈.ResumeLayout(false);
             this.Page_反馈.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).EndInit();
-            this.inPage_腾讯手写.ResumeLayout(false);
-            this.inPage_腾讯手写.PerformLayout();
+            this.groupBox11.ResumeLayout(false);
+            this.groupBox11.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -5195,5 +5221,7 @@ namespace TrOCR
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.TabPage inPage_腾讯手写;
         private System.Windows.Forms.Label label33;
+        private System.Windows.Forms.GroupBox groupBox11;
+        private System.Windows.Forms.CheckBox cbBox_禁用隐藏原文按钮;
     }
 }

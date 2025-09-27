@@ -142,6 +142,7 @@ namespace TrOCR.Helper
         public static bool ListenClipboardTranslation { get; set; }
         public static bool AutoCopyListenClipboardTranslation { get; set; }
         public static bool ListenClipboardTranslationHideOriginal { get; set; }
+        public static bool DisableToggleOriginalButton { get; set; }
 
         /// <summary>
         /// 从config.ini加载配置到静态变量
@@ -164,6 +165,7 @@ namespace TrOCR.Helper
             ListenClipboardTranslation = Convert.ToBoolean(GetValue("配置", "ListenClipboard", "False"));
             AutoCopyListenClipboardTranslation = Convert.ToBoolean(GetValue("配置", "AutoCopyListenClipboardTranslation", "False"));
             ListenClipboardTranslationHideOriginal = Convert.ToBoolean(GetValue("配置", "ListenClipboardTranslationHideOriginal", "False"));
+            DisableToggleOriginalButton = Convert.ToBoolean(GetValue("配置", "DisableToggleOriginalButton", "False"));
 
             // --- 新增: 加载工具栏设置 ---
             IsMergeRemoveSpace = Convert.ToBoolean(GetValue("工具栏", "IsMergeRemoveSpace", "False"));
