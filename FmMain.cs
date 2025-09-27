@@ -4986,7 +4986,40 @@ namespace TrOCR
 		private void OCR_foreach(string name)
 		{
 			OcrHelper.Dispose();
-			
+			var filePath = AppDomain.CurrentDomain.BaseDirectory + "Data\\config.ini";
+
+			// --- 【核心判断逻辑：检查是否在冲突引擎间切换】 ---
+			// 1. 定义哪些引擎是互相冲突的
+			var conflictingEngines = new[] { "PaddleOCR", "PaddleOCR2" };
+
+			// 2. 判断：如果 当前接口 和 新接口 都属于冲突列表，并且两者不相同
+			if (interface_flag != name &&
+			    conflictingEngines.Contains(interface_flag) &&
+			    conflictingEngines.Contains(name))
+			{
+				HelpWin32.IniFileHelper.SetValue("配置", "接口", name, filePath);
+
+				// 1. 准备询问对话框的文本内容
+				string message = "PaddleOCR和PaddleOCR2互相切换，需要重启程序才能生效。如果不重启，直接进行识别程序会闪退\n\n是否立即重启？";
+				string caption = "重启应用程序";
+				MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+				DialogResult result;
+
+				// 2. 显示对话框，并获取用户的选择结果
+				result = MessageBox.Show(message, caption, buttons, MessageBoxIcon.Question);
+
+				// 3. 判断用户是否点击了“是”
+				if (result == DialogResult.Yes)
+				{
+					// 4. 如果是，则调用内置的重启方法
+					Application.Restart();
+					// 也可以使用手动重启方案以保证可靠性
+					// System.Diagnostics.Process.Start(Application.ExecutablePath);
+					// Application.Exit();
+				}
+				
+			}
+
 			// 当切换到其他OCR接口时，释放PaddleOCR资源
 			if (interface_flag == "PaddleOCR" && name != "PaddleOCR")
 			{
@@ -5034,7 +5067,6 @@ namespace TrOCR
 				}
 			}
 			
-			var filePath = AppDomain.CurrentDomain.BaseDirectory + "Data\\config.ini";
 			switch (name)
 			{
 				case "韩语":
