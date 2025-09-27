@@ -143,6 +143,10 @@ namespace TrOCR.Helper
         public static bool AutoCopyListenClipboardTranslation { get; set; }
         public static bool ListenClipboardTranslationHideOriginal { get; set; }
         public static bool DisableToggleOriginalButton { get; set; }
+        
+         // 【新增】用于记忆上次的临时翻译语言，并设置初始默认值
+        public static string LastTempSourceLang { get; set; } = "en";
+        public static string LastTempTargetLang { get; set; } = "zh";
 
         /// <summary>
         /// 从config.ini加载配置到静态变量
@@ -171,7 +175,7 @@ namespace TrOCR.Helper
             IsMergeRemoveSpace = Convert.ToBoolean(GetValue("工具栏", "IsMergeRemoveSpace", "False"));
             IsMergeAutoCopy = Convert.ToBoolean(GetValue("工具栏", "IsMergeAutoCopy", "False"));
             IsSplitAutoCopy = Convert.ToBoolean(GetValue("工具栏", "IsSplitAutoCopy", "False"));
-            
+
 
             // --- 新增: 加载百度表格识别密钥 ---
             // BD_TABLE_API_ID = GetValue("密钥_百度表格", "secret_id", "");

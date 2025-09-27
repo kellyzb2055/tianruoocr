@@ -1149,6 +1149,9 @@ namespace TrOCR
                     // 【核心修改】将 this.FindForm() 作为参数传入，指定所有者
         if (form.ShowDialog(this.FindForm()) == DialogResult.OK) 
                     {
+                         // 【新增】在触发事件前，先“记住”用户这次的选择
+                        StaticValue.LastTempSourceLang = form.SourceLanguage;
+                        StaticValue.LastTempTargetLang = form.TargetLanguage;
                         // 如果用户点击了“翻译”
                         // 触发事件，并将用户输入的语言代码传递出去
                         TemporaryTranslateRequested?.Invoke(this,

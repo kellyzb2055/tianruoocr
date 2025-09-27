@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TrOCR.Helper;
 
 namespace TrOCR
 {
@@ -22,6 +23,9 @@ namespace TrOCR
             // 预填充一些常用值，方便用户
             txtSourceLang.Text = "en";
             txtTargetLang.Text = "zh";
+            // 从静态变量加载上次使用的语言
+            txtSourceLang.Text = StaticValue.LastTempSourceLang;
+            txtTargetLang.Text = StaticValue.LastTempTargetLang;
         }
 
         private void btnOK_Click(object sender, EventArgs e)
