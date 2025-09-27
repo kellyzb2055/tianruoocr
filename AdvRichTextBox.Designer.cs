@@ -27,11 +27,23 @@ using TrOCR.Helper;
 
 namespace TrOCR
 {
+    public class TempTranslateEventArgs : EventArgs
+{
+    public string SourceLanguage { get; }
+    public string TargetLanguage { get; }
+
+    public TempTranslateEventArgs(string source, string target)
+    {
+        SourceLanguage = source;
+        TargetLanguage = target;
+    }
+}
     [Description("Provides a user control that allows the user to edit HTML page.")]
     [ClassInterface(ClassInterfaceType.AutoDispatch)]
     public class AdvRichTextBox : UserControl
     {
-
+        // 【新增】定义一个携带语言数据的公共事件
+        public event EventHandler<TempTranslateEventArgs> TemporaryTranslateRequested;
         protected override void Dispose(bool disposing)
         {
             if (disposing && this.components != null)
@@ -247,6 +259,8 @@ namespace TrOCR
             this.languagle.DropDown.Width = Convert.ToInt32(55f);
             this.languagle.DropDown.Height = Convert.ToInt32(70f);
             this.languagle.ShowDropDownArrow = false;
+            // 【新增】绑定 MouseDown 事件
+            this.languagle.MouseDown += new System.Windows.Forms.MouseEventHandler(this.languagle_MouseDown);
             this.topmost.DisplayStyle = ToolStripItemDisplayStyle.Image;
             this.topmost.Image = (Image)componentResourceManager.GetObject("mode.Image");
             this.topmost.ImageTransparentColor = Color.Magenta;
@@ -1121,7 +1135,28 @@ namespace TrOCR
                 HelpWin32.SendMessage(StaticValue.mainHandle, 600, 725);
             }
         }
+// 【新增】languagle 按钮的 MouseDown 事件处理器
+        private void languagle_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                using (var form = new FmTempTranslate())
+                {
+                    // 将弹窗显示在按钮旁边，体验更好
+                    form.StartPosition = FormStartPosition.Manual;
+                    form.Location = this.PointToScreen(new Point(e.X, e.Y));
 
+                    // 【核心修改】将 this.FindForm() 作为参数传入，指定所有者
+        if (form.ShowDialog(this.FindForm()) == DialogResult.OK) 
+                    {
+                        // 如果用户点击了“翻译”
+                        // 触发事件，并将用户输入的语言代码传递出去
+                        TemporaryTranslateRequested?.Invoke(this,
+                            new TempTranslateEventArgs(form.SourceLanguage, form.TargetLanguage));
+                    }
+                }
+            }
+        }
         public void readIniFile()
         {
             string value = IniHelper.GetValue("工具栏", "顶置");

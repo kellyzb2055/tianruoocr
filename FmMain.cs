@@ -107,8 +107,8 @@ namespace TrOCR
 			// 初始化组件和系统设置
 			InitializeComponent();
 			StaticValue.LoadConfig();//这个代码加不加都行，fmsetting.cs和program.cs里使用就足够了,加上更健壮
-									 // ====================【新增代码开始】====================
-									 // 加载并应用记忆的窗口大小
+			// ====================【新增代码开始】====================
+			// 加载并应用记忆的窗口大小
 			LoadWindowState();
 			LogState("Constructor End (Initial State)"); // <--- 添加这一行
 														 // ====================【新增代码结束】====================
@@ -167,6 +167,11 @@ namespace TrOCR
 			// btnToggleOriginalText.ForeColor = Color.Black;
 			// btnToggleOriginalText.FlatAppearance.MouseOverBackColor = Color.LightGray; // #D3D3D3
 			// btnToggleOriginalText.FlatAppearance.MouseDownBackColor = Color.DarkGray;  // #A9A9A9
+
+			// 【新增】订阅翻译框(RichBoxBody_T)的临时翻译请求事件
+			this.RichBoxBody_T.TemporaryTranslateRequested += RichBoxBody_T_OnTemporaryTranslateRequested;
+	
+			
 		}
 
 		/// <summary>
@@ -227,6 +232,24 @@ namespace TrOCR
             IniHelper.SetValue("WindowState", "Width", logicalWidth.ToString());
             IniHelper.SetValue("WindowState", "Height", logicalHeight.ToString());
         }
+
+		// 【新增】临时翻译事件的处理器
+private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTranslateEventArgs e)
+{
+            // 【新增调试代码】弹窗显示接收到的语言代码
+            // MessageBox.Show($"接收到临时翻译请求：\n源语言: {e.SourceLanguage}\n目标语言: {e.TargetLanguage}");
+            // 确保翻译的文本是最新的
+            typeset_txt = RichBoxBody.Text;
+
+    if (string.IsNullOrWhiteSpace(typeset_txt))
+    {
+        MessageBox.Show("请输入需要翻译的文本！");
+        return;
+    }
+
+    // 调用我们改造后的翻译方法，并传入临时的语言代码
+    trans_Calculate(e.SourceLanguage, e.TargetLanguage);
+}
         /// <summary>
         /// 重写Windows窗体的消息处理方法，用于处理发送到窗口的各种消息
         /// </summary>
@@ -2503,7 +2526,7 @@ namespace TrOCR
 		/// <summary>
 		/// 执行翻译计算操作，根据配置和文本内容进行翻译或拼音转换
 		/// </summary>
-		public async void trans_Calculate()
+		public async void trans_Calculate(string overrideSource = null, string overrideTarget = null)
 		{
 			PositionLoadingIcon();
 			if (pinyin_flag)
@@ -2557,10 +2580,15 @@ namespace TrOCR
 				}
 
 				string toLang;
-				string fromLang = config.Source;
-
+				// 【修改】如果临时源语言(overrideSource)不为空，则使用它，否则才用配置文件中的
+				string fromLang = overrideSource ?? config.Source; 
+				// 【修改】优先使用临时目标语言
+				if (!string.IsNullOrEmpty(overrideTarget))
+				{
+				    toLang = overrideTarget;
+				}
 				// 根据目标语言配置自动判断需要翻译成的语言
-				if (config.Target == "自动判断")
+				else if (config.Target == "自动判断")
 				{
 					toLang = "en"; // 默认翻译为英文
 					if (StaticValue.ZH2EN)
@@ -2592,7 +2620,7 @@ namespace TrOCR
 								japaneseKanaCount++;
 							}
 						}
-						
+
 						// 如果日文假名多于中文字符，说明是日文文本，翻译到中文
 						// 否则翻译到日文
 						if (japaneseKanaCount > 0 && japaneseKanaCount >= chineseCount / 2)

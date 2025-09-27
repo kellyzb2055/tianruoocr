@@ -172,6 +172,7 @@
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Drawing.Common, Version=9.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -291,6 +292,12 @@
     <Compile Include="FmSetting.Designer.cs">
       <DependentUpon>FmSetting.cs</DependentUpon>
     </Compile>
+    <Compile Include="FmTempTranslate.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FmTempTranslate.Designer.cs">
+      <DependentUpon>FmTempTranslate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Helper\CommonHelper.cs" />
     <Compile Include="Helper\HanzToPinyin.cs" />
     <Compile Include="Helper\HelpRepaint.cs" />
@@ -357,6 +364,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FmSetting.resx">
       <DependentUpon>FmSetting.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FmTempTranslate.resx">
+      <DependentUpon>FmTempTranslate.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
