@@ -406,6 +406,15 @@ namespace TrOCR
 			var valueBaiduTableKey = IniHelper.GetValue("密钥_百度表格", "secret_key");
 			textBox1.Text = valueBaiduTableKey == "发生错误" ? "" : valueBaiduTableKey;
 
+			// 【新增】加载百度手写识别密钥
+			text_baidu_handwriting_apikey.Text = TrOCRUtils.LoadSetting("密钥_百度手写", "secret_id", "");
+			text_baidu_handwriting_secretkey.Text = TrOCRUtils.LoadSetting("密钥_百度手写", "secret_key", "");
+			// 【新增】加载百度手写识别语言设置
+			var valueBaiduHandwritingLang = IniHelper.GetValue("密钥_百度手写", "language_code");
+			BaiduOcrHelper.GetAccurateLanguages().TryGetValue(valueBaiduHandwritingLang, out string handwritingLangName);
+			comboBox_Baidu_Handwriting_Language.SelectedItem = string.IsNullOrEmpty(handwritingLangName) ? "中英文混合" : handwritingLangName;
+
+
 			// 读取腾讯OCR密钥信息
 			var valueTencentId = IniHelper.GetValue("密钥_腾讯", "secret_id");
 			BoxTencentId.Text = valueTencentId;
@@ -855,6 +864,8 @@ namespace TrOCR
 			// 添加ocr语言选项到下拉列表
 			comboBox_Baidu_Language.Items.AddRange(BaiduOcrHelper.GetStandardLanguages().Values.ToArray());
 			comboBox_Baidu_Accurate_Language.Items.AddRange(BaiduOcrHelper.GetAccurateLanguages().Values.ToArray());
+			// 【新增】填充百度手写识别的语言下拉框
+			comboBox_Baidu_Handwriting_Language.Items.AddRange(BaiduOcrHelper.GetAccurateLanguages().Values.ToArray());
 			comboBox_Tencent_Accurate_Language.Items.AddRange(TencentOcrHelper.GetAccurateLanguages().Values.ToArray());
 			comboBox_Tencent_Language.Items.AddRange(TencentOcrHelper.GetStandardLanguages().Values.ToArray());
 
@@ -1163,6 +1174,14 @@ namespace TrOCR
 					textBox2.Text = "";
 					textBox1.Text = "";
 				}
+				else if (tabControl_BaiduApiType.SelectedTab == inPage_百度手写)
+        		{
+        		    // 清空专用密钥输入框
+        		    text_baidu_handwriting_apikey.Text = "";
+        		    text_baidu_handwriting_secretkey.Text = "";
+        		    // 将语言下拉框重置为默认值
+        		    comboBox_Baidu_Handwriting_Language.SelectedItem = "中英文混合";
+        		}
 			}
 			else if (tabControl2.SelectedTab == tabPage_腾讯OCR)
 			{
@@ -1832,18 +1851,26 @@ namespace TrOCR
 			IniHelper.SetValue("密钥_百度", "secret_key", text_baidupassword.Text);
 			var selectedLang = comboBox_Baidu_Language.SelectedItem?.ToString();
 			var langCode = BaiduOcrHelper.GetStandardLanguages().FirstOrDefault(x => x.Value == selectedLang).Key;
-			IniHelper.SetValue("密钥_百度", "language_code", langCode ?? "auto_detect");
+			IniHelper.SetValue("密钥_百度", "language_code", langCode ?? "CHN_ENG");
 
 			// 保存百度高精度OCR密钥和语言设置
 			IniHelper.SetValue("密钥_百度高精度", "secret_id", text_baidu_accurate_apikey.Text);
 			IniHelper.SetValue("密钥_百度高精度", "secret_key", text_baidu_accurate_secretkey.Text);
 			var selectedAccurateLang = comboBox_Baidu_Accurate_Language.SelectedItem?.ToString();
 			var accurateLangCode = BaiduOcrHelper.GetAccurateLanguages().FirstOrDefault(x => x.Value == selectedAccurateLang).Key;
-			IniHelper.SetValue("密钥_百度高精度", "language_code", accurateLangCode ?? "auto_detect");
+			IniHelper.SetValue("密钥_百度高精度", "language_code", accurateLangCode ?? "CHN_ENG");
 
 			// 保存百度表格识别密钥
 			IniHelper.SetValue("密钥_百度表格", "secret_id", textBox2.Text);
 			IniHelper.SetValue("密钥_百度表格", "secret_key", textBox1.Text);
+
+			// 【新增】保存百度手写识别密钥
+			IniHelper.SetValue("密钥_百度手写", "secret_id", text_baidu_handwriting_apikey.Text);
+			IniHelper.SetValue("密钥_百度手写", "secret_key", text_baidu_handwriting_secretkey.Text);
+			// 【新增】保存百度手写识别语言设置
+			var selectedHandwritingLang = comboBox_Baidu_Handwriting_Language.SelectedItem?.ToString();
+			var handwritingLangCode = BaiduOcrHelper.GetAccurateLanguages().FirstOrDefault(x => x.Value == selectedHandwritingLang).Key;
+			IniHelper.SetValue("密钥_百度手写", "language_code", handwritingLangCode ?? "CHN_ENG");
 
 			// 保存腾讯OCR密钥和语言设置
 			IniHelper.SetValue("密钥_腾讯", "secret_id", BoxTencentId.Text);

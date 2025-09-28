@@ -108,6 +108,10 @@ namespace TrOCR.Helper
         // 百度表格识别配置
         public static string BD_TABLE_API_ID = "";
         public static string BD_TABLE_API_KEY = "";
+        // 【新增】百度手写识别配置
+        public static string BD_HANDWRITING_API_ID { get; set; }
+        public static string BD_HANDWRITING_API_KEY { get; set; }
+        public static string BD_HANDWRITING_LANGUAGE { get; set; }
 
 // --- OCR Token Caching ---
 

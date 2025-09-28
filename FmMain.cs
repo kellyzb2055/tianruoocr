@@ -2110,6 +2110,12 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 			// 加载百度表格识别密钥
 			StaticValue.BD_TABLE_API_ID = TrOCRUtils.LoadSetting("密钥_百度表格", "secret_id","");
 			StaticValue.BD_TABLE_API_KEY = TrOCRUtils.LoadSetting("密钥_百度表格", "secret_key","");
+			
+			// 【新增】加载百度手写识别密钥
+			StaticValue.BD_HANDWRITING_API_ID = TrOCRUtils.LoadSetting("密钥_百度手写", "secret_id", "");
+			StaticValue.BD_HANDWRITING_API_KEY = TrOCRUtils.LoadSetting("密钥_百度手写", "secret_key", "");
+			StaticValue.BD_HANDWRITING_LANGUAGE = TrOCRUtils.LoadSetting("密钥_百度手写", "language_code", "CHN_ENG");
+
 
 			// 加载腾讯OCR密钥
 			StaticValue.TX_API_ID = TrOCRUtils.LoadSetting("密钥_腾讯", "secret_id","");		
@@ -2360,6 +2366,10 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 				{
 					StaticValue.BD_TABLE_API_KEY = "";
 				}
+				// 【新增】重新加载百度手写识别密钥
+				StaticValue.BD_HANDWRITING_API_ID = TrOCRUtils.LoadSetting("密钥_百度手写", "secret_id", "");
+				StaticValue.BD_HANDWRITING_API_KEY = TrOCRUtils.LoadSetting("密钥_百度手写", "secret_key", "");
+				StaticValue.BD_HANDWRITING_LANGUAGE = TrOCRUtils.LoadSetting("密钥_百度手写", "language_code", "CHN_ENG");
 	
 				// --- 重新加载白描OCR凭据 ---
 				string newBaimiaoUsername = IniHelper.GetValue("密钥_白描", "username");
@@ -4219,6 +4229,14 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 				fmloading.FmlClose = "窗体已关闭";
 				Invoke(new OcrThread(Main_OCR_Thread_last));
 			}
+			// 【新增】百度手写识别的分支
+			if (interface_flag == "百度手写")
+			{
+			    OCR_baidu_handwriting();
+			    fmloading.FmlClose = "窗体已关闭";
+			    Invoke(new OcrThread(Main_OCR_Thread_last));
+			    return;
+			}
 			if (interface_flag == "PaddleOCR")
 			{
 				OCR_PaddleOCR();
@@ -5245,6 +5263,12 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 					Refresh();
 					baidu_accurate.Text = "百度-高精度√";
 					break;
+				 case "百度手写":
+        			interface_flag = "百度手写";
+        			Refresh(); // 这个方法会重置所有√
+        			write.Text = "手写√"; // 将"手写"按钮标记为选中
+					baidu_handwriting.Text = "百度手写√";
+        			break;	
 				case "公式":
 					interface_flag = "公式";
 					Refresh();
@@ -5322,9 +5346,13 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 		/// </summary>
 		/// <param name="sender">事件发送者</param>
 		/// <param name="e">事件参数</param>
-		private void OCR_write_Click(object sender, EventArgs e)
+		// private void OCR_write_Click(object sender, EventArgs e)
+		// {
+		// 	OCR_foreach("手写");
+		// }
+		private void OCR_baidu_handwriting_Click (object sender, EventArgs e)
 		{
-			OCR_foreach("手写");
+			OCR_foreach("百度手写");
 		}
 
 		/// <summary>
@@ -7276,6 +7304,27 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 				return $"[腾讯翻译]：发生未知错误 - {ex.Message}";
 			}
 		}
+		/// <summary>
+		/// 百度手写识别
+		/// </summary>
+		public void OCR_baidu_handwriting()
+		{
+		    split_txt = "";
+			try
+			{
+				var imageBytes = OcrHelper.ImgToBytes(image_screen);
+				// 【修改】将配置的语言传递给识别方法
+				var result = BaiduOcrHelper.Handwriting(imageBytes, StaticValue.BD_HANDWRITING_LANGUAGE);
+				// ProcessOcrResult(result); //不需要再次处理
+				split_txt = typeset_txt = result;
+				
+		    }
+			catch (Exception ex)
+			{
+				typeset_txt = $"***百度手写识别出错: {ex.Message}***";
+				split_txt = typeset_txt;
+			}
+		}
 
 		/// <summary>
 		/// 使用百度API进行表格OCR识别
@@ -7290,10 +7339,10 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 				// 获取图像字节数组
 				var image = image_screen;
 				var imageBytes = OcrHelper.ImgToBytes(image);
-				
+
 				// 调用新的表格识别方法
 				string result = BaiduOcrHelper.TableRecognition(imageBytes, false, false);
-				
+
 				// 检查识别结果
 				if (string.IsNullOrWhiteSpace(result))
 				{
@@ -7660,9 +7709,11 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 			tx_table.Text = "腾讯";
 			ali_table.Text = "阿里";
 			Mathfuntion.Text = "公式";
-			paddleocr.Text="PaddleOCR";
-			paddleocr2.Text="PaddleOCR2";
-			rapidocr.Text="RapidOCR";
+			paddleocr.Text = "PaddleOCR";
+			paddleocr2.Text = "PaddleOCR2";
+			rapidocr.Text = "RapidOCR";
+			write.Text = "手写";
+			baidu_handwriting.Text = "百度手写";
 		}
 
 		/// <summary>

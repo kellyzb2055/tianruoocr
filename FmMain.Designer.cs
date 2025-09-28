@@ -301,6 +301,11 @@ namespace TrOCR
 			this.baidu_accurate = new global::System.Windows.Forms.ToolStripMenuItem();
 			this.baidu_accurate.Text = "百度-高精度";
 			this.baidu_accurate.Click += new global::System.EventHandler(this.OCR_baidu_accurate_Click);
+			// 【新增】初始化百度手写识别菜单项
+			this.baidu_handwriting = new global::System.Windows.Forms.ToolStripMenuItem();
+			this.baidu_handwriting.Name = "baidu_handwriting";//这行加不加都行
+			this.baidu_handwriting.Text = "百度手写";
+			this.baidu_handwriting.Click += new global::System.EventHandler(this.OCR_baidu_handwriting_Click);
 			this.paddleocr = new global::System.Windows.Forms.ToolStripMenuItem();
 			this.paddleocr.Text = "PaddleOCR";
 			this.paddleocr.Click += new global::System.EventHandler(this.OCR_paddleocr_Click);
@@ -326,7 +331,11 @@ namespace TrOCR
 			this.shupai.Text = "竖排";
 			this.shupai.Click += new global::System.EventHandler(this.OCR_shupai_Click);
 			this.write.Text = "手写";
-			this.write.Click += new global::System.EventHandler(this.OCR_write_Click);
+			// this.write.Click += new global::System.EventHandler(this.OCR_write_Click);
+			this.write.DropDownItems.AddRange(new global::System.Windows.Forms.ToolStripItem[]
+			{
+			    this.baidu_handwriting
+			});//手写菜单添加子菜单
 			this.Chinese.Text = "中文标点";
 			this.Chinese.Click += new global::System.EventHandler(this.change_Chinese_Click);
 			this.English.Text = "英文标点";
@@ -369,7 +378,9 @@ namespace TrOCR
 				this.toolStripSeparator1,
 				this.Mathfuntion,
 				this.ocr_table,
-				this.shupai
+				this.shupai,
+				this.write // 【新增】将“手写”父菜单添加到这里
+				
 			});
 			if (global::TrOCR.Helper.IniHelper.GetValue("配置", "接口") == "百度")
 			{
@@ -563,7 +574,7 @@ namespace TrOCR
 		/// <summary>
 		/// 接口 - 手写
 		/// </summary>
-		public global::System.Windows.Forms.ToolStripItem write;
+		public global::System.Windows.Forms.ToolStripMenuItem  write;
 
 		/// <summary>
 		/// 接口 - 公式
@@ -704,6 +715,9 @@ namespace TrOCR
 		/// </summary>
 		private global::System.Windows.Forms.ToolStripMenuItem righ_left;
 		#endregion
+
+		//百度手写
+		public global::System.Windows.Forms.ToolStripItem baidu_handwriting; 
 
 		#region 代理 (Proxy) 子菜单
 		private global::System.Windows.Forms.ToolStripMenuItem customize_Proxy;

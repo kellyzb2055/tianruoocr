@@ -394,7 +394,137 @@ namespace TrOCR.Helper
                 { "HIN", "印地语" }
             };
         }
+        /// <summary>
+        /// 手写文字识别
+        /// </summary>
+        /// <param name="imageBytes">图像数据</param>
+        /// <param name="languageType">识别语言类型, 默认为"CHN_ENG"</param>
+        /// <param name="recognizeGranularity">是否定位单字符位置, "big"或"small"</param>
+        /// <param name="probability">是否返回置信度, "true"或"false"</param>
+        /// <param name="detectDirection">是否检测图像朝向, "true"或"false"</param>
+        /// <param name="detectAlteration">是否检测涂改痕迹, "true"或"false"</param>
+        /// <returns>OCR识别结果</returns>
+        public static string Handwriting(byte[] imageBytes,
+            string languageType = "CHN_ENG",
+            string recognizeGranularity = "big",
+            string probability = "false",
+            string detectDirection = "false",
+            string detectAlteration = "false")
+        {
+            try
+            {
+                string apiKey;
+                string secretKey;
+                string accessToken;
+                bool useStandardKey = false; // 用于标记Token重试时应清除哪个缓存
 
+                // 1. 判断并选择密钥
+                if (!string.IsNullOrEmpty(StaticValue.BD_HANDWRITING_API_ID) && !string.IsNullOrEmpty(StaticValue.BD_HANDWRITING_API_KEY))
+                {
+                    apiKey = StaticValue.BD_HANDWRITING_API_ID;
+                    secretKey = StaticValue.BD_HANDWRITING_API_KEY;
+                    accessToken = GetFreshAccessToken(apiKey, secretKey);
+                }
+                else
+                {
+                    apiKey = StaticValue.BD_API_ID;
+                    secretKey = StaticValue.BD_API_KEY;
+                    useStandardKey = true; // 标记我们正在使用标准版密钥
+                    accessToken = GetAccessToken(apiKey, secretKey, false); // 【修正】调用带缓存的 GetAccessToken
+                }
+
+                if (string.IsNullOrEmpty(apiKey) || string.IsNullOrEmpty(secretKey))
+                {
+                    return "***请在设置中输入百度手写或标准版密钥***";
+                }
+
+           
+                if (string.IsNullOrEmpty(accessToken))
+                {
+                    return "获取百度access_token失败，请检查密钥";
+                }
+
+                // 3. 构建请求
+                string url = $"https://aip.baidubce.com/rest/2.0/ocr/v1/handwriting?access_token={accessToken}";
+                string imageBase64 = Convert.ToBase64String(imageBytes);
+
+                // 4. 【核心修正】动态构建POST数据
+                var postDataBuilder = new Dictionary<string, string>
+                {
+                    { "image", imageBase64 }
+                };
+
+                if (!string.IsNullOrEmpty(languageType)) postDataBuilder.Add("language_type", languageType);
+                if (recognizeGranularity == "small") postDataBuilder.Add("recognize_granularity", "small");
+                if (probability == "true") postDataBuilder.Add("probability", "true");
+                if (detectDirection == "true") postDataBuilder.Add("detect_direction", "true");
+                if (detectAlteration == "true") postDataBuilder.Add("detect_alteration", "true");
+
+                string postData = string.Join("&", postDataBuilder.Select(kvp => $"{kvp.Key}={HttpUtility.UrlEncode(kvp.Value)}"));
+
+                // 5. 发送请求
+                string response = CommonHelper.PostStrData(url, postData);
+                if (string.IsNullOrEmpty(response))
+                {
+                    return "百度手写识别请求失败";
+                }
+
+                // 6. 解析响应
+                JObject json = JObject.Parse(response);
+
+                // 7. 【新增】Token失效重试机制
+                if (json["error_code"] != null)
+                {
+                    string errorCode = json["error_code"].ToString();
+                    string errorMsg = json["error_msg"]?.ToString() ?? "未知错误";
+
+                    // 如果是token失效，且我们回退到了标准版密钥，则尝试清除标准版token并重试
+                    if ((errorCode == "110" || errorCode == "111") && useStandardKey)
+                    {
+                        ClearAccessTokenCache(false); // 清除标准版token
+                        accessToken = GetAccessToken(apiKey, secretKey, false); // 重新获取标准版token（这次会走缓存逻辑）
+                        if (!string.IsNullOrEmpty(accessToken))
+                        {
+                            url = $"https://aip.baidubce.com/rest/2.0/ocr/v1/handwriting?access_token={accessToken}";
+                            response = CommonHelper.PostStrData(url, postData);
+                            if (!string.IsNullOrEmpty(response))
+                            {
+                                json = JObject.Parse(response);
+                                // 如果重试成功（没有error_code了），就跳转到结果处理
+                                if (json["error_code"] == null)
+                                {
+                                    goto ProcessResult;
+                                }
+                            }
+                        }
+                    }
+
+                    return $"百度手写识别错误 {errorCode}: {errorMsg}";
+                }
+
+                ProcessResult:
+                var wordsResult = json["words_result"] as JArray;
+                if (wordsResult == null || wordsResult.Count == 0)
+                {
+                    return "***该区域未发现文本***";
+                }
+
+                StringBuilder sb = new StringBuilder();
+                foreach (var item in wordsResult)
+                {
+                    if (item["words"] != null)
+                    {
+                        sb.AppendLine(item["words"].ToString());
+                    }
+                }
+
+                return sb.ToString().TrimEnd();
+            }
+            catch (Exception ex)
+            {
+                return $"百度手写识别异常: {ex.Message}";
+            }
+        }
         /// <summary>
         /// 表格识别
         /// </summary>
