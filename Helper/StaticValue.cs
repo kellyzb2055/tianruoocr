@@ -166,10 +166,10 @@ namespace TrOCR.Helper
 
             InputTranslateClipboard = Convert.ToBoolean(GetValue("配置", "InputTranslateClipboard", "False"));
             InputTranslateAutoTranslate = Convert.ToBoolean(GetValue("配置", "InputTranslateAutoTranslate", "False"));
-            AutoCopyOcrResult = Convert.ToBoolean(GetValue("识别后操作", "AutoCopyOcrResult", "False"));
+            AutoCopyInputTranslation = Convert.ToBoolean(GetValue("配置", "AutoCopyInputTranslation", "False"));
+            AutoCopyOcrResult = Convert.ToBoolean(GetValue("常规识别", "AutoCopyOcrResult", "False"));
             // AutoTranslateOcrResult = Convert.ToBoolean(GetValue("工具栏", "翻译", "False"));
-            AutoCopyOcrTranslation = Convert.ToBoolean(GetValue("翻译后操作", "AutoCopyOcrTranslation", "False"));
-            AutoCopyInputTranslation = Convert.ToBoolean(GetValue("翻译后操作", "AutoCopyInputTranslation", "False"));
+            AutoCopyOcrTranslation = Convert.ToBoolean(GetValue("常规翻译", "AutoCopyOcrTranslation", "False"));
 
             ListenClipboardTranslation = Convert.ToBoolean(GetValue("配置", "ListenClipboard", "False"));
             AutoCopyListenClipboardTranslation = Convert.ToBoolean(GetValue("配置", "AutoCopyListenClipboardTranslation", "False"));

@@ -301,6 +301,9 @@ namespace TrOCR
             this.快捷键Button = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.pictureBox_截图翻译 = new System.Windows.Forms.PictureBox();
+            this.txtBox_截图翻译 = new System.Windows.Forms.TextBox();
+            this.label35 = new System.Windows.Forms.Label();
             this.pictureBox_静默识别 = new System.Windows.Forms.PictureBox();
             this.txtBox_静默识别 = new System.Windows.Forms.TextBox();
             this.label_静默识别 = new System.Windows.Forms.Label();
@@ -341,8 +344,6 @@ namespace TrOCR
             this.cobBox_动画 = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.cbBox_输入翻译剪贴板 = new System.Windows.Forms.CheckBox();
-            this.cbBox_输入翻译自动翻译 = new System.Windows.Forms.CheckBox();
             this.chbox_取色 = new System.Windows.Forms.CheckBox();
             this.cbBox_弹窗 = new System.Windows.Forms.CheckBox();
             this.cbBox_翻译 = new System.Windows.Forms.CheckBox();
@@ -352,7 +353,6 @@ namespace TrOCR
             this.checkBox_AutoTranslateOcrResult = new System.Windows.Forms.CheckBox();
             this.groupBox_TranslateWorkflow = new System.Windows.Forms.GroupBox();
             this.checkBox_AutoCopyOcrTranslation = new System.Windows.Forms.CheckBox();
-            this.checkBox_AutoCopyInputTranslation = new System.Windows.Forms.CheckBox();
             this.tab_标签 = new System.Windows.Forms.TabControl();
             this.Page_常规2 = new System.Windows.Forms.TabPage();
             this.groupBox11 = new System.Windows.Forms.GroupBox();
@@ -393,9 +393,11 @@ namespace TrOCR
             this.label_更新日期 = new System.Windows.Forms.Label();
             this.pictureBox6 = new System.Windows.Forms.PictureBox();
             this.txt_更新说明 = new System.Windows.Forms.TextBox();
-            this.label35 = new System.Windows.Forms.Label();
-            this.txtBox_截图翻译 = new System.Windows.Forms.TextBox();
-            this.pictureBox_截图翻译 = new System.Windows.Forms.PictureBox();
+            this.groupBox12 = new System.Windows.Forms.GroupBox();
+            this.groupBox13 = new System.Windows.Forms.GroupBox();
+            this.cbBox_输入翻译剪贴板 = new System.Windows.Forms.CheckBox();
+            this.cbBox_输入翻译自动翻译 = new System.Windows.Forms.CheckBox();
+            this.checkBox_AutoCopyInputTranslation = new System.Windows.Forms.CheckBox();
             this.Page_翻译接口.SuspendLayout();
             this.tabControl_Trans.SuspendLayout();
             this.tabPage_Google.SuspendLayout();
@@ -469,6 +471,7 @@ namespace TrOCR
             this.inPage_RapidOCR.SuspendLayout();
             this.Page_快捷键.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_截图翻译)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_静默识别)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_输入翻译)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_识别界面)).BeginInit();
@@ -499,7 +502,8 @@ namespace TrOCR
             ((System.ComponentModel.ISupportInitialize)(this.numbox_间隔时间)).BeginInit();
             this.Page_反馈.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_截图翻译)).BeginInit();
+            this.groupBox12.SuspendLayout();
+            this.groupBox13.SuspendLayout();
             this.SuspendLayout();
             // 
             // Page_翻译接口
@@ -3596,6 +3600,39 @@ namespace TrOCR
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "全局快捷键";
             // 
+            // pictureBox_截图翻译
+            // 
+            this.pictureBox_截图翻译.Image = global::TrOCR.Properties.Resources.快捷键_1;
+            this.pictureBox_截图翻译.Location = new System.Drawing.Point(468, 267);
+            this.pictureBox_截图翻译.Margin = new System.Windows.Forms.Padding(4);
+            this.pictureBox_截图翻译.Name = "pictureBox_截图翻译";
+            this.pictureBox_截图翻译.Size = new System.Drawing.Size(28, 26);
+            this.pictureBox_截图翻译.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureBox_截图翻译.TabIndex = 17;
+            this.pictureBox_截图翻译.TabStop = false;
+            // 
+            // txtBox_截图翻译
+            // 
+            this.txtBox_截图翻译.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.txtBox_截图翻译.Location = new System.Drawing.Point(104, 266);
+            this.txtBox_截图翻译.Margin = new System.Windows.Forms.Padding(4);
+            this.txtBox_截图翻译.Name = "txtBox_截图翻译";
+            this.txtBox_截图翻译.Size = new System.Drawing.Size(345, 27);
+            this.txtBox_截图翻译.TabIndex = 16;
+            this.txtBox_截图翻译.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.txtBox_截图翻译.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtBox_KeyDown);
+            this.txtBox_截图翻译.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtBox_KeyUp);
+            // 
+            // label35
+            // 
+            this.label35.AutoSize = true;
+            this.label35.Location = new System.Drawing.Point(9, 272);
+            this.label35.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label35.Name = "label35";
+            this.label35.Size = new System.Drawing.Size(82, 15);
+            this.label35.TabIndex = 15;
+            this.label35.Text = "截图翻译：";
+            // 
             // pictureBox_静默识别
             // 
             this.pictureBox_静默识别.Image = global::TrOCR.Properties.Resources.快捷键_1;
@@ -3823,7 +3860,7 @@ namespace TrOCR
             this.groupBox10.Controls.Add(this.btn_音效);
             this.groupBox10.Controls.Add(this.text_音效path);
             this.groupBox10.Controls.Add(this.label18);
-            this.groupBox10.Location = new System.Drawing.Point(8, 360);
+            this.groupBox10.Location = new System.Drawing.Point(8, 336);
             this.groupBox10.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox10.Name = "groupBox10";
             this.groupBox10.Padding = new System.Windows.Forms.Padding(4);
@@ -3919,7 +3956,7 @@ namespace TrOCR
             this.groupBox6.Controls.Add(this.textBox_path);
             this.groupBox6.Controls.Add(this.label1);
             this.groupBox6.Controls.Add(this.cbBox_保存);
-            this.groupBox6.Location = new System.Drawing.Point(8, 474);
+            this.groupBox6.Location = new System.Drawing.Point(8, 450);
             this.groupBox6.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Padding = new System.Windows.Forms.Padding(4);
@@ -3975,7 +4012,7 @@ namespace TrOCR
             // pic_help
             // 
             this.pic_help.Image = global::TrOCR.Properties.Resources.帮助;
-            this.pic_help.Location = new System.Drawing.Point(9, 472);
+            this.pic_help.Location = new System.Drawing.Point(4, 537);
             this.pic_help.Margin = new System.Windows.Forms.Padding(4);
             this.pic_help.Name = "pic_help";
             this.pic_help.Size = new System.Drawing.Size(36, 29);
@@ -3986,7 +4023,7 @@ namespace TrOCR
             // 常规Button
             // 
             this.常规Button.BackColor = System.Drawing.Color.White;
-            this.常规Button.Location = new System.Drawing.Point(412, 561);
+            this.常规Button.Location = new System.Drawing.Point(412, 537);
             this.常规Button.Margin = new System.Windows.Forms.Padding(4);
             this.常规Button.Name = "常规Button";
             this.常规Button.Size = new System.Drawing.Size(100, 29);
@@ -4001,7 +4038,7 @@ namespace TrOCR
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.cobBox_动画);
             this.groupBox2.Controls.Add(this.label2);
-            this.groupBox2.Location = new System.Drawing.Point(8, 112);
+            this.groupBox2.Location = new System.Drawing.Point(8, 88);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(4);
@@ -4057,8 +4094,6 @@ namespace TrOCR
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.cbBox_输入翻译剪贴板);
-            this.groupBox1.Controls.Add(this.cbBox_输入翻译自动翻译);
             this.groupBox1.Controls.Add(this.chbox_取色);
             this.groupBox1.Controls.Add(this.cbBox_弹窗);
             this.groupBox1.Controls.Add(this.cbBox_翻译);
@@ -4067,32 +4102,10 @@ namespace TrOCR
             this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox1.Size = new System.Drawing.Size(504, 98);
+            this.groupBox1.Size = new System.Drawing.Size(504, 64);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "设置";
-            // 
-            // cbBox_输入翻译剪贴板
-            // 
-            this.cbBox_输入翻译剪贴板.AutoSize = true;
-            this.cbBox_输入翻译剪贴板.Location = new System.Drawing.Point(23, 58);
-            this.cbBox_输入翻译剪贴板.Margin = new System.Windows.Forms.Padding(4);
-            this.cbBox_输入翻译剪贴板.Name = "cbBox_输入翻译剪贴板";
-            this.cbBox_输入翻译剪贴板.Size = new System.Drawing.Size(224, 19);
-            this.cbBox_输入翻译剪贴板.TabIndex = 7;
-            this.cbBox_输入翻译剪贴板.Text = "输入翻译默认使用剪贴板文本";
-            this.cbBox_输入翻译剪贴板.UseVisualStyleBackColor = true;
-            // 
-            // cbBox_输入翻译自动翻译
-            // 
-            this.cbBox_输入翻译自动翻译.AutoSize = true;
-            this.cbBox_输入翻译自动翻译.Location = new System.Drawing.Point(272, 58);
-            this.cbBox_输入翻译自动翻译.Margin = new System.Windows.Forms.Padding(4);
-            this.cbBox_输入翻译自动翻译.Name = "cbBox_输入翻译自动翻译";
-            this.cbBox_输入翻译自动翻译.Size = new System.Drawing.Size(194, 19);
-            this.cbBox_输入翻译自动翻译.TabIndex = 8;
-            this.cbBox_输入翻译自动翻译.Text = "输入翻译输入后自动翻译";
-            this.cbBox_输入翻译自动翻译.UseVisualStyleBackColor = true;
             // 
             // chbox_取色
             // 
@@ -4146,14 +4159,14 @@ namespace TrOCR
             // 
             this.groupBox_OcrWorkflow.Controls.Add(this.checkBox_AutoCopyOcrResult);
             this.groupBox_OcrWorkflow.Controls.Add(this.checkBox_AutoTranslateOcrResult);
-            this.groupBox_OcrWorkflow.Location = new System.Drawing.Point(8, 208);
+            this.groupBox_OcrWorkflow.Location = new System.Drawing.Point(8, 184);
             this.groupBox_OcrWorkflow.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox_OcrWorkflow.Name = "groupBox_OcrWorkflow";
             this.groupBox_OcrWorkflow.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox_OcrWorkflow.Size = new System.Drawing.Size(504, 69);
             this.groupBox_OcrWorkflow.TabIndex = 9;
             this.groupBox_OcrWorkflow.TabStop = false;
-            this.groupBox_OcrWorkflow.Text = "识别后操作";
+            this.groupBox_OcrWorkflow.Text = "常规识别";
             // 
             // checkBox_AutoCopyOcrResult
             // 
@@ -4180,15 +4193,14 @@ namespace TrOCR
             // groupBox_TranslateWorkflow
             // 
             this.groupBox_TranslateWorkflow.Controls.Add(this.checkBox_AutoCopyOcrTranslation);
-            this.groupBox_TranslateWorkflow.Controls.Add(this.checkBox_AutoCopyInputTranslation);
-            this.groupBox_TranslateWorkflow.Location = new System.Drawing.Point(8, 284);
+            this.groupBox_TranslateWorkflow.Location = new System.Drawing.Point(8, 260);
             this.groupBox_TranslateWorkflow.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox_TranslateWorkflow.Name = "groupBox_TranslateWorkflow";
             this.groupBox_TranslateWorkflow.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox_TranslateWorkflow.Size = new System.Drawing.Size(504, 69);
             this.groupBox_TranslateWorkflow.TabIndex = 10;
             this.groupBox_TranslateWorkflow.TabStop = false;
-            this.groupBox_TranslateWorkflow.Text = "翻译后操作";
+            this.groupBox_TranslateWorkflow.Text = "常规翻译";
             // 
             // checkBox_AutoCopyOcrTranslation
             // 
@@ -4200,17 +4212,6 @@ namespace TrOCR
             this.checkBox_AutoCopyOcrTranslation.TabIndex = 0;
             this.checkBox_AutoCopyOcrTranslation.Text = "识别翻译后，自动复制翻译结果";
             this.checkBox_AutoCopyOcrTranslation.UseVisualStyleBackColor = true;
-            // 
-            // checkBox_AutoCopyInputTranslation
-            // 
-            this.checkBox_AutoCopyInputTranslation.AutoSize = true;
-            this.checkBox_AutoCopyInputTranslation.Location = new System.Drawing.Point(272, 31);
-            this.checkBox_AutoCopyInputTranslation.Margin = new System.Windows.Forms.Padding(4);
-            this.checkBox_AutoCopyInputTranslation.Name = "checkBox_AutoCopyInputTranslation";
-            this.checkBox_AutoCopyInputTranslation.Size = new System.Drawing.Size(239, 19);
-            this.checkBox_AutoCopyInputTranslation.TabIndex = 1;
-            this.checkBox_AutoCopyInputTranslation.Text = "输入翻译后，自动复制翻译结果";
-            this.checkBox_AutoCopyInputTranslation.UseVisualStyleBackColor = true;
             // 
             // tab_标签
             // 
@@ -4238,6 +4239,8 @@ namespace TrOCR
             // 
             // Page_常规2
             // 
+            this.Page_常规2.Controls.Add(this.groupBox13);
+            this.Page_常规2.Controls.Add(this.groupBox12);
             this.Page_常规2.Controls.Add(this.groupBox11);
             this.Page_常规2.Controls.Add(this.groupBox9);
             this.Page_常规2.Location = new System.Drawing.Point(4, 25);
@@ -4250,10 +4253,8 @@ namespace TrOCR
             // 
             // groupBox11
             // 
-            this.groupBox11.Controls.Add(this.checkbox_NoWindowScreenshotTranslation);
-            this.groupBox11.Controls.Add(this.checkbox_AutoCopyScreenshotTranslation);
             this.groupBox11.Controls.Add(this.cbBox_禁用隐藏原文按钮);
-            this.groupBox11.Location = new System.Drawing.Point(6, 113);
+            this.groupBox11.Location = new System.Drawing.Point(9, 277);
             this.groupBox11.Name = "groupBox11";
             this.groupBox11.Size = new System.Drawing.Size(511, 100);
             this.groupBox11.TabIndex = 1;
@@ -4264,7 +4265,7 @@ namespace TrOCR
             // 
             this.checkbox_NoWindowScreenshotTranslation.AutoSize = true;
             this.checkbox_NoWindowScreenshotTranslation.Enabled = false;
-            this.checkbox_NoWindowScreenshotTranslation.Location = new System.Drawing.Point(221, 62);
+            this.checkbox_NoWindowScreenshotTranslation.Location = new System.Drawing.Point(232, 24);
             this.checkbox_NoWindowScreenshotTranslation.Name = "checkbox_NoWindowScreenshotTranslation";
             this.checkbox_NoWindowScreenshotTranslation.Size = new System.Drawing.Size(225, 19);
             this.checkbox_NoWindowScreenshotTranslation.TabIndex = 3;
@@ -4274,7 +4275,7 @@ namespace TrOCR
             // checkbox_AutoCopyScreenshotTranslation
             // 
             this.checkbox_AutoCopyScreenshotTranslation.AutoSize = true;
-            this.checkbox_AutoCopyScreenshotTranslation.Location = new System.Drawing.Point(3, 62);
+            this.checkbox_AutoCopyScreenshotTranslation.Location = new System.Drawing.Point(6, 24);
             this.checkbox_AutoCopyScreenshotTranslation.Name = "checkbox_AutoCopyScreenshotTranslation";
             this.checkbox_AutoCopyScreenshotTranslation.Size = new System.Drawing.Size(194, 19);
             this.checkbox_AutoCopyScreenshotTranslation.TabIndex = 2;
@@ -4295,13 +4296,12 @@ namespace TrOCR
             // groupBox9
             // 
             this.groupBox9.Controls.Add(this.tableLayoutPanel1);
-            this.groupBox9.Dock = System.Windows.Forms.DockStyle.Top;
-            this.groupBox9.Location = new System.Drawing.Point(3, 3);
+            this.groupBox9.Location = new System.Drawing.Point(3, 100);
             this.groupBox9.Name = "groupBox9";
             this.groupBox9.Size = new System.Drawing.Size(517, 104);
             this.groupBox9.TabIndex = 0;
             this.groupBox9.TabStop = false;
-            this.groupBox9.Text = "剪贴板";
+            this.groupBox9.Text = "监听剪贴板";
             // 
             // tableLayoutPanel1
             // 
@@ -4689,38 +4689,62 @@ namespace TrOCR
             this.txt_更新说明.Size = new System.Drawing.Size(366, 155);
             this.txt_更新说明.TabIndex = 4;
             // 
-            // label35
+            // groupBox12
             // 
-            this.label35.AutoSize = true;
-            this.label35.Location = new System.Drawing.Point(9, 272);
-            this.label35.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(82, 15);
-            this.label35.TabIndex = 15;
-            this.label35.Text = "截图翻译：";
+            this.groupBox12.Controls.Add(this.checkbox_NoWindowScreenshotTranslation);
+            this.groupBox12.Controls.Add(this.checkbox_AutoCopyScreenshotTranslation);
+            this.groupBox12.Location = new System.Drawing.Point(7, 210);
+            this.groupBox12.Name = "groupBox12";
+            this.groupBox12.Size = new System.Drawing.Size(513, 61);
+            this.groupBox12.TabIndex = 2;
+            this.groupBox12.TabStop = false;
+            this.groupBox12.Text = "截图翻译";
             // 
-            // txtBox_截图翻译
+            // groupBox13
             // 
-            this.txtBox_截图翻译.Font = new System.Drawing.Font("微软雅黑", 9F);
-            this.txtBox_截图翻译.Location = new System.Drawing.Point(104, 266);
-            this.txtBox_截图翻译.Margin = new System.Windows.Forms.Padding(4);
-            this.txtBox_截图翻译.Name = "txtBox_截图翻译";
-            this.txtBox_截图翻译.Size = new System.Drawing.Size(345, 27);
-            this.txtBox_截图翻译.TabIndex = 16;
-            this.txtBox_截图翻译.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.txtBox_截图翻译.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtBox_KeyDown);
-            this.txtBox_截图翻译.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtBox_KeyUp);
+            this.groupBox13.Controls.Add(this.checkBox_AutoCopyInputTranslation);
+            this.groupBox13.Controls.Add(this.cbBox_输入翻译自动翻译);
+            this.groupBox13.Controls.Add(this.cbBox_输入翻译剪贴板);
+            this.groupBox13.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupBox13.Location = new System.Drawing.Point(3, 3);
+            this.groupBox13.Name = "groupBox13";
+            this.groupBox13.Size = new System.Drawing.Size(517, 91);
+            this.groupBox13.TabIndex = 3;
+            this.groupBox13.TabStop = false;
+            this.groupBox13.Text = "输入翻译";
             // 
-            // pictureBox_截图翻译
+            // cbBox_输入翻译剪贴板
             // 
-            this.pictureBox_截图翻译.Image = global::TrOCR.Properties.Resources.快捷键_1;
-            this.pictureBox_截图翻译.Location = new System.Drawing.Point(468, 267);
-            this.pictureBox_截图翻译.Margin = new System.Windows.Forms.Padding(4);
-            this.pictureBox_截图翻译.Name = "pictureBox_截图翻译";
-            this.pictureBox_截图翻译.Size = new System.Drawing.Size(28, 26);
-            this.pictureBox_截图翻译.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
-            this.pictureBox_截图翻译.TabIndex = 17;
-            this.pictureBox_截图翻译.TabStop = false;
+            this.cbBox_输入翻译剪贴板.AutoSize = true;
+            this.cbBox_输入翻译剪贴板.Location = new System.Drawing.Point(4, 25);
+            this.cbBox_输入翻译剪贴板.Margin = new System.Windows.Forms.Padding(4);
+            this.cbBox_输入翻译剪贴板.Name = "cbBox_输入翻译剪贴板";
+            this.cbBox_输入翻译剪贴板.Size = new System.Drawing.Size(224, 19);
+            this.cbBox_输入翻译剪贴板.TabIndex = 8;
+            this.cbBox_输入翻译剪贴板.Text = "输入翻译默认使用剪贴板文本";
+            this.cbBox_输入翻译剪贴板.UseVisualStyleBackColor = true;
+            // 
+            // cbBox_输入翻译自动翻译
+            // 
+            this.cbBox_输入翻译自动翻译.AutoSize = true;
+            this.cbBox_输入翻译自动翻译.Location = new System.Drawing.Point(254, 25);
+            this.cbBox_输入翻译自动翻译.Margin = new System.Windows.Forms.Padding(4);
+            this.cbBox_输入翻译自动翻译.Name = "cbBox_输入翻译自动翻译";
+            this.cbBox_输入翻译自动翻译.Size = new System.Drawing.Size(194, 19);
+            this.cbBox_输入翻译自动翻译.TabIndex = 9;
+            this.cbBox_输入翻译自动翻译.Text = "输入翻译输入后自动翻译";
+            this.cbBox_输入翻译自动翻译.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_AutoCopyInputTranslation
+            // 
+            this.checkBox_AutoCopyInputTranslation.AutoSize = true;
+            this.checkBox_AutoCopyInputTranslation.Location = new System.Drawing.Point(4, 52);
+            this.checkBox_AutoCopyInputTranslation.Margin = new System.Windows.Forms.Padding(4);
+            this.checkBox_AutoCopyInputTranslation.Name = "checkBox_AutoCopyInputTranslation";
+            this.checkBox_AutoCopyInputTranslation.Size = new System.Drawing.Size(239, 19);
+            this.checkBox_AutoCopyInputTranslation.TabIndex = 10;
+            this.checkBox_AutoCopyInputTranslation.Text = "输入翻译后，自动复制翻译结果";
+            this.checkBox_AutoCopyInputTranslation.UseVisualStyleBackColor = true;
             // 
             // FmSetting
             // 
@@ -4862,6 +4886,7 @@ namespace TrOCR
             this.Page_快捷键.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_截图翻译)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_静默识别)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_输入翻译)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_识别界面)).EndInit();
@@ -4904,7 +4929,10 @@ namespace TrOCR
             this.Page_反馈.ResumeLayout(false);
             this.Page_反馈.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_截图翻译)).EndInit();
+            this.groupBox12.ResumeLayout(false);
+            this.groupBox12.PerformLayout();
+            this.groupBox13.ResumeLayout(false);
+            this.groupBox13.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -4952,8 +4980,6 @@ namespace TrOCR
         private global::System.Windows.Forms.ComboBox cobBox_动画;
         private global::System.Windows.Forms.Label label2;
         private global::System.Windows.Forms.GroupBox groupBox1;
-        private global::System.Windows.Forms.CheckBox cbBox_输入翻译剪贴板;
-        private global::System.Windows.Forms.CheckBox cbBox_输入翻译自动翻译;
         private global::System.Windows.Forms.CheckBox cbBox_开机;
         private global::System.Windows.Forms.TabControl tab_标签;
         private global::System.Windows.Forms.TabPage Page_更新;
@@ -5168,7 +5194,6 @@ namespace TrOCR
         private System.Windows.Forms.CheckBox checkBox_AutoTranslateOcrResult;
         private System.Windows.Forms.GroupBox groupBox_TranslateWorkflow;
         private System.Windows.Forms.CheckBox checkBox_AutoCopyOcrTranslation;
-        private System.Windows.Forms.CheckBox checkBox_AutoCopyInputTranslation;
         private System.Windows.Forms.TabPage tabPage_百度OCR;
         private System.Windows.Forms.TabControl tabControl_BaiduApiType;
         private System.Windows.Forms.TabPage inPage_百度接口;
@@ -5295,5 +5320,10 @@ namespace TrOCR
         private System.Windows.Forms.PictureBox pictureBox_截图翻译;
         private System.Windows.Forms.TextBox txtBox_截图翻译;
         private System.Windows.Forms.Label label35;
+        private System.Windows.Forms.GroupBox groupBox12;
+        private System.Windows.Forms.GroupBox groupBox13;
+        private System.Windows.Forms.CheckBox checkBox_AutoCopyInputTranslation;
+        private System.Windows.Forms.CheckBox cbBox_输入翻译自动翻译;
+        private System.Windows.Forms.CheckBox cbBox_输入翻译剪贴板;
     }
 }

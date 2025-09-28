@@ -131,7 +131,7 @@ namespace TrOCR
 				cbBox_输入翻译自动翻译.Checked = false;
 			}
 
-			var value_autoCopy = IniHelper.GetValue("识别后操作", "AutoCopyOcrResult");
+			var value_autoCopy = IniHelper.GetValue("常规识别", "AutoCopyOcrResult");
 			if (value_autoCopy == "发生错误")
 			{
 				checkBox_AutoCopyOcrResult.Checked = false;
@@ -158,7 +158,7 @@ namespace TrOCR
 				checkBox_AutoTranslateOcrResult.Checked = false;
 			}
 
-			var value_autoCopyOcr = IniHelper.GetValue("翻译后操作", "AutoCopyOcrTranslation");
+			var value_autoCopyOcr = IniHelper.GetValue("常规翻译", "AutoCopyOcrTranslation");
 			if (value_autoCopyOcr == "发生错误")
 			{
 				checkBox_AutoCopyOcrTranslation.Checked = false;
@@ -172,7 +172,7 @@ namespace TrOCR
 				checkBox_AutoCopyOcrTranslation.Checked = false;
 			}
 
-			var value_autoCopyInput = IniHelper.GetValue("翻译后操作", "AutoCopyInputTranslation");
+			var value_autoCopyInput = IniHelper.GetValue("配置", "AutoCopyInputTranslation");
 			if (value_autoCopyInput == "发生错误")
 			{
 				checkBox_AutoCopyInputTranslation.Checked = false;
@@ -1796,14 +1796,14 @@ namespace TrOCR
 			IniHelper.SetValue("配置", "识别弹窗", cbBox_弹窗.Checked.ToString());
 			IniHelper.SetValue("配置", "InputTranslateClipboard", cbBox_输入翻译剪贴板.Checked.ToString());
 			IniHelper.SetValue("配置", "InputTranslateAutoTranslate", cbBox_输入翻译自动翻译.Checked.ToString());
+			IniHelper.SetValue("配置", "AutoCopyInputTranslation", checkBox_AutoCopyInputTranslation.Checked.ToString());
 			IniHelper.SetValue("配置", "窗体动画", cobBox_动画.Text);
 			IniHelper.SetValue("配置", "记录数目", numbox_记录.Text);
 			IniHelper.SetValue("配置", "自动保存", cbBox_保存.Checked.ToString());
 			IniHelper.SetValue("配置", "截图位置", textBox_path.Text);
-			IniHelper.SetValue("识别后操作", "AutoCopyOcrResult", checkBox_AutoCopyOcrResult.Checked.ToString());
+			IniHelper.SetValue("常规识别", "AutoCopyOcrResult", checkBox_AutoCopyOcrResult.Checked.ToString());
 			IniHelper.SetValue("工具栏", "翻译", checkBox_AutoTranslateOcrResult.Checked.ToString());
-			IniHelper.SetValue("翻译后操作", "AutoCopyOcrTranslation", checkBox_AutoCopyOcrTranslation.Checked.ToString());
-			IniHelper.SetValue("翻译后操作", "AutoCopyInputTranslation", checkBox_AutoCopyInputTranslation.Checked.ToString());
+			IniHelper.SetValue("常规翻译", "AutoCopyOcrTranslation", checkBox_AutoCopyOcrTranslation.Checked.ToString());
 
 			IniHelper.SetValue("工具栏", "IsMergeRemoveSpace", checkBox_合并去除空格.Checked.ToString());
 			IniHelper.SetValue("工具栏", "IsMergeAutoCopy", checkBox_合并自动复制.Checked.ToString());
