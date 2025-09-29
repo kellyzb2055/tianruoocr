@@ -370,6 +370,7 @@ namespace TrOCR
 			this.change_button = this.Main_change;
 			this.change_button.DropDownItems.AddRange(new global::System.Windows.Forms.ToolStripItem[]
 			{
+				this.pangu_spacing,
 				this.Chinese,
 				this.English,
 				this.zh_tra,
@@ -377,7 +378,7 @@ namespace TrOCR
 				this.str_Upper,
 				this.Upper_str,
 				this.pinyin,
-				this.pangu_spacing
+				
 			});
 			this.interface_button = this.Main_jiekou;
 			this.interface_button.DropDownItems.AddRange(new global::System.Windows.Forms.ToolStripItem[]
