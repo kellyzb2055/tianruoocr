@@ -34,6 +34,16 @@ namespace TrOCR
 			this.btnToggleOriginalText.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnToggleOriginalText_MouseUp);
 			global::System.ComponentModel.ComponentResourceManager componentResourceManager = new global::System.ComponentModel.ComponentResourceManager(typeof(global::TrOCR.FmMain));
 			
+			//导出excel菜单项
+			this.ExportExcel = new global::System.Windows.Forms.ToolStripMenuItem();
+			//
+			//ExportExcel
+			//
+
+			this.ExportExcel.Name = "ExportExcel";
+			this.ExportExcel.Size = new System.Drawing.Size(180, 22);
+			this.ExportExcel.Text = "导出为Excel";
+			this.ExportExcel.Click += new System.EventHandler(this.ExportExcel_Click);
 			// 托盘图标控件
 			this.minico = new global::System.Windows.Forms.NotifyIcon(this.components);
 			// ====================【在此处添加代码块】====================
@@ -145,6 +155,9 @@ namespace TrOCR
 			// 翻译界面右键菜单
 			this.menu_copy = new global::System.Windows.Forms.ContextMenuStrip();
 			this.menu_copy.Renderer = new global::TrOCR.Helper.HelpRepaint.MenuItemRendererT();
+
+			
+
 			
 			// 图片框控件
 			this.PictureBox1 = new global::System.Windows.Forms.PictureBox();
@@ -276,6 +289,7 @@ namespace TrOCR
 				this.Main_selectall,
 				this.speak,
 				this.baidu_s,
+				this.ExportExcel, // 在这里添加新的菜单项
 				this.Main_change,
 				this.Main_jiekou,
 				this.Main_exit
@@ -648,6 +662,10 @@ namespace TrOCR
 		private global::System.Windows.Forms.ToolStripMenuItem pinyin;
 		//转换 - 盘古之白
 		private global::System.Windows.Forms.ToolStripMenuItem pangu_spacing; 
+
+		//导出excel
+		private global::System.Windows.Forms.ToolStripMenuItem ExportExcel; // 新增
+
 
 		#endregion
 

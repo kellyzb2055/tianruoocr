@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Data;
 
 namespace TrOCR.Helper
 {
@@ -263,8 +264,13 @@ namespace TrOCR.Helper
         /// </summary>
         /// <param name="image">图片字节数组</param>
         /// <returns>HTML格式的表格识别结果</returns>
-        public static string TableRecognition(byte[] image)
+        public static string TableRecognition(byte[] image,out DataTable tableResult, out List<string> headerTexts, out List<string> footerTexts,out List<TableCell> bodyCells)
         {
+             // 初始化所有 out 参数
+            tableResult = null;
+            headerTexts = new List<string>();
+            footerTexts = new List<string>();
+            bodyCells = new List<TableCell>();
             try
             {
                 // 获取腾讯表格识别密钥，如果为空则使用标准版密钥
@@ -274,7 +280,7 @@ namespace TrOCR.Helper
                 {
                     return "***请在设置中输入腾讯标准版密钥或表格识别专用密钥***";
                 }
-                
+
                 var host = "ocr.tencentcloudapi.com";
                 var service = "ocr";
                 var version = "2018-11-19";
@@ -340,7 +346,7 @@ namespace TrOCR.Helper
                         using (StreamReader reader = new StreamReader(resStream, Encoding.UTF8))
                         {
                             string result = reader.ReadToEnd();
-                            return ProcessTencentTableResult(result);
+                            return ProcessTencentTableResult(result, out tableResult, out headerTexts, out footerTexts, out bodyCells);
                         }
                     }
                 }
@@ -351,13 +357,16 @@ namespace TrOCR.Helper
             }
         }
 
-                       /// <summary>
-        /// 处理腾讯表格识别结果，生成统一的HTML表格（可直接粘贴到Excel）
+        /// <summary>
+        /// 处理腾讯表格识别结果，生成统一的HTML表格和DataTable (新版本)
         /// </summary>
-        /// <param name="jsonResult">腾讯API返回的JSON结果</param>
-        /// <returns>HTML格式的表格</returns>
-        private static string ProcessTencentTableResult(string jsonResult)
+        private static string ProcessTencentTableResult(string jsonResult, out DataTable tableResult, out List<string> headerTexts, out List<string> footerTexts,out List<TableCell> bodyCells)
         {
+            // 初始化
+            tableResult = new DataTable();
+            headerTexts = new List<string>();
+            footerTexts = new List<string>();
+            bodyCells = new List<TableCell>();
             try
             {
                 JObject jObject = JObject.Parse(jsonResult);
@@ -377,20 +386,13 @@ namespace TrOCR.Helper
 
                 // --- 1. 分离结构化表格和独立的页眉/页脚文本块 ---
                 var structuredTables = new List<JToken>();
-                var headerTexts = new List<string>();
-                var footerTexts = new List<string>();
-
+                // --- 解析独立的 Header 和 Footer 文本块 ---
                 foreach (var table in tableDetections)
                 {
                     var cells = table["Cells"];
                     if (cells == null || !cells.HasValues) continue;
-
                     bool isStructuredTable = cells.Any(c => (c["RowTl"]?.Value<int>() ?? -1) >= 0);
-
-                    if (isStructuredTable)
-                    {
-                        structuredTables.Add(table);
-                    }
+                    if (isStructuredTable) { structuredTables.Add(table); }
                     else // 独立的、无坐标的文本块
                     {
                         foreach (var cell in cells)
@@ -414,20 +416,18 @@ namespace TrOCR.Helper
 
                 if (!structuredTables.Any() && !headerTexts.Any() && !footerTexts.Any())
                 {
-                     return "***未识别到任何表格或文本内容***";
+                    return "***未识别到任何表格或文本内容***";
                 }
-                
-                StringBuilder finalHtml = new StringBuilder();
 
                 var mainTable = structuredTables.FirstOrDefault();
-                
                 int maxCol = 1;
+                int maxRow = 0;
 
                 if (mainTable != null)
                 {
                     var cells = mainTable["Cells"];
-                    var tableCells = new List<TableCell>();
-                    int maxRow = 0;
+                    // var tableCells = new List<TableCell>();
+                    // 注意：这里不再用 tableCells 局部变量，而是直接填充 out 参数 bodyCells
 
                     foreach (var cell in cells)
                     {
@@ -437,31 +437,181 @@ namespace TrOCR.Helper
                         int colTl = cell["ColTl"].Value<int>();
                         int rowBr = cell["RowBr"].Value<int>();
                         int colBr = cell["ColBr"].Value<int>();
-                        
-                        tableCells.Add(new TableCell
+
+                        bodyCells.Add(new TableCell
                         {
                             Text = cell["Text"]?.Value<string>() ?? "",
                             Type = cell["Type"]?.Value<string>() ?? "body",
                             Row = rowTl,
                             Col = colTl,
+                            // 注意：腾讯的 Br 是不包含的边界，所以跨度是 Br - Tl
                             RowSpan = rowBr - rowTl,
                             ColSpan = colBr - colTl
                         });
                         maxRow = Math.Max(maxRow, rowBr);
                         maxCol = Math.Max(maxCol, colBr);
                     }
-                    
+
+
+                    // --- 开始构建 DataTable ---
+                    if (maxRow > 0 && maxCol > 0)
+                    {
+                        // 注意：腾讯的坐标是从0开始，maxRow/maxCol是不包含的边界，所以实际行/列数是 maxRow+1, maxCol+1
+                        maxRow++;
+                        maxCol++;
+
+                        // 创建一个二维数组来模拟表格布局，处理合并单元格
+                        string[,] grid = new string[maxRow, maxCol];
+
+                        foreach (var cell in bodyCells)
+                        {
+                            if (cell.Row < maxRow && cell.Col < maxCol)
+                            {
+                                grid[cell.Row, cell.Col] = cell.Text;
+                            }
+                        }
+
+                        // 添加列
+                        for (int c = 0; c < maxCol; c++)
+                        {
+                            tableResult.Columns.Add($"列 {c + 1}");
+                        }
+
+                        // 添加行
+                        for (int r = 0; r < maxRow; r++)
+                        {
+                            DataRow newRow = tableResult.NewRow();
+                            for (int c = 0; c < maxCol; c++)
+                            {
+                                newRow[c] = grid[r, c];
+                            }
+                            tableResult.Rows.Add(newRow);
+                        }
+                    }
+                    // --- 结束构建 DataTable ---
+                }
+
+                return ProcessTencentTableResult(mainTable, maxRow, maxCol, headerTexts, footerTexts); // 调用原方法来获取HTML
+            }
+            catch (Exception ex)
+            {
+                return "处理腾讯表格结果时发生异常: " + ex.Message;
+            }
+}
+
+
+                       /// <summary>
+        /// 处理腾讯表格识别结果，生成统一的HTML表格（可直接粘贴到Excel）
+        /// </summary>
+        /// <param name="jsonResult">腾讯API返回的JSON结果</param>
+        /// <returns>HTML格式的表格</returns>
+        private static string ProcessTencentTableResult(JToken mainTable,int maxRow,int maxCol,List<string> headerTexts,List<string> footerTexts)
+        {
+            try
+            {
+                // JObject jObject = JObject.Parse(jsonResult);
+
+                // if (jObject["Response"]?["Error"] != null)
+                // {
+                //     string errorCode = jObject["Response"]["Error"]["Code"]?.ToString() ?? "UnknownCode";
+                //     string errorMessage = jObject["Response"]["Error"]["Message"]?.ToString() ?? "Unknown error message.";
+                //     return $"腾讯表格识别错误 - Code: {errorCode}, Message: {errorMessage}";
+                // }
+
+                // var tableDetections = jObject["Response"]?["TableDetections"];
+                // if (tableDetections == null || !tableDetections.HasValues)
+                // {
+                //     return "***该区域未发现表格***";
+                // }
+
+                // --- 1. 分离结构化表格和独立的页眉/页脚文本块 ---
+                // var structuredTables = new List<JToken>();
+                // var headerTexts = new List<string>();
+                // var footerTexts = new List<string>();
+
+                // foreach (var table in tableDetections)
+                // {
+                //     var cells = table["Cells"];
+                //     if (cells == null || !cells.HasValues) continue;
+
+                //     bool isStructuredTable = cells.Any(c => (c["RowTl"]?.Value<int>() ?? -1) >= 0);
+
+                //     if (isStructuredTable)
+                //     {
+                //         structuredTables.Add(table);
+                //     }
+                //     else // 独立的、无坐标的文本块
+                //     {
+                //         foreach (var cell in cells)
+                //         {
+                //             string text = cell["Text"]?.Value<string>() ?? "";
+                //             if (!string.IsNullOrWhiteSpace(text))
+                //             {
+                //                 string blockType = cell["Type"]?.Value<string>() ?? "body";
+                //                 if (blockType == "header")
+                //                 {
+                //                     headerTexts.Add(text);
+                //                 }
+                //                 else
+                //                 {
+                //                     footerTexts.Add(text);
+                //                 }
+                //             }
+                //         }
+                //     }
+                // }
+
+                // if (!structuredTables.Any() && !headerTexts.Any() && !footerTexts.Any())
+                // {
+                //     return "***未识别到任何表格或文本内容***";
+                // }
+
+                StringBuilder finalHtml = new StringBuilder();
+
+                // var mainTable = structuredTables.FirstOrDefault();
+
+                // int maxCol = 1;
+                // int maxRow = 0;
+
+                if (mainTable != null)
+                {
+                    //var cells = mainTable["Cells"];
+                    var tableCells = new List<TableCell>();
+
+
+                    //     foreach (var cell in cells)
+                    //     {
+                    //         int rowTl = cell["RowTl"]?.Value<int>() ?? -1;
+                    //         if (rowTl < 0) continue;
+
+                    //         int colTl = cell["ColTl"].Value<int>();
+                    //         int rowBr = cell["RowBr"].Value<int>();
+                    //         int colBr = cell["ColBr"].Value<int>();
+
+                    //         tableCells.Add(new TableCell
+                    //         {
+                    //             Text = cell["Text"]?.Value<string>() ?? "",
+                    //             Type = cell["Type"]?.Value<string>() ?? "body",
+                    //             Row = rowTl,
+                    //             Col = colTl,
+                    //             RowSpan = rowBr - rowTl,
+                    //             ColSpan = colBr - colTl
+                    //         });
+                    //         maxRow = Math.Max(maxRow, rowBr);
+                    //         maxCol = Math.Max(maxCol, colBr);
+                    //     }
+
                     if (maxRow > 0 && maxCol > 0)
                     {
                         finalHtml.AppendLine("<table border='1' style='border-collapse: collapse;'>");
-                        
+
                         // --- 3. 在表格顶部插入页眉行 ---
                         // 将页眉处理逻辑修改为“水平整合”
                         if (headerTexts.Any())
                         {
                             finalHtml.AppendLine("  <thead>");
                             finalHtml.AppendLine("    <tr>"); // 只创建一个 <tr> 行
-                            
+
                             if (headerTexts.Count == 1)
                             {
                                 // 如果只有一个页眉，则跨越整个表格
@@ -477,12 +627,12 @@ namespace TrOCR.Helper
                                     finalHtml.AppendLine($"      <th style='text-align: center; background-color: #f0f0f0;font-weight: bold;'>{encodedHeaderText}</th>");
                                 }
                             }
-                            
+
                             finalHtml.AppendLine("    </tr>");
                             finalHtml.AppendLine("  </thead>");
                         }
 
-                    // --- 4. 构建表格主体 ---
+                        // --- 4. 构建表格主体 ---
                         finalHtml.AppendLine("  <tbody>");
                         var grid = new bool[maxRow, maxCol];
                         for (int r = 0; r < maxRow; r++)
@@ -499,7 +649,7 @@ namespace TrOCR.Helper
                                     string rowspanAttr = currentCell.RowSpan > 1 ? $" rowspan='{currentCell.RowSpan}'" : "";
                                     string colspanAttr = currentCell.ColSpan > 1 ? $" colspan='{currentCell.ColSpan}'" : "";
                                     string cellText = System.Web.HttpUtility.HtmlEncode(currentCell.Text).Replace("\n", "&#10;");
-                                    
+
 
                                     finalHtml.AppendLine($"      <{tag}{rowspanAttr}{colspanAttr}>{cellText}</{tag}>");
 
@@ -523,7 +673,7 @@ namespace TrOCR.Helper
                         }
                         finalHtml.AppendLine("  </tbody>");
 
-                    // --- 5. 在表格底部插入页脚行 ---
+                        // --- 5. 在表格底部插入页脚行 ---
                         if (footerTexts.Any())
                         {
                             finalHtml.AppendLine("  <tfoot>");
@@ -538,12 +688,12 @@ namespace TrOCR.Helper
                                 for (int i = 0; i < footerCellCount; i++)
                                 {
                                     int currentColspan = colsPerFooter + (i < extraCols ? 1 : 0);
-                                    if(i == footerCellCount - 1) // 最后一个单元格吃掉所有剩余的列
+                                    if (i == footerCellCount - 1) // 最后一个单元格吃掉所有剩余的列
                                     {
                                         currentColspan = maxCol - colsUsed;
                                     }
                                     if (currentColspan <= 0) continue; // 避免无效的colspan
-                                    
+
                                     string encodedFooterText = System.Web.HttpUtility.HtmlEncode(footerTexts[i]);
                                     finalHtml.Append($"      <td colspan='{currentColspan}' style='text-align: left;background-color: #f0f0f0;'>{encodedFooterText}</td>");
                                     colsUsed += currentColspan;
@@ -558,9 +708,9 @@ namespace TrOCR.Helper
                 }
                 else if (headerTexts.Any() || footerTexts.Any())
                 {
-                     finalHtml.AppendLine(string.Join("<br />", headerTexts.Concat(footerTexts).Select(t => System.Web.HttpUtility.HtmlEncode(t))));
+                    finalHtml.AppendLine(string.Join("<br />", headerTexts.Concat(footerTexts).Select(t => System.Web.HttpUtility.HtmlEncode(t))));
                 }
-                
+
                 return finalHtml.ToString();
             }
             catch (Exception ex)
@@ -572,7 +722,7 @@ namespace TrOCR.Helper
         /// <summary>
         /// 内部类，用于存储解析后的单元格信息
         /// </summary>
-        private class TableCell
+        public class TableCell
         {
             public string Text { get; set; }
             public string Type { get; set; } // "header", "body", "footer"

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -532,8 +533,13 @@ namespace TrOCR.Helper
         /// <param name="returnExcel">是否返回Excel文件（base64编码）</param>
         /// <param name="cellContents">是否输出单元格文字位置信息</param>
         /// <returns>识别结果</returns>
-        public static string TableRecognition(byte[] imageBytes, bool returnExcel = false, bool cellContents = false)
+        public static string TableRecognition(byte[] imageBytes, out DataTable tableResult, out List<string> headerTexts, out List<string> footerTexts, out List<CellInfo> bodyCells,bool returnExcel = false, bool cellContents = false)
         {
+             // 初始化所有 out 参数
+            tableResult = null;
+            headerTexts = new List<string>();
+            footerTexts = new List<string>();
+            bodyCells = new List<CellInfo>();
             try
             {
                 string apiKey, secretKey, accessToken;
@@ -546,7 +552,7 @@ namespace TrOCR.Helper
                     apiKey = StaticValue.BD_TABLE_API_ID;
                     secretKey = StaticValue.BD_TABLE_API_KEY;
                     useCustomKey = true;
-                    
+
                     // 直接获取新的access_token，不使用缓存
                     accessToken = GetFreshAccessToken(apiKey, secretKey);
                 }
@@ -555,12 +561,12 @@ namespace TrOCR.Helper
                     // 使用标准版密钥和缓存的access_token
                     apiKey = StaticValue.BD_API_ID;
                     secretKey = StaticValue.BD_API_KEY;
-                    
+
                     if (string.IsNullOrEmpty(apiKey) || string.IsNullOrEmpty(secretKey))
                     {
                         return "***请在设置中输入百度标准版密钥或表格识别专用密钥***";
                     }
-                    
+
                     // 使用缓存的access_token
                     accessToken = GetAccessToken(apiKey, secretKey, false);
                 }
@@ -573,16 +579,16 @@ namespace TrOCR.Helper
                 // 构建请求
                 string url = $"https://aip.baidubce.com/rest/2.0/ocr/v1/table?access_token={accessToken}";
                 string imageBase64 = Convert.ToBase64String(imageBytes);
-                
+
                 // 构建POST数据
                 StringBuilder postDataBuilder = new StringBuilder();
                 postDataBuilder.Append($"image={HttpUtility.UrlEncode(imageBase64)}");
-                
+
                 if (returnExcel)
                 {
                     postDataBuilder.Append("&return_excel=true");
                 }
-                
+
                 if (cellContents)
                 {
                     postDataBuilder.Append("&cell_contents=true");
@@ -599,13 +605,13 @@ namespace TrOCR.Helper
 
                 // 解析响应
                 JObject json = JObject.Parse(response);
-                
+
                 // 检查是否有错误
                 if (json["error_code"] != null)
                 {
                     string errorCode = json["error_code"].ToString();
                     string errorMsg = json["error_msg"]?.ToString() ?? "未知错误";
-                    
+
                     // 如果是token失效且使用标准版缓存，清除缓存并重试一次
                     if ((errorCode == "110" || errorCode == "111") && !useCustomKey)
                     {
@@ -625,17 +631,131 @@ namespace TrOCR.Helper
                             }
                         }
                     }
-                    
+
                     return $"百度表格识别错误 {errorCode}: {errorMsg}";
                 }
 
-                ProcessResult:
+            ProcessResult:
                 // 处理识别结果
-                return ProcessTableResult(json, returnExcel);
+                return ProcessTableResult(json, returnExcel, out tableResult, out headerTexts, out footerTexts,out bodyCells);
             }
             catch (Exception ex)
             {
                 return $"百度表格识别异常: {ex.Message}";
+            }
+        }
+        
+        /// <summary>
+        /// 处理表格识别结果 (新版本)
+        /// </summary>
+        private static string ProcessTableResult(JObject json, bool returnExcel, out DataTable tableResult,out List<string> headerTexts, out List<string> footerTexts,out List<CellInfo> bodyCells)
+        {
+            // 初始化
+            tableResult = new DataTable();
+            headerTexts = new List<string>();
+            footerTexts = new List<string>();
+            bodyCells = new List<CellInfo>(); // 初始化
+            try
+            {
+                if (returnExcel && json["excel_file"] != null)
+                {
+                    string excelBase64 = json["excel_file"].ToString();
+                    return $"Excel文件(Base64): {excelBase64}";
+                }
+
+                var tablesResult = json["tables_result"] as JArray;
+                if (tablesResult == null || tablesResult.Count == 0)
+                {
+                    return "***该区域未发现表格***";
+                }
+
+                var firstTable = tablesResult.FirstOrDefault();
+                if (firstTable == null) return "***该区域未发现表格***";
+
+                var body = firstTable["body"] as JArray;
+                var header = firstTable["header"] as JArray;
+
+                var footer = firstTable["footer"] as JArray;
+                // --- 新增：解析 Header 和 Footer 文本 ---
+                if (header != null)
+                {
+                    foreach (var item in header)
+                    {
+                        headerTexts.Add(item["words"]?.ToString() ?? "");
+                    }
+                }
+                if (footer != null)
+                {
+                    foreach (var item in footer)
+                    {
+                        footerTexts.Add(item["words"]?.ToString() ?? "");
+                    }
+                }
+                 // --- 新增：解析 body 数据到 bodyCells 列表 ---
+                if (body != null)
+                {
+                    foreach (var cell in body)
+                    {
+                        bodyCells.Add(new CellInfo
+                        {
+                            RowStart = cell["row_start"]?.ToObject<int>() ?? 0,
+                            RowEnd = cell["row_end"]?.ToObject<int>() ?? 0,
+                            ColStart = cell["col_start"]?.ToObject<int>() ?? 0,
+                            ColEnd = cell["col_end"]?.ToObject<int>() ?? 0,
+                            Words = cell["words"]?.ToString() ?? ""
+                        });
+                    }
+                }
+                // --- DataTable 构建逻辑现在可以简化或移除，因为我们主要依赖 bodyCells ---
+                // (为了兼容性，可以暂时保留)
+                // --- 开始构建 DataTable ---
+                if (body != null && body.Count > 0)
+                {
+                    int maxCol = 0;
+                    foreach (var cell in body)
+                    {
+                        int colEnd = cell["col_end"]?.ToObject<int>() ?? 0;
+                        maxCol = Math.Max(maxCol, colEnd);
+                    }
+
+                    for (int i = 0; i < maxCol; i++)
+                    {
+                        tableResult.Columns.Add($"列 {i + 1}");
+                    }
+
+                    // 使用一个字典来构建每一行，键是行号
+                    var rowsDict = new Dictionary<int, string[]>();
+
+                    foreach (var cell in body)
+                    {
+                        int rowStart = cell["row_start"]?.ToObject<int>() ?? 0;
+                        int colStart = cell["col_start"]?.ToObject<int>() ?? 0;
+                        string words = cell["words"]?.ToString() ?? "";
+
+                        if (!rowsDict.ContainsKey(rowStart))
+                        {
+                            rowsDict[rowStart] = new string[maxCol];
+                        }
+                        if (colStart < maxCol)
+                        {
+                            rowsDict[rowStart][colStart] = words;
+                        }
+                    }
+
+                    // 按行号排序并添加到 DataTable
+                    foreach (var rowPair in rowsDict.OrderBy(p => p.Key))
+                    {
+                        tableResult.Rows.Add(rowPair.Value);
+                    }
+                }
+                // --- 结束构建 DataTable ---
+
+                string completeHtml = GenerateCompleteHtmlTable(header, body, firstTable["footer"] as JArray);
+                return completeHtml;
+            }
+            catch (Exception ex)
+            {
+                return $"处理表格识别结果时发生异常: {ex.Message}";
             }
         }
 
@@ -648,7 +768,7 @@ namespace TrOCR.Helper
             {
                 string url = $"https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id={apiKey}&client_secret={secretKey}";
                 string response = CommonHelper.GetHtmlContent(url);
-                
+
                 if (string.IsNullOrEmpty(response))
                 {
                     return null;
@@ -1112,7 +1232,7 @@ namespace TrOCR.Helper
         /// <summary>
         /// 单元格信息类
         /// </summary>
-        private class CellInfo
+        public class CellInfo
         {
             public int RowStart { get; set; }
             public int RowEnd { get; set; }

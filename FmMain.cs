@@ -32,6 +32,7 @@ using TencentCloud.Common;
 using TencentCloud.Common.Profile;
 using TencentCloud.Tmt.V20180321;
 using TencentCloud.Tmt.V20180321.Models;
+using System.Data;
 // ReSharper disable StringLiteralTypo
 
 namespace TrOCR
@@ -57,6 +58,15 @@ namespace TrOCR
  		private bool isOriginalTextHidden = false; // 新增：用于跟踪原文窗口的显隐状态
 
 		private bool isScreenshotTranslateMode = false; // 【新增】截图翻译模式标志
+
+		// private DataTable lastRecognizedTable; // 存储最近一次识别的表格数据，不再需要
+		private List<string> lastRecognizedHeader; // 新增
+		private List<string> lastRecognizedFooter; // 新增
+
+		private List<BaiduOcrHelper.CellInfo> lastBaiduCells;
+		private List<TencentOcrHelper.TableCell> lastTencentCells;
+		private string lastOcrProvider; // 用于区分是百度还是腾讯
+
 
 
 
@@ -7389,6 +7399,23 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 				split_txt = typeset_txt;
 			}
 		}
+		private void ExportExcel_Click(object sender, EventArgs e)
+		{
+		    // 调用我们创建的帮助类来处理导出
+		    // Helper.ExcelHelper.ExportToExcel(this.lastRecognizedTable,this.lastRecognizedHeader, this.lastRecognizedFooter);
+			if (this.lastOcrProvider == "Baidu")
+		    {
+		        Helper.ExcelHelper.ExportToExcel(this.lastBaiduCells, this.lastRecognizedHeader, this.lastRecognizedFooter);
+		    }
+		    else if (this.lastOcrProvider == "Tencent")
+		    {
+		        Helper.ExcelHelper.ExportToExcel(this.lastTencentCells, this.lastRecognizedHeader, this.lastRecognizedFooter);
+		    }
+		    else
+		    {
+		        MessageBox.Show("没有可供导出的表格数据。", "信息", MessageBoxButtons.OK, MessageBoxIcon.Information);
+		    }
+		}
 
 		/// <summary>
 		/// 使用百度API进行表格OCR识别
@@ -7398,14 +7425,23 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 		{
 			typeset_txt = "[消息]：表格已下载！";
 			split_txt = "";
+			// this.lastRecognizedTable = null; // 每次识别前清空 
+    		this.lastRecognizedHeader = null;
+    		this.lastRecognizedFooter = null;
+			this.lastBaiduCells = null;
+    		this.lastOcrProvider = "Baidu";
 			try
 			{
 				// 获取图像字节数组
 				var image = image_screen;
 				var imageBytes = OcrHelper.ImgToBytes(image);
 
+
 				// 调用新的表格识别方法
-				string result = BaiduOcrHelper.TableRecognition(imageBytes, false, false);
+				// string result = BaiduOcrHelper.TableRecognition(imageBytes, out this.lastRecognizedTable, out this.lastRecognizedHeader, out this.lastRecognizedFooter, false, false);
+				DataTable dummyTable; // DataTable 现在只是个附属品
+				string result = BaiduOcrHelper.TableRecognition(imageBytes, out dummyTable, out this.lastRecognizedHeader, out this.lastRecognizedFooter, out this.lastBaiduCells, false, false);
+
 
 				// 检查识别结果
 				if (string.IsNullOrWhiteSpace(result))
@@ -7433,15 +7469,21 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 		{
 			typeset_txt = "[消息]：表格已下载！";
 			split_txt = "";
+			// this.lastRecognizedTable = null; 
+    		this.lastRecognizedHeader = null;
+    		this.lastRecognizedFooter = null;
+			this.lastTencentCells = null;
+    		this.lastOcrProvider = "Tencent";
 			try
 			{
 				// 获取图像字节数组
 				var image = image_screen;
 				var imageBytes = OcrHelper.ImgToBytes(image);
-				
+
 				// 调用腾讯表格识别方法
-				string result = TencentOcrHelper.TableRecognition(imageBytes);
-				
+				// string result = TencentOcrHelper.TableRecognition(imageBytes,out this.lastRecognizedTable,out this.lastRecognizedHeader, out this.lastRecognizedFooter);
+				DataTable dummyTable;
+				string result = TencentOcrHelper.TableRecognition(imageBytes, out dummyTable, out this.lastRecognizedHeader, out this.lastRecognizedFooter, out this.lastTencentCells);
 				// 检查识别结果
 				if (string.IsNullOrWhiteSpace(result))
 				{
@@ -7572,7 +7614,7 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 				if (isSuccess)
 				{
 					// 显示识别结果
-					RichBoxBody.Text = "[消息]：表格识别成功，已复制到粘贴板！可直接粘贴到Excel";
+					RichBoxBody.Text = "[消息]：百度表格识别成功，已复制到粘贴板！可直接导出Excel文件或粘贴到Excel";
 
 					// 提取HTML表格部分
 					string htmlTable = ExtractHtmlTable(typeset_txt);
@@ -7584,7 +7626,7 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 						dataObject.SetData(DataFormats.Html, CreateHtmlClipboardData(htmlTable));
 						dataObject.SetData(DataFormats.UnicodeText, typeset_txt);
 						SetClipboardWithLock(dataObject);
-						Debug.WriteLine("识别表格结果复制到剪贴板-html格式");
+						Debug.WriteLine("百度识别表格结果复制到剪贴板-html格式");
 					}
 					else
 					{
@@ -7592,7 +7634,7 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 						var dataObject = new DataObject();
 						dataObject.SetData(DataFormats.UnicodeText, typeset_txt);
 						SetClipboardWithLock(dataObject);
-						Debug.WriteLine("识别表格结果复制到剪贴板-普通文本格式");
+						Debug.WriteLine("百度识别表格结果复制到剪贴板-普通文本格式");
 					}
 
 				}
@@ -7617,7 +7659,7 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 				if (isSuccess)
 				{
 					// 显示识别结果
-					RichBoxBody.Text = "[消息]：腾讯表格识别成功，已复制到粘贴板！可直接粘贴到Excel";
+					RichBoxBody.Text = "[消息]：腾讯表格识别成功，已复制到粘贴板！可直接导出Excel文件或粘贴到Excel";
 
 					// 提取HTML表格部分
 					string htmlTable = ExtractHtmlTable(typeset_txt);
