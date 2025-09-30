@@ -39,9 +39,10 @@ namespace TrOCR.Helper
                     return tokenCache;
                 }
 
-                // 3. 获取新的access_token
-                string url = $"https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id={apiKey}&client_secret={secretKey}";
-                string response = CommonHelper.GetHtmlContent(url);
+                // 3. 【修改】获取新的access_token（由GET改为POST）
+                string url = "https://aip.baidubce.com/oauth/2.0/token";
+                string postData = $"grant_type=client_credentials&client_id={apiKey}&client_secret={secretKey}";
+                string response = CommonHelper.PostStrData(url, postData);
 
                 if (string.IsNullOrEmpty(response))
                 {
@@ -769,8 +770,16 @@ namespace TrOCR.Helper
         {
             try
             {
-                string url = $"https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id={apiKey}&client_secret={secretKey}";
-                string response = _httpClient.GetStringAsync(url).GetAwaiter().GetResult();
+                // 【修改】由GET请求改为POST请求
+                string url = "https://aip.baidubce.com/oauth/2.0/token";
+                var postData = new FormUrlEncodedContent(new[]
+                {
+                    new KeyValuePair<string, string>("grant_type", "client_credentials"),
+                    new KeyValuePair<string, string>("client_id", apiKey),
+                    new KeyValuePair<string, string>("client_secret", secretKey)
+                });
+                var responseMessage = _httpClient.PostAsync(url, postData).GetAwaiter().GetResult();
+                string response = responseMessage.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 
                 if (string.IsNullOrEmpty(response))
                 {
