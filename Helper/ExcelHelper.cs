@@ -240,9 +240,30 @@ namespace TrOCR.Helper
 
                         if (result == DialogResult.OK)
                         {
-                            MessageBox.Show($"表格已成功导出到:\n{sfd.FileName}", "导出成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            // 1.准备好带有清晰说明的消息
+                            string successMessage = $"表格已成功导出到:\n{sfd.FileName}\n\n点击“确定”将打开文件所在文件夹。";
+
+                            // 2. 显示带有“确定”和“取消”按钮的消息框
+                            DialogResult msgBoxResult = MessageBox.Show(owner, successMessage, "导出成功",
+                                                                        MessageBoxButtons.OKCancel, // <-- 使用 OKCancel
+                                                                        MessageBoxIcon.Information);//想要去掉声音，改成MessageBoxIcon.None，不过这样一来图标也没了
+
+                            // 3. 只在用户点击“确定”时，才执行打开文件夹的操作
+                            if (msgBoxResult == DialogResult.OK)
+                            {
+                                try
+                                {
+                                    System.Diagnostics.Process.Start("explorer.exe", $"/select,\"{sfd.FileName}\"");
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show(owner, $"无法打开文件夹: {ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+                            // 如果用户点击“取消”或关闭按钮，则什么也不做，弹窗直接消失。
                         }
-                    }catch(Exception ex)
+                    }
+                    catch(Exception ex)
                     {
                         MessageBox.Show($"导出异常:{ex.Message}");
                     }
