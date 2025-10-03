@@ -42,7 +42,7 @@ namespace TrOCR
 
 			this.ExportExcel.Name = "ExportExcel";
 			this.ExportExcel.Size = new System.Drawing.Size(180, 22);
-			this.ExportExcel.Text = "导出为Excel";
+			this.ExportExcel.Text = "导出表格";
 			this.ExportExcel.Click += new System.EventHandler(this.ExportExcel_Click);
 			// 托盘图标控件
 			this.minico = new global::System.Windows.Forms.NotifyIcon(this.components);

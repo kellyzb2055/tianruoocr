@@ -116,10 +116,36 @@ namespace TrOCR.Helper
                                 var dataRange = worksheet.Range(tableBodyStartRow, 1, currentRow - 1, columnCount);
                                 foreach (var cell in dataRange.Cells())
                                 {
+                                    // 优先判断单元格的底层类型是否为数字，这是最高效的方式
                                     if (cell.Value.IsNumber)
                                     {
                                         cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                                        continue; // 处理完毕，进入下一次循环
                                     }
+
+                                    // 如果不是数字类型，则按字符串处理
+                                    string textValue = cell.GetValue<string>().Trim();
+                                    if (string.IsNullOrEmpty(textValue))
+                                    {
+                                        continue; // 空单元格不处理
+                                    }
+
+                                    // --- 核心逻辑：先净化字符串，再进行判断 ---
+
+                                    // 1. 移除千位分隔符逗号
+                                    string cleanText = textValue.Replace(",", "");
+
+                                    // 2. 判断净化后的字符串是否为百分比
+                                    if (cleanText.EndsWith("%") && decimal.TryParse(cleanText.Substring(0, cleanText.Length - 1), out _))
+                                    {
+                                        cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                                    }
+                                    // 3. 判断净化后的字符串是否为普通数字（可以带负号和小数点）
+                                    else if (decimal.TryParse(cleanText, out _))
+                                    {
+                                        cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                                    }
+                                    // 4. 如果以上都不是，则视为普通文本
                                     else
                                     {
                                         cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
