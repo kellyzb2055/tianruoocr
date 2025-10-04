@@ -259,7 +259,7 @@ namespace TrOCR
 				this.trans_caiyun,
 				this.trans_volcano,
 				this.trans_caiyun2,
-				this.trans_baidu2
+				// this.trans_baidu2,
 			});
 			
 			// 翻译界面右键菜单字体设置
