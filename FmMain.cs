@@ -595,11 +595,13 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 			{
 				return;
 			}
-			// 暂停窗体的布局逻辑，防止在调整多个控件时发生闪烁
-		    this.SuspendLayout();
+            // ★★★ 核心修正：在所有操作之前，立刻更新状态 ★★★
+            isOriginalTextHidden = !isOriginalTextHidden;
+            // 暂停窗体的布局逻辑，防止在调整多个控件时发生闪烁
+            this.SuspendLayout();
 		    Size oldLastNormalSize = lastNormalSize;
 		    Debug.WriteLine($"现在的size：{Size}");
-			if (isOriginalTextHidden) // 如果当前原文是隐藏的，那么点击后就要【显示】它
+			if (!isOriginalTextHidden) // 如果当前原文是隐藏的，那么点击后就要【显示】它
 		    {
 				Debug.WriteLine($"原文是隐藏的，恢复它，lastNormalSize为{lastNormalSize}");
 		        // 步骤 1：暂停UI布局，防止闪烁
@@ -625,7 +627,6 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 				//btnToggleOriginalText.Left = RichBoxBody.Right - btnToggleOriginalText.Width;
 				btnToggleOriginalText.Left= panelSeparator.Left - btnToggleOriginalText.Width - 10;
 		        btnToggleOriginalText.Text = "◀";
-		        isOriginalTextHidden = false;
 				lastNormalSize = oldLastNormalSize;
 
 		        // 步骤 7：恢复UI布局，让所有更改一次性生效
@@ -651,7 +652,6 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
                 // 4. 更新按钮文本和状态
 				btnToggleOriginalText.Left = RichBoxBody_T.Right - btnToggleOriginalText.Width;
                 btnToggleOriginalText.Text = "▶";
-		        isOriginalTextHidden = true;
 		        lastNormalSize = oldLastNormalSize;
                 // 【关键日志2】在所有操作的最后，再次记录状态
                 LogState("Click - HIDE - END of block");
@@ -2678,28 +2678,39 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 				}
 			}
 
-			// --- 步骤 2: 布局主容器（文本框和分隔条）---
-			// 当RichBoxBody未设置停靠样式时调整大小
-			if (RichBoxBody.Dock != DockStyle.Fill)
-			{
+            // --- 步骤 2: 布局主容器（文本框和分隔条）---
+            // 当RichBoxBody未设置停靠样式时调整大小. Dock != Fill 意味着处于双栏翻译模式
+            if (RichBoxBody.Dock != DockStyle.Fill)
+            {//  核心修正：在此处添加对 isOriginalTextHidden 状态的判断 ★★★★★
+                if (isOriginalTextHidden)
+                {
+                    // 特殊状态：翻译模式已开启，但原文被隐藏了
+                    // 此时，译文框应该填满整个窗口
+                    RichBoxBody.Visible = false;      // 确保原文框是隐藏的
+                    panelSeparator.Visible = false; // 确保分隔条是隐藏的
+                    RichBoxBody_T.Location = new Point(0, 0);
+                    RichBoxBody_T.Size = this.ClientRectangle.Size;
+				}
+				else
+				{
 
-				// --- 替换为带分隔条的布局逻辑 ---
-				// 1. 计算每个文本框的理想宽度
-				int panelWidth = (this.ClientRectangle.Width - panelSeparator.Width) / 2;
+                    // --- 替换为带分隔条的布局逻辑 ---
+                    // 1. 计算每个文本框的理想宽度
+                    int panelWidth = (this.ClientRectangle.Width - panelSeparator.Width) / 2;
 
-				// 2. 设置左侧文本框的位置和大小
-				RichBoxBody.Location = new Point(0, 0);
-				RichBoxBody.Size = new Size(panelWidth, this.ClientRectangle.Height);
+                    // 2. 设置左侧文本框的位置和大小
+                    RichBoxBody.Location = new Point(0, 0);
+                    RichBoxBody.Size = new Size(panelWidth, this.ClientRectangle.Height);
 
-				// 3. 设置分隔条的位置和高度
-				panelSeparator.Location = new Point(RichBoxBody.Right, 0);
-				panelSeparator.Height = this.ClientRectangle.Height;
+                    // 3. 设置分隔条的位置和高度
+                    panelSeparator.Location = new Point(RichBoxBody.Right, 0);
+                    panelSeparator.Height = this.ClientRectangle.Height;
 
-				// 4. 设置右侧文本框的位置和大小
-				RichBoxBody_T.Location = new Point(panelSeparator.Right, 0);
-				RichBoxBody_T.Size = new Size(this.ClientRectangle.Width - panelSeparator.Right, this.ClientRectangle.Height);
-				// ====================【核心修改结束】====================
-			}
+                    // 4. 设置右侧文本框的位置和大小
+                    RichBoxBody_T.Location = new Point(panelSeparator.Right, 0);
+                    RichBoxBody_T.Size = new Size(this.ClientRectangle.Width - panelSeparator.Right, this.ClientRectangle.Height);
+                }
+            }
 			if ((WindowState == FormWindowState.Normal) || (WindowState == FormWindowState.Maximized))
 			{
 				if (transtalate_fla == "开启")
