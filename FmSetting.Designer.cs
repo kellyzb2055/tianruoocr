@@ -142,6 +142,7 @@ namespace TrOCR
             this.label_BaimiaoUsername = new System.Windows.Forms.Label();
             this.Page_显示的接口 = new System.Windows.Forms.TabPage();
             this.groupBox_翻译接口 = new System.Windows.Forms.GroupBox();
+            this.checkBox_ShowBaidu2 = new System.Windows.Forms.CheckBox();
             this.checkBox_ShowGoogle = new System.Windows.Forms.CheckBox();
             this.checkBox_ShowBaidu = new System.Windows.Forms.CheckBox();
             this.checkBox_ShowTencent = new System.Windows.Forms.CheckBox();
@@ -192,7 +193,6 @@ namespace TrOCR
             this.label11 = new System.Windows.Forms.Label();
             this.Page_密钥 = new System.Windows.Forms.TabPage();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
-            this.label32 = new System.Windows.Forms.Label();
             this.label_OcrApiHelpText = new System.Windows.Forms.Label();
             this.百度_btn = new System.Windows.Forms.Button();
             this.密钥Button_apply = new System.Windows.Forms.Button();
@@ -414,7 +414,6 @@ namespace TrOCR
             this.label_更新日期 = new System.Windows.Forms.Label();
             this.pictureBox6 = new System.Windows.Forms.PictureBox();
             this.txt_更新说明 = new System.Windows.Forms.TextBox();
-            this.checkBox_ShowBaidu2 = new System.Windows.Forms.CheckBox();
             this.Page_翻译接口.SuspendLayout();
             this.tabControl_Trans.SuspendLayout();
             this.tabPage_Google.SuspendLayout();
@@ -1911,6 +1910,17 @@ namespace TrOCR
             this.groupBox_翻译接口.TabStop = false;
             this.groupBox_翻译接口.Text = "选择要显示的翻译接口";
             // 
+            // checkBox_ShowBaidu2
+            // 
+            this.checkBox_ShowBaidu2.AutoSize = true;
+            this.checkBox_ShowBaidu2.Location = new System.Drawing.Point(360, 106);
+            this.checkBox_ShowBaidu2.Margin = new System.Windows.Forms.Padding(4);
+            this.checkBox_ShowBaidu2.Name = "checkBox_ShowBaidu2";
+            this.checkBox_ShowBaidu2.Size = new System.Drawing.Size(97, 19);
+            this.checkBox_ShowBaidu2.TabIndex = 11;
+            this.checkBox_ShowBaidu2.Text = "百度翻译2";
+            this.checkBox_ShowBaidu2.UseVisualStyleBackColor = true;
+            // 
             // checkBox_ShowGoogle
             // 
             this.checkBox_ShowGoogle.AutoSize = true;
@@ -2482,7 +2492,6 @@ namespace TrOCR
             // 
             // groupBox7
             // 
-            this.groupBox7.Controls.Add(this.label32);
             this.groupBox7.Controls.Add(this.label_OcrApiHelpText);
             this.groupBox7.Location = new System.Drawing.Point(12, 214);
             this.groupBox7.Name = "groupBox7";
@@ -2491,15 +2500,6 @@ namespace TrOCR
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "说明";
             this.groupBox7.Visible = false;
-            // 
-            // label32
-            // 
-            this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(6, 75);
-            this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(472, 45);
-            this.label32.TabIndex = 0;
-            this.label32.Text = "百度手写识别接口暂未添加，请使用腾讯高精度接口（支持手写识别）\r\n\r\n或离线ocr接口使用支持手写识别的离线模型";
             // 
             // label_OcrApiHelpText
             // 
@@ -4944,17 +4944,6 @@ namespace TrOCR
             this.txt_更新说明.Size = new System.Drawing.Size(366, 155);
             this.txt_更新说明.TabIndex = 4;
             // 
-            // checkBox_ShowBaidu2
-            // 
-            this.checkBox_ShowBaidu2.AutoSize = true;
-            this.checkBox_ShowBaidu2.Location = new System.Drawing.Point(360, 106);
-            this.checkBox_ShowBaidu2.Margin = new System.Windows.Forms.Padding(4);
-            this.checkBox_ShowBaidu2.Name = "checkBox_ShowBaidu2";
-            this.checkBox_ShowBaidu2.Size = new System.Drawing.Size(97, 19);
-            this.checkBox_ShowBaidu2.TabIndex = 11;
-            this.checkBox_ShowBaidu2.Text = "百度翻译2";
-            this.checkBox_ShowBaidu2.UseVisualStyleBackColor = true;
-            // 
             // FmSetting
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -5071,7 +5060,6 @@ namespace TrOCR
             this.groupBox4.PerformLayout();
             this.Page_密钥.ResumeLayout(false);
             this.groupBox7.ResumeLayout(false);
-            this.groupBox7.PerformLayout();
             this.tabControl2.ResumeLayout(false);
             this.tabPage_百度OCR.ResumeLayout(false);
             this.tabControl_BaiduApiType.ResumeLayout(false);
@@ -5524,7 +5512,6 @@ namespace TrOCR
         private System.Windows.Forms.CheckBox cbBox_ListenClipboard;
         private System.Windows.Forms.CheckBox cbBox_AutoCopyListenClipboardTranslation;
         private System.Windows.Forms.TabPage inPage_百度手写;
-        private System.Windows.Forms.Label label32;
         private System.Windows.Forms.Label label34;
         private System.Windows.Forms.CheckBox cbBox_ListenHideOriginal;
         private System.Windows.Forms.CheckBox checkBox1;
