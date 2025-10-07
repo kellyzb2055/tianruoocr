@@ -67,6 +67,9 @@ namespace TrOCR
 		private List<TencentOcrHelper.TableCell> lastTencentCells;
 		private string lastOcrProvider; // 用于区分是百度还是腾讯
 
+		private bool isProgrammaticResize = false; // 用于屏蔽Form_Resize事件的标志位
+
+
 
 
 
@@ -542,9 +545,29 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 			//下面是双击标题栏的事件处理
 			if (transtalate_fla == "开启")
 			{
+				isProgrammaticResize = true; // --- 步骤A: 挂起Form_Resize的状态更新
+
 				WindowState = FormWindowState.Normal;
-				Size = new Size((int)font_base.Width * 23 * 2, (int)font_base.Height * 24);
+				Size newSize;
+				Size newLastNormalSize; // 准备一个新的基准尺寸
+                if (isOriginalTextHidden)
+                {
+                    // 如果原文隐藏，则恢复到【硬编码的单栏】默认大小
+                    // 计算单栏的默认尺寸
+        			newSize = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
+        			newLastNormalSize = newSize; // ★ 关键：在这里手动计算出正确的基准尺寸
+                }
+                else
+                {
+                    // 如果原文可见（双栏），则恢复到【硬编码的双栏】默认大小
+                    // 计算双栏的默认尺寸
+        			newSize = new Size((int)font_base.Width * 23 * 2, (int)font_base.Height * 24);
+        			newLastNormalSize = new Size(newSize.Width / 2, newSize.Height); // ★ 关键：在这里手动计算出正确的基准尺寸
+                }
+				this.Size = newSize; // 更新视觉
+				this.lastNormalSize = newLastNormalSize; // ★ 关键：同步更新数据状态
 				Location = (Point)new Size(Screen.PrimaryScreen.Bounds.Width / 2 - Screen.PrimaryScreen.Bounds.Width / 10 * 2, Screen.PrimaryScreen.Bounds.Height / 2 - Screen.PrimaryScreen.Bounds.Height / 6);
+				isProgrammaticResize = false;
 				return;
 			}
 			WindowState = FormWindowState.Normal;
@@ -2648,32 +2671,41 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 		{
 			LogState("Form_Resize Start");
 			// --- 步骤 1: 更新窗口尺寸记忆（状态管理，保持在最前） ---
-			// 仅当窗口处于“正常”状态时，才考虑更新尺寸记忆
-			if (WindowState == FormWindowState.Normal)
+			if (!isProgrammaticResize)
 			{
-				if (transtalate_fla == "开启")
+				// 仅当窗口处于“正常”状态时，才考虑更新尺寸记忆
+				if (WindowState == FormWindowState.Normal)
 				{
-					// 双栏模式：记录一半的宽度为基础尺寸
-					if (!isOriginalTextHidden)
+					if (transtalate_fla == "开启")
 					{
-						this.lastNormalSize = new Size(this.Size.Width / 2, this.Size.Height);
+						// 双栏模式：记录一半的宽度为基础尺寸
+						if (!isOriginalTextHidden)
+						{
+							this.lastNormalSize = new Size(this.Size.Width / 2, this.Size.Height);
+						}
+						else
+						{
+							// 单栏模式（原文隐藏）：基准尺寸就是当前的窗口尺寸
+							// 这能确保用户在此模式下缩放窗口后，新尺寸能被记住
+							this.lastNormalSize = this.Size;
+						}
 					}
-				}
-				else // 单栏模式 (transtalate_fla == "关闭")
-				{
-					// 【核心防御逻辑】
-					// 检查这是否是一次可疑的Resize：即在单栏模式下，窗口宽度突然变得接近之前基础宽度的两倍。
-					// 我们用1.8倍作为阈值，以允许一些误差。
-					if (this.lastNormalSize.Width > 0 && this.Size.Width > this.lastNormalSize.Width * 1.8)
+					else // 单栏模式 (transtalate_fla == "关闭")
 					{
-						// 如果是，则判定为“幽灵事件”，拒绝更新lastNormalSize，并强制将窗口尺寸改回正确的值。
-						System.Diagnostics.Debug.WriteLine($"  REJECTED suspicious resize. Forcing size back to {this.lastNormalSize}");
-						this.Size = this.lastNormalSize;
-					}
-					else
-					{
-						// 如果不是可疑的Resize（例如用户正常拖动边框），则正常更新尺寸记忆
-						this.lastNormalSize = this.Size;
+						// 【核心防御逻辑】
+						// 检查这是否是一次可疑的Resize：即在单栏模式下，窗口宽度突然变得接近之前基础宽度的两倍。
+						// 我们用1.8倍作为阈值，以允许一些误差。
+						if (this.lastNormalSize.Width > 0 && this.Size.Width > this.lastNormalSize.Width * 1.8)
+						{
+							// 如果是，则判定为“幽灵事件”，拒绝更新lastNormalSize，并强制将窗口尺寸改回正确的值。
+							System.Diagnostics.Debug.WriteLine($"  REJECTED suspicious resize. Forcing size back to {this.lastNormalSize}");
+							this.Size = this.lastNormalSize;
+						}
+						else
+						{
+							// 如果不是可疑的Resize（例如用户正常拖动边框），则正常更新尺寸记忆
+							this.lastNormalSize = this.Size;
+						}
 					}
 				}
 			}
@@ -2716,15 +2748,19 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 				if (transtalate_fla == "开启")
 				{
 
-					btnToggleOriginalText.Left = panelSeparator.Left - btnToggleOriginalText.Width - 10;
+					if (isOriginalTextHidden)
+            		{
+            		    // 如果原文隐藏，则将按钮锚定在窗口右侧
+            		    btnToggleOriginalText.Left = this.ClientRectangle.Width - btnToggleOriginalText.Width;
+            		}
+            		else
+            		{
+            		    // 如果原文可见，则将按钮放在分隔条旁边
+            		    btnToggleOriginalText.Left = panelSeparator.Left - btnToggleOriginalText.Width - 10;
+            		}
 
 				}
-				else
-				{
-
-					btnToggleOriginalText.Left = RichBoxBody_T.Right - btnToggleOriginalText.Width;
-
-				}
+				
 			}
 
 			LogState("Form_Resize End"); // <--- 添加这一行
