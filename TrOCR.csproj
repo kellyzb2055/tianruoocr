@@ -113,11 +113,11 @@
       <HintPath>packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="OcrLib" Condition="'$(Platform)' == 'x64'">
-      <HintPath>$(SolutionDir)libs\OcrLib\x64\OcrLib.dll</HintPath>
+      <HintPath>$(SolutionDir)libs\OcrLib\x64\必需的\必须放在程序运行目录的\OcrLib.dll</HintPath>
       <!-- <Private>False</Private> -->
     </Reference>
     <Reference Include="OcrLib" Condition="'$(Platform)' == 'x86'">
-      <HintPath>$(SolutionDir)libs\OcrLib\x86\OcrLib.dll</HintPath>
+      <HintPath>$(SolutionDir)libs\OcrLib\x86\必需的\必须放在程序运行目录的\OcrLib.dll</HintPath>
       <!-- <Private>False</Private> -->
     </Reference>
     <Reference Include="Ookii.Dialogs.WinForms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=66aa232afad40158, processorArchitecture=MSIL">
