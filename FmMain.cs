@@ -4444,11 +4444,40 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 					fmNote.TextNote = "";
 				}
 			}
+            //处理无弹窗配置
+            if (IniHelper.GetValue("配置", "识别弹窗") == "False")
+            {
+                FormBorderStyle = FormBorderStyle.Sizable;
+                // Size = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
+                this.Size = this.lastNormalSize;
+                Visible = false;
+				RichBoxBody.Text = finalTextToShow;
+                if (RichBoxBody.Text != "***该区域未发现文本***" && !string.IsNullOrWhiteSpace(RichBoxBody.Text))
+                {
+                    SetClipboardWithLock(RichBoxBody.Text);
 
-			// --- 步骤 2: 集中进行所有UI更新 ---
+                    Debug.WriteLine("无弹窗模式复制识别结果成功");
+                    CommonHelper.ShowHelpMsg("已识别并复制");
+                }
+                else
+                {
+                    CommonHelper.ShowHelpMsg("无文本");
+                }
+                if (IniHelper.GetValue("快捷键", "翻译文本") != "请按下快捷键")
+                {
+                    var value2 = IniHelper.GetValue("快捷键", "翻译文本");
+                    var text4 = "None";
+                    var text5 = "F9";
+                    SetHotkey(text4, text5, value2, 205);
+                }
+                HelpWin32.UnregisterHotKey(Handle, 222);
+                return;
+            }
 
-			// a. 先让窗口框架稳定
-			Text = "耗时：" + str;
+            // --- 步骤 2: 集中进行所有UI更新 ---
+
+            // a. 先让窗口框架稳定
+            Text = "耗时：" + str;
 			FormBorderStyle = FormBorderStyle.Sizable;
             // 在设置尺寸之前记录一次，这是看到 Bug 的关键
             System.Diagnostics.Debug.WriteLine("Main_OCR_Thread_last: About to set final size.");
@@ -4629,34 +4658,7 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 				HelpWin32.UnregisterHotKey(Handle, 222);
 				return;
 			}
-			//处理无弹窗配置
-			if (IniHelper.GetValue("配置", "识别弹窗") == "False")
-			{ 
-				FormBorderStyle = FormBorderStyle.Sizable;
-				// Size = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
-				this.Size = this.lastNormalSize;
-				Visible = false;
-				if (RichBoxBody.Text != "***该区域未发现文本***" && !string.IsNullOrWhiteSpace(RichBoxBody.Text))
-				{
-					SetClipboardWithLock(RichBoxBody.Text);
-					
-					Debug.WriteLine("无弹窗模式复制识别结果成功");
-					CommonHelper.ShowHelpMsg("已识别并复制");
-				}
-				else
-				{
-					CommonHelper.ShowHelpMsg("无文本");
-				}
-				if (IniHelper.GetValue("快捷键", "翻译文本") != "请按下快捷键")
-				{
-					var value2 = IniHelper.GetValue("快捷键", "翻译文本");
-					var text4 = "None";
-					var text5 = "F9";
-					SetHotkey(text4, text5, value2, 205);
-				}
-				HelpWin32.UnregisterHotKey(Handle, 222);
-				return;
-			}
+		
 			// 处理识别后自动翻译功能
 			if (autoTranslate)
 			{
