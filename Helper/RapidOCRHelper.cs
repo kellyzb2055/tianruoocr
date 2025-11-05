@@ -42,6 +42,26 @@ namespace TrOCR.Helper
         #region --- 2. 构造函数负责所有初始化工作 ---
         private RapidOCRHelper()
         {
+            // --- 修复：在每次初始化时都重新声明DLL搜索路径 ---
+            var processArchitecture = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture;
+            if (processArchitecture == System.Runtime.InteropServices.Architecture.X64)
+            {
+                string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "RapidOCR_data", "win_x64");
+                if (Directory.Exists(path))
+                {
+                    // 假设 TrOCRUtils.AddDllDirectory 是 Program.cs 中 AddDllDirectory 的包装器
+                    TrOCRUtils.AddDllDirectory(path); 
+                }
+            }
+            else if (processArchitecture == System.Runtime.InteropServices.Architecture.X86)
+            {
+                string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "RapidOCR_data", "win_x86");
+                if (Directory.Exists(path))
+                {
+                    TrOCRUtils.AddDllDirectory(path);
+                }
+            }
+            // --- 修复结束 ---
              // --- 步骤1：从INI读取所有路径配置 ---
             string detPath = GetConfigValue("模型配置_RapidOCR", "Det");
             string clsPath = GetConfigValue("模型配置_RapidOCR", "Cls");
