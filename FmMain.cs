@@ -3310,54 +3310,71 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 		/// </summary>
 		public void TTS_thread()
 		{
-			try
-        	{
-        	    Stream responseStream = ((HttpWebResponse) ((HttpWebRequest) WebRequest.Create(string.Format("{0}?{1}", "http://aip.baidubce.com/oauth/2.0/token", "grant_type=client_credentials&client_id=iQekhH39WqHoxur5ss59GpU4&client_secret=8bcee1cee76ed60cdfaed1f2c038584d"))).GetResponse( )).GetResponseStream( );
-        	    string text = new StreamReader(responseStream, Encoding.GetEncoding("utf-8")).ReadToEnd( );
-        	    responseStream.Close( );
-        	    string text2 = !contain_ch(htmltxt) ? "zh" : "zh";
-        	    HttpWebRequest httpWebRequest = (HttpWebRequest) WebRequest.Create(string.Concat(new string[]
-        	    {
-        	        "http://tsn.baidu.com/text2audio?lan=" + text2 + "&ctp=1&cuid=abcdxxx&tok=",
-        	        ((JObject)JsonConvert.DeserializeObject(text))["access_token"].ToString(),
-        	        "&tex=",
-        	        HttpUtility.UrlEncode(htmltxt.Replace("***", "")),
-        	        "&vol=9&per=0&spd=5&pit=5"
-        	    }));
-        	    httpWebRequest.Method = "POST";
-        	    HttpWebResponse httpWebResponse = (HttpWebResponse) httpWebRequest.GetResponse( );
-        	    byte[] array = new byte[16384];
-        	    byte[] array2;
-        	    using (MemoryStream memoryStream = new( ))
-        	    {
-        	        int num;
-        	        while ((num = httpWebResponse.GetResponseStream( ).Read(array, 0, array.Length)) > 0)
-        	        {
-        	            memoryStream.Write(array, 0, num);
-        	        }
-        	        array2 = memoryStream.ToArray( );
-        	    }
-        	    ttsData = array2;
-        	    if (speak_copyb == "朗读" || voice_count == 0)
-        	    {
-        	        Invoke(new Translate(Speak_child));
+            try
+            {
+                // 1. === 获取 Token (使用 using 自动释放) ===
+                string text;
+                HttpWebRequest tokenRequest = (HttpWebRequest)WebRequest.Create(string.Format("{0}?{1}", "http://aip.baidubce.com/oauth/2.0/token", "grant_type=client_credentials&client_id=iQekhH39WqHoxur5ss59GpU4&client_secret=8bcee1cee76ed60cdfaed1f2c038584d"));
+
+                using (HttpWebResponse tokenResponse = (HttpWebResponse)tokenRequest.GetResponse())
+                using (Stream responseStream = tokenResponse.GetResponseStream())
+                using (StreamReader streamReader = new StreamReader(responseStream, Encoding.GetEncoding("utf-8")))
+                {
+                    text = streamReader.ReadToEnd();
+                }
+                // <--- 在这里，tokenResponse, responseStream, 和 streamReader 已被自动关闭和释放
+
+                string text2 = !contain_ch(htmltxt) ? "zh" : "zh";
+
+                // 2. === 构建 TTS 请求 ===
+                HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(string.Concat(new string[]
+                {
+            		"http://tsn.baidu.com/text2audio?lan=" + text2 + "&ctp=1&cuid=abcdxxx&tok=",
+            		((JObject)JsonConvert.DeserializeObject(text))["access_token"].ToString(),
+            		"&tex=",
+            		HttpUtility.UrlEncode(htmltxt.Replace("***", "")),
+            		"&vol=9&per=0&spd=5&pit=5"
+                }));
+                httpWebRequest.Method = "POST";
+
+                byte[] array2;
+
+                // 3. === 获取音频流 (使用 using 自动释放) ===
+                // 修复了原版代码在 while 循环中重复调用 GetResponseStream() 的 Bug
+                using (HttpWebResponse httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse())
+                using (Stream audioStream = httpWebResponse.GetResponseStream()) // <-- 只调用一次
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    byte[] array = new byte[16384];
+                    int num;
+                    while ((num = audioStream.Read(array, 0, array.Length)) > 0)
+                    {
+                        memoryStream.Write(array, 0, num);
+                    }
+                    array2 = memoryStream.ToArray();
+                }
+                // <--- 在这里，httpWebResponse, audioStream, 和 memoryStream 已被自动关闭和释放
+
+                ttsData = array2;
+                if (speak_copyb == "朗读" || voice_count == 0)
+                {
+                    Invoke(new Translate(Speak_child));
                     speak_copyb = "";
-        	    }
-        	    else
-        	    {
-        	        Invoke(new Translate(TTS_child));
-        	    }
+                }
+                else
+                {
+                    Invoke(new Translate(TTS_child));
+                }
                 voice_count++;
-        	}
-        	catch (Exception ex)
-        	{
-        	    if (ex.ToString( ).IndexOf("Null") <= -1)
-        	    {
-        	        MessageBox.Show("文本过长，请使用右键菜单中的选中朗读！", "提醒");
-        	    }
-        	}
-    
-		}
+            }
+            catch (Exception ex)
+            {
+                if (ex.ToString().IndexOf("Null") <= -1)
+                {
+                    MessageBox.Show("文本过长，请使用右键菜单中的选中朗读！", "提醒");
+                }
+            }
+        }
 
 		/// <summary>
 		/// TTS文本朗读播放函数，在UI线程中执行，负责播放已下载的语音数据
