@@ -36,6 +36,20 @@ namespace TrOCR
         [STAThread]
         public static void Main(string[] args)
         {
+            // 在程序启动的最开始（例如 Program.cs 的 Main 方法顶部）
+            // 这会告诉 Debug 和 Trace 将所有输出写入到 "debug_log.txt" 文件中
+            //string logPath = Path.Combine(Application.StartupPath, "debug_log.txt");
+            string logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "debug_log.txt");
+
+            var listener = new TextWriterTraceListener(logPath);
+
+            Debug.Listeners.Add(listener);
+            //Trace.Listeners.Add(listener)
+
+            // 设置 AutoFlush <b>非常重要</b>，否则可能文件里什么都看不到
+            Debug.AutoFlush = true;
+
+            Debug.WriteLine("===== 应用程序启动，日志开始 =====");
 
             try
             {
@@ -122,15 +136,15 @@ namespace TrOCR
                 // 记录详细的异常信息到日志文件
                 try
                 {
-                    var logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "error.log");
-                    var logDir = Path.GetDirectoryName(logPath);
+                    var logPath2 = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "error.log");
+                    var logDir = Path.GetDirectoryName(logPath2);
                     if (!Directory.Exists(logDir))
                     {
                         Directory.CreateDirectory(logDir);
                     }
 
                     var logEntry = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] 未处理异常:{ex}{new string('=', 80)}";
-                    File.AppendAllText(logPath, logEntry, Encoding.UTF8);
+                    File.AppendAllText(logPath2, logEntry, Encoding.UTF8);
                 }
                 catch
                 {
