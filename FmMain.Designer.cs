@@ -1,3 +1,5 @@
+using System.Windows.Forms;
+
 namespace TrOCR
 {
 	// 主窗口类，负责OCR识别和翻译功能的主界面
@@ -173,8 +175,16 @@ namespace TrOCR
 			this.minico.Icon = (global::System.Drawing.Icon)componentResourceManager.GetObject("minico.Icon");
 			this.minico.Text = "双击开始截图识别";
 			this.minico.Visible = true;
-			this.minico.MouseDoubleClick += new global::System.Windows.Forms.MouseEventHandler(this.tray_double_Click);
-            this.minico.Click += new System.EventHandler(this.trayShowClick);
+			// this.minico.MouseDoubleClick += new global::System.Windows.Forms.MouseEventHandler(this.tray_double_Click);
+			// this.minico.Click += new System.EventHandler(this.tray_SingleClick_StartTimer);
+			// 【修改】移除 Click 和 DoubleClick 事件，改用 MouseDown
+			this.minico.MouseDown += new global::System.Windows.Forms.MouseEventHandler(this.tray_MouseDown);
+			
+			// 【新增】初始化单击/双击区分定时器
+            this.trayClickTimer = new System.Windows.Forms.Timer(this.components);
+            this.trayClickTimer.Interval = SystemInformation.DoubleClickTime; // 使用系统定义的双击间隔
+            this.trayClickTimer.Tick += new System.EventHandler(this.trayClickTimer_Tick);
+            //
 
             // 字体基础尺寸
             this.font_base.Width = 18f * this.F_factor;
@@ -479,6 +489,8 @@ namespace TrOCR
 		}
 
 		private global::System.ComponentModel.IContainer components;
+		// 【新增】添加一个定时器用于区分单击和双击
+        private global::System.Windows.Forms.Timer trayClickTimer;
 
 		/// <summary>
 		/// 托盘图标

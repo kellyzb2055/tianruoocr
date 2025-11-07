@@ -69,7 +69,8 @@ namespace TrOCR
 
 		private bool isProgrammaticResize = false; // 用于屏蔽Form_Resize事件的标志位
 
-
+	    // 【新增】用于手动计算托盘点击次数的计数器
+    	private int trayClickCount = 0;
 
 
 
@@ -1087,7 +1088,8 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 		/// <param name="e">事件参数</param>
 		private void trayShowClick(object sender, EventArgs e)
 		{
-			Show();
+			Debug.WriteLine("托盘菜单点击了显示主窗口");
+            Show();
 			Activate();
 			Visible = true;
 			WindowState = FormWindowState.Normal;
@@ -7118,14 +7120,52 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 		/// </summary>
 		/// <param name="sender">事件发送者</param>
 		/// <param name="e">事件参数</param>
-		private void tray_double_Click(object sender, EventArgs e)
+		/// <summary>
+		/// 【新增】托盘图标鼠标按下事件
+		/// </summary>
+		private void tray_MouseDown(object sender, MouseEventArgs e)
 		{
-			HelpWin32.UnregisterHotKey(Handle, 205);
-			menu.Hide();
-			RichBoxBody.Hide = "";
-			RichBoxBody_T.Hide = "";
-			MainOCRQuickScreenShots();
+			if (e.Button == MouseButtons.Left)
+			{
+				// 每当左键按下，计数器加 1
+				trayClickCount++;
+
+				if (trayClickCount == 1)
+				{
+					// 如果这是第一次点击，启动定时器
+					// 定时器将等待系统双击那么长的时间
+					trayClickTimer.Start();
+				}
+			}
 		}
+	/// <summary>
+    /// 【修改】定时器触发事件：检查时间窗口内的总点击次数
+    /// </summary>
+    private void trayClickTimer_Tick(object sender, EventArgs e)
+    {
+        // 1. 定时器到期，立即停止
+        trayClickTimer.Stop();
+
+        // 2. 检查在时间窗口内总共发生了几次点击
+        if (trayClickCount == 1)
+        {
+            // 如果只有 1 次点击，判定为“单击”
+            trayShowClick(sender, e);
+        }
+        else if (trayClickCount >= 2)
+        {
+            // 如果有 2 次或更多点击，判定为“双击”
+            // (这里我们执行原 tray_double_Click 的逻辑)
+            HelpWin32.UnregisterHotKey(Handle, 205);
+            menu.Hide();
+            RichBoxBody.Hide = "";
+            RichBoxBody_T.Hide = "";
+            MainOCRQuickScreenShots();
+        }
+
+        // 3. 无论结果如何，重置计数器
+        trayClickCount = 0;
+    }
 
 		/// <summary>
 		/// 统计文本中的英文单词数量
