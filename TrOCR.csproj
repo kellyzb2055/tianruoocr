@@ -516,13 +516,15 @@
         rmdir /S /Q "$(TargetDir)wco_data"
     )
 )</PostBuildEvent> -->
- <PostBuildEvent>if /I "$(PlatformName)" == "x86" (
+    <PostBuildEvent>if /I "$(PlatformName)" == "x86" (
     echo Deleting x64-only WeChatOcr components for x86 build...
     
     rem 删除 WeChatOcr 依赖的 wco_data 文件夹
     if exist "$(TargetDir)wco_data" (
         rmdir /S /Q "$(TargetDir)wco_data"
     )
-)</PostBuildEvent>
+)
+IF EXIST "$(TargetDir)dll" ( RD /S /Q "$(TargetDir)dll" )
+IF EXIST "$(TargetDir)PaddleOCR_data" ( RD /S /Q "$(TargetDir)PaddleOCR_data" )</PostBuildEvent>
   </PropertyGroup>
 </Project>
