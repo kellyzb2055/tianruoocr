@@ -414,6 +414,7 @@ namespace TrOCR
             this.label_更新日期 = new System.Windows.Forms.Label();
             this.pictureBox6 = new System.Windows.Forms.PictureBox();
             this.txt_更新说明 = new System.Windows.Forms.TextBox();
+            this.checkBox_合并去除所有空格 = new System.Windows.Forms.CheckBox();
             this.Page_翻译接口.SuspendLayout();
             this.tabControl_Trans.SuspendLayout();
             this.tabPage_Google.SuspendLayout();
@@ -4700,6 +4701,7 @@ namespace TrOCR
             this.tableLayoutPanel_合并文本.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 36.08871F));
             this.tableLayoutPanel_合并文本.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 63.91129F));
             this.tableLayoutPanel_合并文本.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel_合并文本.Controls.Add(this.checkBox_合并去除所有空格, 1, 0);
             this.tableLayoutPanel_合并文本.Controls.Add(this.checkBox_合并去除空格, 0, 0);
             this.tableLayoutPanel_合并文本.Controls.Add(this.checkBox_合并自动复制, 0, 1);
             this.tableLayoutPanel_合并文本.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -4722,6 +4724,7 @@ namespace TrOCR
             this.checkBox_合并去除空格.TabIndex = 2;
             this.checkBox_合并去除空格.Text = "合并时智能去除空格";
             this.checkBox_合并去除空格.UseVisualStyleBackColor = true;
+            this.checkBox_合并去除空格.CheckedChanged += new System.EventHandler(this.checkBox_合并去除空格_CheckedChanged);
             // 
             // checkBox_合并自动复制
             // 
@@ -4943,6 +4946,19 @@ namespace TrOCR
             this.txt_更新说明.Name = "txt_更新说明";
             this.txt_更新说明.Size = new System.Drawing.Size(366, 155);
             this.txt_更新说明.TabIndex = 4;
+            // 
+            // checkBox_合并去除所有空格
+            // 
+            this.checkBox_合并去除所有空格.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.checkBox_合并去除所有空格.AutoSize = true;
+            this.checkBox_合并去除所有空格.Location = new System.Drawing.Point(183, 8);
+            this.checkBox_合并去除所有空格.Margin = new System.Windows.Forms.Padding(4);
+            this.checkBox_合并去除所有空格.Name = "checkBox_合并去除所有空格";
+            this.checkBox_合并去除所有空格.Size = new System.Drawing.Size(164, 19);
+            this.checkBox_合并去除所有空格.TabIndex = 3;
+            this.checkBox_合并去除所有空格.Text = "合并时去除所有空格";
+            this.checkBox_合并去除所有空格.UseVisualStyleBackColor = true;
+            this.checkBox_合并去除所有空格.CheckedChanged += new System.EventHandler(this.checkBox_合并去除所有空格_CheckedChanged);
             // 
             // FmSetting
             // 
@@ -5546,5 +5562,6 @@ namespace TrOCR
         private System.Windows.Forms.Button btn_Reset_Baidu2_Source;
         private System.Windows.Forms.TextBox textBox_Baidu2_Source;
         private System.Windows.Forms.CheckBox checkBox_ShowBaidu2;
+        private System.Windows.Forms.CheckBox checkBox_合并去除所有空格;
     }
 }

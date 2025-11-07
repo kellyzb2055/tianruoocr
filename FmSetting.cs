@@ -199,6 +199,9 @@ namespace TrOCR
 			{
 				checkBox_合并去除空格.Checked = false;
 			}
+
+            checkBox_合并去除所有空格.Checked = TrOCRUtils.LoadSetting("工具栏", "IsMergeRemoveAllSpace", false);
+
 			var value_IsMergeAutoCopy = IniHelper.GetValue("工具栏", "IsMergeAutoCopy");
 			if (value_IsMergeAutoCopy == "发生错误")
 			{
@@ -1686,14 +1689,51 @@ namespace TrOCR
 			text_端口.Enabled = false;
 			text_服务器.Enabled = false;
 		}
+        /// <summary>
+        /// 【新增】处理“智能去除空格”复选框的互斥逻辑
+        /// </summary>
+        private void checkBox_合并去除空格_CheckedChanged(object sender, EventArgs e)
+        {
+            // 只有当用户“勾选”此项时，才触发互斥
+            if (checkBox_合并去除空格.Checked)
+            {
+                // 移除另一个事件的监听，以防止循环触发
+                this.checkBox_合并去除所有空格.CheckedChanged -= this.checkBox_合并去除所有空格_CheckedChanged;
 
-		/// <summary>
-		/// 检查更新复选框状态改变事件处理函数
-		/// 当检查更新复选框选中状态发生改变时触发此事件
-		/// </summary>
-		/// <param name="sender">事件发送者</param>
-		/// <param name="e">事件参数</param>
-		private void check_检查更新_CheckedChanged(object sender, EventArgs e)
+                // 取消“去除所有空格”的勾选
+                checkBox_合并去除所有空格.Checked = false;
+
+                // 重新订阅事件
+                this.checkBox_合并去除所有空格.CheckedChanged += new System.EventHandler(this.checkBox_合并去除所有空格_CheckedChanged);
+            }
+        }
+
+        /// <summary>
+        /// 【新增】处理“去除所有空格”复选框的互斥逻辑
+        /// </summary>
+        private void checkBox_合并去除所有空格_CheckedChanged(object sender, EventArgs e)
+        {
+            // 只有当用户“勾选”此项时，才触发互斥
+            if (checkBox_合并去除所有空格.Checked)
+            {
+                // 移除另一个事件的监听，以防止循环触发
+                this.checkBox_合并去除空格.CheckedChanged -= this.checkBox_合并去除空格_CheckedChanged;
+
+                // 取消“智能去除空格”的勾选
+                checkBox_合并去除空格.Checked = false;
+
+                // 重新订阅事件
+                this.checkBox_合并去除空格.CheckedChanged += new System.EventHandler(this.checkBox_合并去除空格_CheckedChanged);
+            }
+        }
+
+        /// <summary>
+        /// 检查更新复选框状态改变事件处理函数
+        /// 当检查更新复选框选中状态发生改变时触发此事件
+        /// </summary>
+        /// <param name="sender">事件发送者</param>
+        /// <param name="e">事件参数</param>
+        private void check_检查更新_CheckedChanged(object sender, EventArgs e)
 		{
 			// 当复选框被选中时，启用更新间隔相关控件
 			if (check_检查更新.Checked)
@@ -1830,7 +1870,8 @@ namespace TrOCR
 			IniHelper.SetValue("常规翻译", "AutoCopyOcrTranslation", checkBox_AutoCopyOcrTranslation.Checked.ToString());
 
 			IniHelper.SetValue("工具栏", "IsMergeRemoveSpace", checkBox_合并去除空格.Checked.ToString());
-			IniHelper.SetValue("工具栏", "IsMergeAutoCopy", checkBox_合并自动复制.Checked.ToString());
+            IniHelper.SetValue("工具栏", "IsMergeRemoveAllSpace", checkBox_合并去除所有空格.Checked.ToString());
+            IniHelper.SetValue("工具栏", "IsMergeAutoCopy", checkBox_合并自动复制.Checked.ToString());
 			IniHelper.SetValue("工具栏", "IsSplitAutoCopy", checkBox_拆分后自动复制.Checked.ToString());
 			
 			// 保存快捷键设置

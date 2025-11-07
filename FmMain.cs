@@ -994,8 +994,16 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 					{
 						if (!string.IsNullOrEmpty(textToDisplay))
 						{
-							// 直接调用新的统一方法
-							string finalText = PerformIntelligentMerge(textToDisplay, StaticValue.IsMergeRemoveSpace);
+							string finalText;
+                            if (StaticValue.IsMergeRemoveAllSpace)
+                            {
+                                finalText = Regex.Replace(textToDisplay, @"[\r\n 　]+", "");
+                            }
+							else
+                            {
+                                // 只有在“非移除所有空格”模式下，才调用原来的智能合并方法
+                                finalText = PerformIntelligentMerge(textToDisplay, StaticValue.IsMergeRemoveSpace);
+                            }
 							textToDisplay = finalText;
 
 							// 应用“合并后自动复制”设置
@@ -4478,8 +4486,15 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 			else if (bool.Parse(IniHelper.GetValue("工具栏", "合并")) || set_merge)
 			{
 				set_merge = false;
-        		// 直接调用新的统一方法，并传入相应的设置
-    			finalTextToShow = PerformIntelligentMerge(text, StaticValue.IsMergeRemoveSpace);
+				if (StaticValue.IsMergeRemoveAllSpace)
+                {
+                    finalTextToShow = Regex.Replace(text, @"[\r\n 　]+", "");
+                }
+                else
+                {
+        		    // 只有在“非移除所有空格”模式下，才调用原来的智能合并方法
+    			    finalTextToShow = PerformIntelligentMerge(text, StaticValue.IsMergeRemoveSpace);
+                }
     			
 			}
 
