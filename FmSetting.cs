@@ -2566,7 +2566,7 @@ namespace TrOCR
 			var paddleOcr2ClsVersion = GetConfigValue("模型配置_PaddleOCR2", "Cls_Version");
 			var paddleOcr2RecVersion = GetConfigValue("模型配置_PaddleOCR2", "Rec_Version");
 			comboBox_PaddleOCR2_det_Version.SelectedItem = string.IsNullOrEmpty(paddleOcr2DetVersion) ? "v5" : paddleOcr2DetVersion;
-			comboBox_PaddleOCR2_cls_Version.SelectedItem = string.IsNullOrEmpty(paddleOcr2ClsVersion) ? "v2" : paddleOcr2ClsVersion;
+			comboBox_PaddleOCR2_cls_Version.SelectedItem = string.IsNullOrEmpty(paddleOcr2ClsVersion) ? "v5" : paddleOcr2ClsVersion;
 			comboBox_PaddleOCR2_rec_Version.SelectedItem = string.IsNullOrEmpty(paddleOcr2RecVersion) ? "v5" : paddleOcr2RecVersion;
 
 
