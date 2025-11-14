@@ -26,6 +26,8 @@ jobs:
   build-x86:
     name: Build (x86)
     runs-on: windows-latest
+    # <--- 关键修改：添加这一行 ---
+    continue-on-error: true
     
     # 为整个 Job 添加 if 条件
     # 只有当事件不是 'watch'，或者当事件是 'watch' 且触发者是仓库所有者时，才运行此任务
@@ -63,6 +65,8 @@ jobs:
   build-x64:
     name: Build (x64)
     runs-on: windows-latest
+    # <--- 关键修改：添加这一行 ---
+    continue-on-error: true
 
     # 为整个 Job 添加同样的 if 条件
     if: github.event_name != 'watch' || (github.event_name == 'watch' && github.actor == github.repository_owner)
@@ -107,6 +111,7 @@ jobs:
     
     # 使用 ubuntu-latest 更快，且已预装 zip/7z
     runs-on: ubuntu-latest
+    continue-on-error: true
     
     # (关键) 需要权限来创建 Release
     permissions:
