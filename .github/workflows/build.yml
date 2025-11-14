@@ -140,4 +140,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           # <--- 新增：告诉 Action 商城使用我们的标签名 ---
           tag: ${{ env.RELEASE_TAG }}
-          name: "Release ${{ env.RELEASE_TAG }}" # <--- 新增：设置 Release 的标题，去掉直接使用手动输入的或者推送的标签
+          # name: "Release ${{ env.RELEASE_TAG }}" # <--- 新增：设置 Release 的标题，去掉直接使用手动输入的或者推送的标签
