@@ -1,10 +1,12 @@
 # 工作流的名称
-name: .NET Framework Multi-Platform Build
+name: .NET Framework Multi-Platform Build & Release
 
 # 触发工作流的事件
 on:
   push:
     branches: [ "main" ]
+    # tags: [ 'v*' ] # <--- 新增：当推送 v* 标签时也触发，匹配v开头的标签
+    tags: [ '*' ] #匹配所有标签
   pull_request:
     branches: [ "main" ]
   watch:
@@ -73,3 +75,55 @@ jobs:
       with:
         name: TrOCR-Release-x64
         path: bin/x64/Release
+
+  # --- 第三个任务：创建 Release发行版 ---
+  create-release:
+    name: Create Release
+    # (关键) 只在推送标签时才运行这个任务
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    # (关键) 等待 x86 和 x64 都编译成功
+    needs: [build-x86, build-x64]
+    
+    # 使用 ubuntu-latest 更快，且已预装 zip/7z
+    runs-on: ubuntu-latest
+    
+    # (关键) 需要权限来创建 Release
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download x86 Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: TrOCR-Release-x86
+          path: ./TrOCR-Release-x86 # 下载到指定文件夹
+
+      - name: Download x64 Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: TrOCR-Release-x64
+          path: ./TrOCR-Release-x64
+
+      - name: List downloaded files (for debugging)
+        run: ls -R
+
+      - name: Package artifacts into .zip files
+        # 使用 7z (预装在 ubuntu-latest) 来创建 zip 包
+        run: |
+          7z a -tzip TrOCR-Release-${{ github.ref_name }}-x86.zip ./TrOCR-Release-x86/*
+          7z a -tzip TrOCR-Release-${{ github.ref_name }}-x64.zip ./TrOCR-Release-x64/*
+
+      - name: Create Release (as Draft)
+        uses: ncipollo/release-action@v1
+        with:
+          # 上传所有 .zip 文件
+          artifacts: "*.zip" 
+          
+          # (推荐) 设为 true, 创建为草稿, 等你手动编辑日志
+          draft: true
+          
+          # 设为 false, 因为你的提交不规范，不让它自动生成
+          generateReleaseNotes: false 
+          
+          token: ${{ secrets.GITHUB_TOKEN }}
