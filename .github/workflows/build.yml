@@ -32,6 +32,12 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        # <--- 关键修改 ---
+        # 智能签出:
+        # 1. 如果是手动运行, 签出你输入的 tag_name
+        # 2. 如果是其他运行 (push tag, push main), 签出 github.ref
+        ref: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.tag_name) || github.ref }}
 
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
@@ -62,6 +68,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        # <--- 关键修改 (同上) ---
+        ref: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.tag_name) || github.ref }}
 
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
@@ -95,12 +104,13 @@ jobs:
     
     # (关键) 需要权限来创建 Release
     permissions:
-      contents: write
+      contents: write #'write' 权限 (用于 gh api 和 ncipollo)
 
     # <--- 新增：设置一个环境变量来存储标签名 ---
     env:
       # 如果是手动运行, 使用输入的值; 否则 (即 push tag), 使用 ref_name
       RELEASE_TAG: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.tag_name) || github.ref_name }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # (gh api 需要这个)
 
     steps:
       - name: Download x86 Artifact
@@ -124,6 +134,31 @@ jobs:
           # <--- 修改：使用新的环境变量来命名 .zip ---
           7z a -tzip TrOCR_${{ env.RELEASE_TAG }}_x86.zip ./TrOCR-Release-x86/*
           7z a -tzip TrOCR_${{ env.RELEASE_TAG }}_x64.zip ./TrOCR-Release-x64/*
+
+      #     # <--- 关键的新增步骤，方案一 ---
+      # - name: Create and Push Git Tag (if manual)
+      #   # 只有当 "手动运行" 时才执行此步骤
+      #   if: github.event_name == 'workflow_dispatch'
+      #   run: |
+      #     # (注意) 这会给当前的 'main' 分支的最新 commit 打上标签
+      #     echo "Creating tag ${{ env.RELEASE_TAG }} and pushing to remote..."
+      #     git config user.name "github-actions[bot]"
+      #     git config user.email "github-actions[bot]@users.noreply.github.com"
+      #     git tag ${{ env.RELEASE_TAG }} -m "Release ${{ env.RELEASE_TAG }}"
+      #     git push origin ${{ env.RELEASE_TAG }}
+      #     echo "Tag pushed successfully."
+      
+          # <--- 关键的新增步骤，方案二  ---
+      - name: Verify Git Tag Exists (if manual)
+        # 只有 "手动运行" 时才需要检查, "推送标签" 触发时标签一定存在
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          echo "正在检查标签 ${{ env.RELEASE_TAG }} 是否存在..."
+          # 使用 gh api 检查 Git 引用
+          # 如果标签不存在, 这条命令会返回 "Not Found" (exit code 1)
+          # 'set -e' (默认) 会捕获这个错误并停止工作流
+          gh api /repos/${{ github.repository }}/git/ref/tags/${{ env.RELEASE_TAG }} --silent
+          echo "检查通过! 标签 ${{ env.RELEASE_TAG }} 存在, 准备发布。"
 
       - name: Create Release (as Draft)
         uses: ncipollo/release-action@v1
