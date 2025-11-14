@@ -122,8 +122,8 @@ jobs:
         # 使用 7z (预装在 ubuntu-latest) 来创建 zip 包
         run: |
           # <--- 修改：使用新的环境变量来命名 .zip ---
-          7z a -tzip TrOCR-Release-${{ env.RELEASE_TAG }}-x86.zip ./TrOCR-Release-x86/*
-          7z a -tzip TrOCR-Release-${{ env.RELEASE_TAG }}-x64.zip ./TrOCR-Release-x64/*
+          7z a -tzip TrOCR_${{ env.RELEASE_TAG }}_x86.zip ./TrOCR-Release-x86/*
+          7z a -tzip TrOCR_${{ env.RELEASE_TAG }}_x64.zip ./TrOCR-Release-x64/*
 
       - name: Create Release (as Draft)
         uses: ncipollo/release-action@v1
