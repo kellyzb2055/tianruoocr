@@ -101,10 +101,13 @@ namespace TrOCR
             this.toolStripToolBar.GripStyle = ToolStripGripStyle.Hidden;
             this.toolStripToolBar.Location = new Point(0, 0);
             this.toolStripToolBar.Name = "toolStripToolBar";
+            //修复工具栏图标dpi缩放的代码目前放在构造函数了，放到InitializeComponent这里也行, 
+            // 不过放到这里有个缺陷是vs设计器修改界面后会自动重写代码，可能覆盖掉自己添加的代码，构造函数里的不会被覆盖，
+            // 不过对于本项目来说，这个设计文件本来就不适合使用vs设计器设计，所以无所谓了
+            //修复工具栏图标dpi缩放的代码和构造函数里的一样：if判断加不加都行,这里就不加if判断了，毕竟注释掉了，只是告诉你也可以在这里修复
+            //this.toolStripToolBar.ImageScalingSize = new Size((int)(16 * Program.Factor), (int)(16 * Program.Factor));
             this.toolStripToolBar.RenderMode = ToolStripRenderMode.System;
-            //这个工具栏宽度不知道需不需要改，高度应该是要改的
-            this.toolStripToolBar.Size = new Size((int)(600 *Program.Factor), (int)(25 * Program.Factor));
-            //this.toolStripToolBar.AutoSize = false; //这句代码没有必要添加
+            this.toolStripToolBar.Size = new Size(600, 25);
             this.toolStripToolBar.TabIndex = 1;
             this.toolStripToolBar.Click += this.toolStripToolBar_Click;
             this.toolStripToolBar.Text = "Tool Bar";
@@ -114,16 +117,14 @@ namespace TrOCR
             this.toolStripButtonBold.Image = (Image)componentResourceManager.GetObject("toolStripButtonBold.Image");
             this.toolStripButtonBold.ImageTransparentColor = Color.Magenta;
             this.toolStripButtonBold.Name = "toolStripButtonBold";
-            this.toolStripButtonBold.Size = new Size( (int)(23 * Program.Factor *0.85),  (int)(22 * Program.Factor));
+            this.toolStripButtonBold.Size = new Size(23, 22);
             this.toolStripButtonBold.Text = "加粗";
-            this.toolStripButtonBold.AutoSize= false;
             this.toolStripButtonBold.Click += this.toolStripButtonBold_Click;
             this.toolStripButtonParagraph.DisplayStyle = ToolStripItemDisplayStyle.Image;
             this.toolStripButtonParagraph.Image = (Image)componentResourceManager.GetObject("toolStripButtonParagraph.Image");
             this.toolStripButtonParagraph.ImageTransparentColor = Color.Magenta;
             this.toolStripButtonParagraph.Name = "toolStripButtonParagraph";
-            this.toolStripButtonParagraph.Size = new Size( (int)(23 * Program.Factor *0.85),  (int)(22 * Program.Factor));
-            this.toolStripButtonParagraph.AutoSize = false;
+            this.toolStripButtonParagraph.Size = new Size(23, 22);
             this.toolStripButtonParagraph.Text = "依据位置自动分段\r\n仅支持搜狗接口\r\n适合段落识别\r\n图片越清晰越准确\r\n准确度98%以上";
             this.toolStripButtonParagraph.Click += this.toolStripButtonParagraph_Click;
             this.toolStripButtonParagraph.MouseDown += this.toolStripButtonParagraph_keydown;
@@ -131,124 +132,110 @@ namespace TrOCR
             this.toolStripButtonFind.Image = (Image)componentResourceManager.GetObject("toolStripButtonFind.Image");
             this.toolStripButtonFind.ImageTransparentColor = Color.Magenta;
             this.toolStripButtonFind.Name = "toolStripButtonFind";
-            this.toolStripButtonFind.Size = new Size( (int)(23 * Program.Factor *0.85),  (int)(22 * Program.Factor));
+            this.toolStripButtonFind.Size = new Size(23, 22);
             this.toolStripButtonFind.Text = "查找\\替换";
-            this.toolStripButtonFind.AutoSize = false;
             this.toolStripButtonFind.Click += this.toolStripButtonFind_Click;
             this.toolStripButtonColor.DisplayStyle = ToolStripItemDisplayStyle.Image;
             this.toolStripButtonColor.Image = (Image)componentResourceManager.GetObject("toolStripButtonColor.Image");
             this.toolStripButtonColor.ImageTransparentColor = Color.Magenta;
             this.toolStripButtonColor.Name = "toolStripButtonColor";
-            this.toolStripButtonColor.Size = new Size( (int)(23 * Program.Factor *0.85),  (int)(22 * Program.Factor));
-            this.toolStripButtonColor.AutoSize = false;
+            this.toolStripButtonColor.Size = new Size(23, 22);
             this.toolStripButtonColor.Text = "字体颜色";
             this.toolStripButtonColor.Click += this.toolStripButtonColor_Click;
             this.toolStripButtonLeft.DisplayStyle = ToolStripItemDisplayStyle.Image;
             this.toolStripButtonLeft.Image = (Image)componentResourceManager.GetObject("toolStripButtonLeft.Image");
             this.toolStripButtonLeft.ImageTransparentColor = Color.Magenta;
             this.toolStripButtonLeft.Name = "toolStripButtonLeft";
-            this.toolStripButtonLeft.Size = new Size( (int)(23 * Program.Factor *0.85),  (int)(22 * Program.Factor));
+            this.toolStripButtonLeft.Size = new Size(23, 22);
             this.toolStripButtonLeft.Text = "左对齐";
             this.toolStripButtonLeft.Click += this.toolStripButtonLeft_Click;
-            this.toolStripButtonLeft.AutoSize = false;
             this.toolStripButtonMerge.DisplayStyle = ToolStripItemDisplayStyle.Image;
             this.toolStripButtonMerge.Image = (Image)componentResourceManager.GetObject("toolStripButtonMerge.Image");
             this.toolStripButtonMerge.ImageTransparentColor = Color.Magenta;
             this.toolStripButtonMerge.Name = "toolStripButtonMerge";
-            this.toolStripButtonMerge.Size = new Size( (int)(23 * Program.Factor *0.85),  (int)(22 * Program.Factor));
+            this.toolStripButtonMerge.Size = new Size(23, 22);
             this.toolStripButtonMerge.Text = "将文本合并成一段";
-            this.toolStripButtonMerge.AutoSize = false;
             this.toolStripButtonMerge.Click += this.toolStripButtonMerge_Click;
             this.toolStripButtonMerge.MouseDown += this.toolStripButtonMerge_keydown;
             this.toolStripButtonVoice.DisplayStyle = ToolStripItemDisplayStyle.Image;
             this.toolStripButtonVoice.Image = (Image)componentResourceManager.GetObject("toolStripButtonVoice.Image");
             this.toolStripButtonVoice.ImageTransparentColor = Color.Magenta;
             this.toolStripButtonVoice.Name = "toolStripButtonVoice";
-            this.toolStripButtonVoice.Size = new Size( (int)(23 * Program.Factor *0.85),  (int)(22 * Program.Factor));
+            this.toolStripButtonVoice.Size = new Size(23, 22);
             this.toolStripButtonVoice.Text = "朗读";
-            this.toolStripButtonVoice.AutoSize = false;
             this.toolStripButtonVoice.Click += this.toolStripButtonVoice_Click;
             this.toolStripButtonFull.DisplayStyle = ToolStripItemDisplayStyle.Image;
             this.toolStripButtonFull.Image = (Image)componentResourceManager.GetObject("toolStripButtonFull.Image");
             this.toolStripButtonFull.ImageTransparentColor = Color.Magenta;
             this.toolStripButtonFull.Name = "toolStripButtonFull";
-            this.toolStripButtonFull.Size = new Size( (int)(23 * Program.Factor *0.85),  (int)(22 * Program.Factor));
+            this.toolStripButtonFull.Size = new Size(23, 22);
             this.toolStripButtonFull.Text = "两端对齐";
-            this.toolStripButtonFull.AutoSize = false;
             this.toolStripButtonFull.Click += this.toolStripButtonFull_Click;
             this.toolStripButtonspace.DisplayStyle = ToolStripItemDisplayStyle.Image;
             this.toolStripButtonspace.Image = (Image)componentResourceManager.GetObject("toolStripButtonspace.Image");
             this.toolStripButtonspace.ImageTransparentColor = Color.Magenta;
             this.toolStripButtonspace.Name = "toolStripButtonLine";
-            this.toolStripButtonspace.Size = new Size( (int)(23 * Program.Factor *0.85),  (int)(22 * Program.Factor));
+            this.toolStripButtonspace.Size = new Size(23, 22);
             this.toolStripButtonspace.Text = "首行缩进";
-            this.toolStripButtonspace.AutoSize = false;
             this.toolStripButtonspace.Click += this.toolStripButtonspace_Click;
             this.toolStripButtonFence.DisplayStyle = ToolStripItemDisplayStyle.Image;
             this.toolStripButtonFence.Image = (Image)componentResourceManager.GetObject("toolStripButtonFence.Image");
             this.toolStripButtonFence.ImageTransparentColor = Color.Magenta;
             this.toolStripButtonFence.Name = "toolStripButtonformat";
-            this.toolStripButtonFence.Size = new Size( (int)(23 * Program.Factor *0.85),  (int)(22 * Program.Factor));
+            this.toolStripButtonFence.Size = new Size(23, 22);
             this.toolStripButtonFence.Text = "截图时自动分栏\r\n多选区时无效\r\n单击显示分栏示意图";
-            this.toolStripButtonFence.AutoSize = false;
             this.toolStripButtonFence.Click += this.toolStripButtonFence_Click;
             this.toolStripButtonFence.MouseDown += this.toolStripButtonFence_keydown;
             this.toolStripButtonSend.DisplayStyle = ToolStripItemDisplayStyle.Image;
             this.toolStripButtonSend.Image = (Image)componentResourceManager.GetObject("toolStripButtonSend.Image");
             this.toolStripButtonSend.ImageTransparentColor = Color.Magenta;
             this.toolStripButtonSend.Name = "toolStripButtonSend";
-            this.toolStripButtonSend.Size = new Size( (int)(23 * Program.Factor *0.85),  (int)(22 * Program.Factor));
+            this.toolStripButtonSend.Size = new Size(23, 22);
             this.toolStripButtonSend.Text = "复制/发送";
-            this.toolStripButtonSend.AutoSize = false;
             this.toolStripButtonSend.Click += this.toolStripButtonSend_Click;
             this.toolStripButtonSplit.DisplayStyle = ToolStripItemDisplayStyle.Image;
             this.toolStripButtonSplit.Image = (Image)componentResourceManager.GetObject("toolStripButtonSplit.Image");
             this.toolStripButtonSplit.ImageTransparentColor = Color.Magenta;
             this.toolStripButtonSplit.Name = "toolStripButtonSplit";
-            this.toolStripButtonSplit.Size = new Size( (int)(23 * Program.Factor *0.85),  (int)(22 * Program.Factor));
+            this.toolStripButtonSplit.Size = new Size(23, 22);
             this.toolStripButtonSplit.Text = "按图片中的行进行拆分";
-            this.toolStripButtonSplit.AutoSize = false;
             this.toolStripButtonSplit.Click += this.toolStripButtonSplit_Click;
             this.toolStripButtonSplit.MouseDown += this.toolStripButtonSplit_keydown;
             this.toolStripButtoncheck.DisplayStyle = ToolStripItemDisplayStyle.Image;
             this.toolStripButtoncheck.Image = (Image)componentResourceManager.GetObject("toolStripButtoncheck.Image");
             this.toolStripButtoncheck.ImageTransparentColor = Color.Magenta;
             this.toolStripButtoncheck.Name = "toolStripButtoncheck";
-            this.toolStripButtoncheck.Size = new Size( (int)(23 * Program.Factor *0.85),  (int)(22 * Program.Factor));
+            this.toolStripButtoncheck.Size = new Size(23, 22);
             this.toolStripButtoncheck.Text = "检查文本是否有错别字";
-            this.toolStripButtoncheck.AutoSize = false;
             this.toolStripButtoncheck.Click += this.toolStripButtoncheck_Click;
             this.toolStripButtoncheck.MouseDown += this.toolStripButtoncheck_keydown;
             this.toolStripButtonTrans.DisplayStyle = ToolStripItemDisplayStyle.Image;
             this.toolStripButtonTrans.Image = (Image)componentResourceManager.GetObject("toolStripButtonTrans.Image");
             this.toolStripButtonTrans.ImageTransparentColor = Color.Magenta;
             this.toolStripButtonTrans.Name = "toolStripButtonTrans";
-            this.toolStripButtonTrans.Size = new Size( (int)(23 * Program.Factor *0.85),  (int)(22 * Program.Factor));
+            this.toolStripButtonTrans.Size = new Size(23, 22);
             this.toolStripButtonTrans.Text = "翻译";
-            this.toolStripButtonTrans.AutoSize = false;
             this.toolStripButtonTrans.Click += this.toolStripButtonTrans_Click;
             this.toolStripButtonTrans.MouseDown += this.toolStripButtontrans_keydown;
             this.toolStripButtonNote.DisplayStyle = ToolStripItemDisplayStyle.Image;
             this.toolStripButtonNote.Image = (Image)componentResourceManager.GetObject("toolStripButtonNote.Image");
             this.toolStripButtonNote.ImageTransparentColor = Color.Magenta;
             this.toolStripButtonNote.Name = "toolStripButtonTrans";
-            this.toolStripButtonNote.Size = new Size( (int)(23 * Program.Factor *0.85),  (int)(22 * Program.Factor));
+            this.toolStripButtonNote.Size = new Size(23, 22);
             this.toolStripButtonNote.Text = "记录窗体";
-            this.toolStripButtonNote.AutoSize = false;
             this.toolStripButtonNote.Click += this.toolStripButtonNote_Click;
             this.toolStripButtonclose.DisplayStyle = ToolStripItemDisplayStyle.Image;
             this.toolStripButtonclose.Image = (Image)componentResourceManager.GetObject("toolStripButtonclose.Image");
             this.toolStripButtonclose.ImageTransparentColor = Color.Magenta;
             this.toolStripButtonclose.Name = "toolStripButtonclose";
-            this.toolStripButtonclose.Size = new Size( (int)(23 * Program.Factor *0.85),  (int)(22 * Program.Factor));
+            this.toolStripButtonclose.Size = new Size(23, 22);
             this.toolStripButtonclose.Text = "关闭";
-            this.toolStripButtonclose.AutoSize = false;
             this.toolStripButtonclose.Click += this.toolStripButtonclose_Click;
             this.languagle.DisplayStyle = ToolStripItemDisplayStyle.Image;
             this.languagle.Image = (Image)componentResourceManager.GetObject("languagle.Image");
             this.languagle.ImageTransparentColor = Color.Magenta;
             this.languagle.Name = "toolStripButtonclose";
-            this.languagle.Size = new Size( (int)(23 * Program.Factor *0.85),  (int)(22 * Program.Factor));
+            this.languagle.Size = new Size(23, 22);
             this.languagle.Text = "选择翻译语言\r\n支持自动检测\r\n可以双向翻译";
             this.zh_en.Text = "中⇆英";
             this.zh_en.ForeColor = Color.Red;
@@ -283,15 +270,14 @@ namespace TrOCR
             this.topmost.Image = (Image)componentResourceManager.GetObject("mode.Image");
             this.topmost.ImageTransparentColor = Color.Magenta;
             this.topmost.Name = "toolStripButtonclose";
-            this.topmost.Size = new Size( (int)(23 * Program.Factor *0.85),  (int)(22 * Program.Factor));
+            this.topmost.Size = new Size(23, 22);
             this.topmost.Text = "顶置";
-            this.topmost.AutoSize = false;
             this.topmost.MouseDown += this.topmost_keydown;
             this.Fontstyle.DisplayStyle = ToolStripItemDisplayStyle.Image;
             this.Fontstyle.Image = (Image)componentResourceManager.GetObject("Fontstyle.Image");
             this.Fontstyle.ImageTransparentColor = Color.Magenta;
             this.Fontstyle.Name = "toolStripButtonclose";
-            this.Fontstyle.Size = new Size( (int)(23 * Program.Factor *0.85),  (int)(22 * Program.Factor));
+            this.Fontstyle.Size = new Size(23, 22);
             this.Fontstyle.Text = "字体";
             this.Fontstyle.AutoSize = false;
             ((ToolStripDropDownMenu)this.Fontstyle.DropDown).ShowImageMargin = false;
@@ -375,65 +361,26 @@ namespace TrOCR
             this.c = new AdvRichTextBox.cmd(50);
             this.Font = new Font(this.Font.Name, 9f / StaticValue.DpiFactor, this.Font.Style, this.Font.Unit, this.Font.GdiCharSet, this.Font.GdiVerticalFont);
             this.InitializeComponent();
-            // [新增] 使用100%可靠的设计时检查：只有在程序 *运行* 时才读取INI文件, 不要 SSSSin Visual Studio 设计器中运行此代码
-            //解决设计器拖动创建或创建AdvRickTextBox控件时，因为配置文件找不到执行读取文件操作失败报错的问题
-            //设计器拖动创建或创建Fmmain控件时应该也有此问题，暂时不改，想改的话，只需要像下面这样修改Fmmain构造函数里所有需要读取或写入文件的地方就行了
-            bool inDesignMode = (LicenseManager.UsageMode == LicenseUsageMode.Designtime);
-
-            if (!inDesignMode)
-            {
-                this.readIniFile();
-            }
-            // [新增] 根据 dpi 强制缩放工具栏的 *目标* 图标尺寸
+            this.readIniFile();
+             // [新增] 根据 dpi 强制缩放工具栏的 *目标* 图标尺寸
             //这样工具栏图标也强制放大了，而不只是图标所占格子放大，但是原始图标是16x16的，强制放大后会糊，
             // 需要提供更高像素的图标，比如32x32，64x64的，这样放大后才清晰不糊
             // 低像素图标一般放大会糊，但是高像素图标缩小一般不会糊
-            if (Program.Factor > 1.0f)
+            //ps：省事的话只需要一套高像素尺寸图标即可，更专业的是提供不同套像素尺寸的图标，然后根据dpi自动选择或缩放哪一套，
+            // 这里及未来会直接采用省事的方案: 只需要一套高像素图标
+            if (Program.Factor > 1.0f)//这个if判断去掉也行，dpi对应1.0f的时候，计算一下也没啥性能影响
             {
                 // 1. 计算新的目标图标大小 (例如 16 * 2.0 = 32)
                 int newIconSize = (int)(16 * Program.Factor);
 
                 // 2. 将这个新尺寸应用到 *整个工具栏*
                 this.toolStripToolBar.ImageScalingSize = new System.Drawing.Size(newIconSize, newIconSize);
+                //或者直接            
+                // this.toolStripToolBar.ImageScalingSize = new Size((int)(16 * Program.Factor), (int)(16 * Program.Factor));
+
             }
-
-            // [新增] 修复字体图标缩放，但是本程序使用的不是字体图标，是字体/文字转成的图片图标，所以注释掉
-            //        if (Program.Factor > 1.0f)
-            //{
-            //    // 1. 定义您的图标字体。
-            //    //    (如果 "T, B, A" 和 "段, 分, 拆" 使用的是标准字体，
-            //    //     而其他图标使用的是 Segoe，您可能需要分开设置)
-
-            //    // 假设所有图标都使用 "Segoe MDL2 Assets" 字体
-            //    // 请根据您的实际字体更改 "Segoe MDL2 Assets"
-            //    Font iconFont = new Font("Segoe MDL2 Assets", 10f * Program.Factor); // 10pt * 2.0 = 20pt
-
-            //    // 假设 "T, B, A" 使用的是 "Arial" 粗体
-            //    Font textIconFont = new Font("Arial", 9f * Program.Factor, FontStyle.Bold); // 9pt * 2.0 = 18pt
-
-            //    // 2. 遍历工具栏上的所有项目并应用新字体
-            //    foreach (ToolStripItem item in this.toolStripToolBar.Items)
-            //    {
-            //        // 只修改我们关心的按钮
-            //        if (item is ToolStripButton || item is ToolStripDropDownButton)
-            //        {
-            //            // 这是一个示例，您需要根据按钮的名字来区分
-            //            if (item.Name == "toolStripButtonBold" || item.Name == "toolStripButtonItalic") // (假设 T, B, A 是这些)
-            //            {
-            //                item.Font = textIconFont;
-            //            }
-            //            else if (item.Text == "段" || item.Text == "分" || item.Text == "拆") // (按文本区分)
-            //            {
-            //                item.Font = this.Font; // (使用控件的默认字体，它已经被缩放了)
-            //            }
-            //            else
-            //            {
-            //                // 其他所有“真·图标字体”的按钮
-            //                item.Font = iconFont;
-            //            }
-            //        }
-            //    }
-            //}
+            //字体图标（非图片图标）的思路看上个提交吧
+        
             this.richTextBox1.LanguageOption = RichTextBoxLanguageOptions.UIFonts;
         }
         
