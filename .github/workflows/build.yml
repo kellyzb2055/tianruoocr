@@ -11,8 +11,8 @@ on:
     # tags: [ '*' ] #匹配所有标签
   # pull_request:
   #   branches: [ "main" ]
-  watch:
-    types: [started]
+  # watch:
+  #   types: [started]
   #手动触发按钮
   workflow_dispatch:
     # <--- 新增：为手动运行添加输入框，以支持手动运行 action 创建发行版(草稿) ---
