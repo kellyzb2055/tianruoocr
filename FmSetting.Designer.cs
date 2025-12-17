@@ -140,6 +140,19 @@ namespace TrOCR
             this.BoxBaimiaoUsername = new System.Windows.Forms.TextBox();
             this.label_BaimiaoPassword = new System.Windows.Forms.Label();
             this.label_BaimiaoUsername = new System.Windows.Forms.Label();
+            this.Page_AI密钥 = new System.Windows.Forms.TabPage();
+            this.tabControl_AI = new System.Windows.Forms.TabControl();
+            this.tabPage_OpenAICompatible = new System.Windows.Forms.TabPage();
+            this.groupBox_OpenAICompatible = new System.Windows.Forms.GroupBox();
+            this.lblOpenAICompatibleBaseUrl = new System.Windows.Forms.Label();
+            this.txtOpenAICompatibleBaseUrl = new System.Windows.Forms.TextBox();
+            this.lblOpenAICompatibleModel = new System.Windows.Forms.Label();
+            this.txtOpenAICompatibleModel = new System.Windows.Forms.TextBox();
+            this.lblOpenAICompatibleKey = new System.Windows.Forms.Label();
+            this.txtOpenAICompatibleKey = new System.Windows.Forms.TextBox();
+            this.lblOpenAICompatibleConfig = new System.Windows.Forms.Label();
+            this.txtOpenAICompatibleConfig = new System.Windows.Forms.TextBox();
+            this.btn_OpenAICompatible_Config_Browse = new System.Windows.Forms.Button();
             this.Page_显示的接口 = new System.Windows.Forms.TabPage();
             this.groupBox_翻译接口 = new System.Windows.Forms.GroupBox();
             this.checkBox_ShowBaidu2 = new System.Windows.Forms.CheckBox();
@@ -466,6 +479,10 @@ namespace TrOCR
             this.groupBox_Baidu2_Target.SuspendLayout();
             this.groupBox_Baidu2_Source.SuspendLayout();
             this.tabPage_白描接口.SuspendLayout();
+            this.Page_AI密钥.SuspendLayout();
+            this.tabControl_AI.SuspendLayout();
+            this.tabPage_OpenAICompatible.SuspendLayout();
+            this.groupBox_OpenAICompatible.SuspendLayout();
             this.Page_显示的接口.SuspendLayout();
             this.groupBox_翻译接口.SuspendLayout();
             this.groupBox_Ocr.SuspendLayout();
@@ -1874,9 +1891,134 @@ namespace TrOCR
             this.label_BaimiaoUsername.Size = new System.Drawing.Size(45, 15);
             this.label_BaimiaoUsername.TabIndex = 5;
             this.label_BaimiaoUsername.Text = "账号:";
-            // 
+            //
+            // Page_AI密钥
+            //
+            this.Page_AI密钥.BackColor = System.Drawing.Color.White;
+            this.Page_AI密钥.Controls.Add(this.tabControl_AI);
+            this.Page_AI密钥.Location = new System.Drawing.Point(4, 25);
+            this.Page_AI密钥.Name = "Page_AI密钥";
+            this.Page_AI密钥.Padding = new System.Windows.Forms.Padding(4);
+            this.Page_AI密钥.Size = new System.Drawing.Size(523, 515);
+            this.Page_AI密钥.TabIndex = 14;
+            this.Page_AI密钥.Text = "AI密钥";
+            //
+            // tabControl_AI
+            //
+            this.tabControl_AI.Controls.Add(this.tabPage_OpenAICompatible);
+            this.tabControl_AI.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl_AI.Location = new System.Drawing.Point(4, 4);
+            this.tabControl_AI.Name = "tabControl_AI";
+            this.tabControl_AI.SelectedIndex = 0;
+            this.tabControl_AI.Size = new System.Drawing.Size(515, 507);
+            this.tabControl_AI.TabIndex = 0;
+            //
+            // tabPage_OpenAICompatible
+            //
+            this.tabPage_OpenAICompatible.Controls.Add(this.groupBox_OpenAICompatible);
+            this.tabPage_OpenAICompatible.Location = new System.Drawing.Point(4, 25);
+            this.tabPage_OpenAICompatible.Name = "tabPage_OpenAICompatible";
+            this.tabPage_OpenAICompatible.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_OpenAICompatible.Size = new System.Drawing.Size(507, 478);
+            this.tabPage_OpenAICompatible.TabIndex = 0;
+            this.tabPage_OpenAICompatible.Text = "OpenAICompatible";
+            this.tabPage_OpenAICompatible.UseVisualStyleBackColor = true;
+            //
+            // groupBox_OpenAICompatible
+            //
+            this.groupBox_OpenAICompatible.Controls.Add(this.btn_OpenAICompatible_Config_Browse);
+            this.groupBox_OpenAICompatible.Controls.Add(this.txtOpenAICompatibleConfig);
+            this.groupBox_OpenAICompatible.Controls.Add(this.lblOpenAICompatibleConfig);
+            this.groupBox_OpenAICompatible.Controls.Add(this.txtOpenAICompatibleKey);
+            this.groupBox_OpenAICompatible.Controls.Add(this.lblOpenAICompatibleKey);
+            this.groupBox_OpenAICompatible.Controls.Add(this.txtOpenAICompatibleModel);
+            this.groupBox_OpenAICompatible.Controls.Add(this.lblOpenAICompatibleModel);
+            this.groupBox_OpenAICompatible.Controls.Add(this.txtOpenAICompatibleBaseUrl);
+            this.groupBox_OpenAICompatible.Controls.Add(this.lblOpenAICompatibleBaseUrl);
+            this.groupBox_OpenAICompatible.Location = new System.Drawing.Point(8, 8);
+            this.groupBox_OpenAICompatible.Name = "groupBox_OpenAICompatible";
+            this.groupBox_OpenAICompatible.Size = new System.Drawing.Size(490, 200);
+            this.groupBox_OpenAICompatible.TabIndex = 0;
+            this.groupBox_OpenAICompatible.TabStop = false;
+            this.groupBox_OpenAICompatible.Text = "配置";
+            //
+            // lblOpenAICompatibleBaseUrl
+            //
+            this.lblOpenAICompatibleBaseUrl.AutoSize = true;
+            this.lblOpenAICompatibleBaseUrl.Location = new System.Drawing.Point(20, 30);
+            this.lblOpenAICompatibleBaseUrl.Name = "lblOpenAICompatibleBaseUrl";
+            this.lblOpenAICompatibleBaseUrl.Size = new System.Drawing.Size(71, 15);
+            this.lblOpenAICompatibleBaseUrl.TabIndex = 0;
+            this.lblOpenAICompatibleBaseUrl.Text = "Base URL:";
+            //
+            // txtOpenAICompatibleBaseUrl
+            //
+            this.txtOpenAICompatibleBaseUrl.Location = new System.Drawing.Point(100, 27);
+            this.txtOpenAICompatibleBaseUrl.Name = "txtOpenAICompatibleBaseUrl";
+            this.txtOpenAICompatibleBaseUrl.Size = new System.Drawing.Size(370, 25);
+            this.txtOpenAICompatibleBaseUrl.TabIndex = 1;
+            //
+            // lblOpenAICompatibleModel
+            //
+            this.lblOpenAICompatibleModel.AutoSize = true;
+            this.lblOpenAICompatibleModel.Location = new System.Drawing.Point(20, 70);
+            this.lblOpenAICompatibleModel.Name = "lblOpenAICompatibleModel";
+            this.lblOpenAICompatibleModel.Size = new System.Drawing.Size(45, 15);
+            this.lblOpenAICompatibleModel.TabIndex = 2;
+            this.lblOpenAICompatibleModel.Text = "模型:";
+            //
+            // txtOpenAICompatibleModel
+            //
+            this.txtOpenAICompatibleModel.Location = new System.Drawing.Point(100, 67);
+            this.txtOpenAICompatibleModel.Name = "txtOpenAICompatibleModel";
+            this.txtOpenAICompatibleModel.Size = new System.Drawing.Size(370, 25);
+            this.txtOpenAICompatibleModel.TabIndex = 3;
+            //
+            // lblOpenAICompatibleKey
+            //
+            this.lblOpenAICompatibleKey.AutoSize = true;
+            this.lblOpenAICompatibleKey.Location = new System.Drawing.Point(20, 110);
+            this.lblOpenAICompatibleKey.Name = "lblOpenAICompatibleKey";
+            this.lblOpenAICompatibleKey.Size = new System.Drawing.Size(63, 15);
+            this.lblOpenAICompatibleKey.TabIndex = 4;
+            this.lblOpenAICompatibleKey.Text = "API Key:";
+            //
+            // txtOpenAICompatibleKey
+            //
+            this.txtOpenAICompatibleKey.Location = new System.Drawing.Point(100, 107);
+            this.txtOpenAICompatibleKey.Name = "txtOpenAICompatibleKey";
+            this.txtOpenAICompatibleKey.PasswordChar = '*';
+            this.txtOpenAICompatibleKey.Size = new System.Drawing.Size(370, 25);
+            this.txtOpenAICompatibleKey.TabIndex = 5;
+            //
+            // lblOpenAICompatibleConfig
+            //
+            this.lblOpenAICompatibleConfig.AutoSize = true;
+            this.lblOpenAICompatibleConfig.Location = new System.Drawing.Point(20, 150);
+            this.lblOpenAICompatibleConfig.Name = "lblOpenAICompatibleConfig";
+            this.lblOpenAICompatibleConfig.Size = new System.Drawing.Size(75, 15);
+            this.lblOpenAICompatibleConfig.TabIndex = 6;
+            this.lblOpenAICompatibleConfig.Text = "配置文件:";
+            //
+            // txtOpenAICompatibleConfig
+            //
+            this.txtOpenAICompatibleConfig.Location = new System.Drawing.Point(100, 147);
+            this.txtOpenAICompatibleConfig.Name = "txtOpenAICompatibleConfig";
+            this.txtOpenAICompatibleConfig.Size = new System.Drawing.Size(324, 25);
+            this.txtOpenAICompatibleConfig.TabIndex = 7;
+            //
+            // btn_OpenAICompatible_Config_Browse
+            //
+            this.btn_OpenAICompatible_Config_Browse.Location = new System.Drawing.Point(430, 147);
+            this.btn_OpenAICompatible_Config_Browse.Name = "btn_OpenAICompatible_Config_Browse";
+            this.btn_OpenAICompatible_Config_Browse.Size = new System.Drawing.Size(40, 25);
+            this.btn_OpenAICompatible_Config_Browse.TabIndex = 8;
+            this.btn_OpenAICompatible_Config_Browse.Text = "...";
+            this.btn_OpenAICompatible_Config_Browse.UseVisualStyleBackColor = true;
+            this.btn_OpenAICompatible_Config_Browse.Click += new System.EventHandler(this.Btn_OpenAICompatible_Config_Browse_Click);
+            //
             // Page_显示的接口
-            // 
+            //
             this.Page_显示的接口.BackColor = System.Drawing.Color.White;
             this.Page_显示的接口.Controls.Add(this.groupBox_翻译接口);
             this.Page_显示的接口.Controls.Add(this.groupBox_Ocr);
@@ -4421,6 +4563,7 @@ namespace TrOCR
             this.tab_标签.Controls.Add(this.Page_常规2);
             this.tab_标签.Controls.Add(this.Page_快捷键);
             this.tab_标签.Controls.Add(this.Page_密钥);
+            this.tab_标签.Controls.Add(this.Page_AI密钥);
             this.tab_标签.Controls.Add(this.Page_翻译接口);
             this.tab_标签.Controls.Add(this.Page_显示的接口);
             this.tab_标签.Controls.Add(this.Page_工具栏);
@@ -5064,6 +5207,11 @@ namespace TrOCR
             this.groupBox_Baidu2_Source.PerformLayout();
             this.tabPage_白描接口.ResumeLayout(false);
             this.tabPage_白描接口.PerformLayout();
+            this.Page_AI密钥.ResumeLayout(false);
+            this.tabControl_AI.ResumeLayout(false);
+            this.tabPage_OpenAICompatible.ResumeLayout(false);
+            this.groupBox_OpenAICompatible.ResumeLayout(false);
+            this.groupBox_OpenAICompatible.PerformLayout();
             this.Page_显示的接口.ResumeLayout(false);
             this.groupBox_翻译接口.ResumeLayout(false);
             this.groupBox_翻译接口.PerformLayout();
@@ -5158,6 +5306,19 @@ namespace TrOCR
 
         }
 
+        private System.Windows.Forms.TabPage Page_AI密钥;
+        private System.Windows.Forms.TabControl tabControl_AI;
+        private System.Windows.Forms.TabPage tabPage_OpenAICompatible;
+        private System.Windows.Forms.GroupBox groupBox_OpenAICompatible;
+        private System.Windows.Forms.Label lblOpenAICompatibleBaseUrl;
+        private System.Windows.Forms.TextBox txtOpenAICompatibleBaseUrl;
+        private System.Windows.Forms.Label lblOpenAICompatibleModel;
+        private System.Windows.Forms.TextBox txtOpenAICompatibleModel;
+        private System.Windows.Forms.Label lblOpenAICompatibleKey;
+        private System.Windows.Forms.TextBox txtOpenAICompatibleKey;
+        private System.Windows.Forms.Label lblOpenAICompatibleConfig;
+        private System.Windows.Forms.TextBox txtOpenAICompatibleConfig;
+        private System.Windows.Forms.Button btn_OpenAICompatible_Config_Browse;
         private System.Windows.Forms.TabPage Page_显示的接口;
         private System.Windows.Forms.GroupBox groupBox_翻译接口;
         private System.Windows.Forms.GroupBox groupBox_Ocr;

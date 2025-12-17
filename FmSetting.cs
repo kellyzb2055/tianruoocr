@@ -824,6 +824,12 @@ namespace TrOCR
 
 			// 读取OCR模型配置
 			ReadOcrModelConfigs();
+
+			// 读取OpenAICompatible配置
+			txtOpenAICompatibleBaseUrl.Text = IniHelper.GetValue("OpenAICompatible", "BaseUrl") == "发生错误" ? "" : IniHelper.GetValue("OpenAICompatible", "BaseUrl");
+			txtOpenAICompatibleModel.Text = IniHelper.GetValue("OpenAICompatible", "Model") == "发生错误" ? "" : IniHelper.GetValue("OpenAICompatible", "Model");
+			txtOpenAICompatibleKey.Text = IniHelper.GetValue("OpenAICompatible", "APIKey") == "发生错误" ? "" : IniHelper.GetValue("OpenAICompatible", "APIKey");
+			txtOpenAICompatibleConfig.Text = IniHelper.GetValue("OpenAICompatible", "Config") == "发生错误" ? "" : IniHelper.GetValue("OpenAICompatible", "Config");
 		}
 
 		/// <summary>
@@ -2077,6 +2083,12 @@ namespace TrOCR
 			IniHelper.SetValue("模型配置_RapidOCR", "Keys", textBox_RapidOCR_Keys.Text);
 			IniHelper.SetValue("模型配置_RapidOCR", "AdvancedConfig", textBox7.Text);
 
+			// 保存OpenAICompatible配置
+			IniHelper.SetValue("OpenAICompatible", "BaseUrl", txtOpenAICompatibleBaseUrl.Text);
+			IniHelper.SetValue("OpenAICompatible", "Model", txtOpenAICompatibleModel.Text);
+			IniHelper.SetValue("OpenAICompatible", "APIKey", txtOpenAICompatibleKey.Text);
+			IniHelper.SetValue("OpenAICompatible", "Config", txtOpenAICompatibleConfig.Text);
+
 			ResetOcrEngineOnConfigChange();
 			DialogResult = DialogResult.OK;
 			StaticValue.LoadConfig();
@@ -2317,6 +2329,10 @@ namespace TrOCR
         	if (selectedPage == Page_密钥)
         	{
         		selectedPage = tabControl2.SelectedTab;
+        	}
+        	else if (selectedPage == Page_AI密钥)
+        	{
+        		selectedPage = tabControl_AI.SelectedTab;
         	}
         	else if (selectedPage == Page_翻译接口)
         	{
@@ -2642,7 +2658,7 @@ namespace TrOCR
 			}
 		}
 		/// <summary>
-        /// 离线接口浏览高级配置文件的专用方法（只选择json文件）
+        /// AI接口和离线接口浏览高级配置文件的专用方法（只选择json文件）
         /// </summary>
         private void BrowseAdvancedConfigModelFile(TextBox textBox, string description)
         {
@@ -2692,10 +2708,11 @@ namespace TrOCR
         private void Btn_RapidOCR_Keys_Browse_Click(object sender, EventArgs e) => BrowseKeysModelFile(textBox_RapidOCR_Keys, "RapidOCR字典文件");
 		private void Btn_RapidOCR_AdvancedConfig_Browse_Click(object sender, EventArgs e) => BrowseAdvancedConfigModelFile(textBox7, "RapidOCR高级配置文件");
         private void TextBox_RapidOCR_TextChanged(object sender, EventArgs e)
-		{
-			this.rapidOcrConfigChanged = true;
-		}
+  {
+   this.rapidOcrConfigChanged = true;
+  }
 
+  private void Btn_OpenAICompatible_Config_Browse_Click(object sender, EventArgs e) => BrowseAdvancedConfigModelFile(txtOpenAICompatibleConfig, "OpenAICompatible配置文件");
         
         /// <summary>
         /// 配置变更时重置OCR引擎
