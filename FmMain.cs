@@ -1947,6 +1947,11 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 		{
 			OCR_foreach("RapidOCR");
 		}
+
+		private void OCR_ai_openai_compatible_Click(object sender, EventArgs e)
+		{
+			OCR_foreach("OpenAICompatible");
+		}
 		#endregion
 // ====================================================================================================================
 		// **文本操作与格式化**
@@ -4370,6 +4375,15 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 				fmloading.FmlClose = "窗体已关闭";
 				Invoke(new OcrThread(Main_OCR_Thread_last));
 			}
+			if (interface_flag == "OpenAICompatible")
+			{
+				// OpenAICompatible OCR 占位符
+				typeset_txt = "OpenAICompatible OCR 尚未实现接口调用。";
+				split_txt = typeset_txt;
+				fmloading.FmlClose = "窗体已关闭";
+				Invoke(new OcrThread(Main_OCR_Thread_last));
+				return;
+			}
 			// 【新增】百度手写识别的分支
 			if (interface_flag == "百度手写")
 			{
@@ -5465,6 +5479,12 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 					interface_flag = "RapidOCR";
 					Refresh();
 					rapidocr.Text = "RapidOCR√";
+					break;
+				case "OpenAICompatible":
+					interface_flag = "OpenAICompatible";
+					Refresh();
+					ai_menu.Text = "AI√";
+					ai_openai_compatible.Text = "OpenAICompatible√";
 					break;
 				case "从左向右" when !File.Exists("cvextern.dll"):
 					MessageBox.Show("请从蓝奏网盘中下载cvextern.dll大小约25m，点击确定自动弹出网页。\r\n将下载后的文件与 天若OCR文字识别.exe 这个文件放在一起。");
@@ -8005,6 +8025,8 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 			rapidocr.Text = "RapidOCR";
 			write.Text = "手写";
 			baidu_handwriting.Text = "百度手写";
+			ai_menu.Text = "AI";
+			ai_openai_compatible.Text = "OpenAICompatible";
 		}
 
 		/// <summary>
