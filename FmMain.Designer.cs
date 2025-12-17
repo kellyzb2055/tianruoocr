@@ -85,14 +85,7 @@ namespace TrOCR
 			this.trans_baidu2 = new global::System.Windows.Forms.ToolStripMenuItem();      // 百度翻译2
 
 			
-			// 表格OCR菜单项
-			this.baidu_table = new global::System.Windows.Forms.ToolStripMenuItem();
-			this.tx_table = new global::System.Windows.Forms.ToolStripMenuItem();
-			this.ali_table = new global::System.Windows.Forms.ToolStripMenuItem();
-			this.ocr_table = new global::System.Windows.Forms.ToolStripMenuItem();
-			// AI_OCR菜单项
-			this.ai_menu = new global::System.Windows.Forms.ToolStripMenuItem();
-			this.ai_openai_compatible = new global::System.Windows.Forms.ToolStripMenuItem();
+			
 			
 			// 主右键菜单
 			this.menu = new global::System.Windows.Forms.ContextMenuStrip();
@@ -150,7 +143,14 @@ namespace TrOCR
 			this.baidu_v = new global::System.Windows.Forms.ToolStripMenuItem();            // 百度VIP OCR
 			this.youdao = new global::System.Windows.Forms.ToolStripMenuItem();             // 有道OCR
 			this.wechat = new global::System.Windows.Forms.ToolStripMenuItem();             // 微信OCR
-			this.ai_menu = new global::System.Windows.Forms.ToolStripMenuItem();             // AIOCR
+			// 表格OCR菜单项
+			this.baidu_table = new global::System.Windows.Forms.ToolStripMenuItem();
+			this.tx_table = new global::System.Windows.Forms.ToolStripMenuItem();
+			this.ali_table = new global::System.Windows.Forms.ToolStripMenuItem();
+			this.ocr_table = new global::System.Windows.Forms.ToolStripMenuItem();
+			// AI_OCR菜单项
+			this.ai_menu = new global::System.Windows.Forms.ToolStripMenuItem();
+			this.ai_openai_compatible = new global::System.Windows.Forms.ToolStripMenuItem();
 			
 			// 文本转换菜单项
 			this.Chinese = new global::System.Windows.Forms.ToolStripMenuItem();            // 中文
