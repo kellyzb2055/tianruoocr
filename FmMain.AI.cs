@@ -38,6 +38,8 @@ namespace TrOCR
                 this.ai_openai_compatible.Click += new EventHandler(this.OCR_ai_openai_compatible_Click);
                 // 4. 重置当前选中的模式
                 this.currentSelectedAIMode = null;
+                // === 【新增】读取上次保存的模式名称 ===
+                string lastSelectedModeName = IniHelper.GetValue("OpenAICompatible", "SelectedMode");
                 // 1. 获取配置文件路径 (假设在 Data 目录下)
                 // 这里我们优先使用 Ini 中配置的路径，如果没有则尝试默认路径
                 string configPath = IniHelper.GetValue("OpenAICompatible", "Config");
@@ -73,6 +75,13 @@ namespace TrOCR
                         ToolStripMenuItem modeItem = new ToolStripMenuItem();
                         modeItem.Text = mode.mode; // 显示名称
                         modeItem.Tag = mode;       // 将 mode 对象存储在 Tag 中
+                        // === 【新增】比对并恢复选中状态 ===
+                        // 如果当前遍历的模式名称 等于 上次保存的名称
+                        if (!string.IsNullOrEmpty(lastSelectedModeName) && mode.mode == lastSelectedModeName)
+                        {
+                            modeItem.Checked = true;             // 恢复UI勾选
+                            this.currentSelectedAIMode = mode;   // 恢复内存变量
+                        }
                         modeItem.Click += new EventHandler(this.AI_SubMenu_Click); // 绑定点击事件
 
                         // 可以根据描述添加 ToolTipText
@@ -113,7 +122,9 @@ namespace TrOCR
 
                 // 2. 更新父菜单的选中状态或文本（可选，用于提示用户当前选了哪个）
                 // 比如：this.ai_openai_compatible.Text = $"OpenAICompatible ({mode.mode})";
-                
+
+                // === 【新增】保存选中状态到配置文件 ===
+                IniHelper.SetValue("OpenAICompatible", "SelectedMode", mode.mode);
                 // 3. 触发 OCR 流程
                 // 注意：这里调用 OCR_foreach 会触发 Main_OCR_Thread，最终调用 OCR_OpenAICompatible
                 OCR_foreach("OpenAICompatible");

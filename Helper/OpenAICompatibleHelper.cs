@@ -68,19 +68,79 @@ namespace TrOCR.Helper
                         return "读取配置文件出错" + ex.Message;
                     }
                 }
+                //if(aiConfig != null && aiConfig.modes != null && aiConfig.modes.Count > 0)
+                //{
+                //    // 1. 尝试读取配置文件中保存的“模式名称”
+                //    string savedModeName = IniHelper.GetValue("OpenAICompatible", "SelectedMode");
+                //    AIMode foundMode = null;
 
-                // 获取当前模式（默认第一项，或者回退到默认值）
-                 currentMode = (aiConfig != null && aiConfig.modes != null && aiConfig.modes.Count > 0)
-                                    ? aiConfig.modes[0]
-                                    : new AIMode
-                                    { // 默认模式
-                                        mode = "默认模式",
-                                        system_prompt = "You are a professional OCR engine. Recognize the text in the image and output it directly. Do not use markdown code blocks. Do not output any conversational filler. Maintain the original line breaks. If the image contains code, remember to preserve the formatting.",
-                                        prompt = "OCR this image.",
-                                        temperature = 0.1,
-                                        enable_thinking = false,
+                //    // 2. 如果有保存的名字，在列表中查找匹配项
+                //    if (!string.IsNullOrEmpty(savedModeName))
+                //    {
+                //        // 使用 LINQ 查找第一个名字匹配的模式
+                //        foundMode = aiConfig.modes.FirstOrDefault(m => m.mode == savedModeName);
+                //    }
 
-                                    };
+                //    // 3. 赋值：如果找到了就用找到的，没找到(比如改名了)就回退到第一个
+                //    currentMode = foundMode ?? aiConfig.modes[0];
+                //}
+                //else
+                //{
+                //    // 4. 只有配置文件读不到时，才用硬编码默认值
+                //    currentMode = new AIMode
+                //    {
+                //        // 默认模式
+                //        mode = "默认模式",
+                //        system_prompt = "You are a professional OCR engine. Recognize the text in the image and output it directly. Do not use markdown code blocks. Do not output any conversational filler. Maintain the original line breaks. If the image contains code, remember to preserve the formatting.",
+                //        prompt = "OCR this image.",
+                //        temperature = 0.1,
+                //        enable_thinking = false,
+                //    };
+                //}
+                // 1. 先准备一个“兜底”的内置安全模式 (Hardcoded Default)
+                // 作用：当配置文件不存在、或者配置文件里找不到对应的模式时，使用这个模式。
+                AIMode defaultSafeMode = new AIMode
+                {
+                    mode = "默认模式 (内置)",
+                    system_prompt = "You are a professional OCR engine. Recognize the text in the image and output it directly. Do not use markdown code blocks. Do not output any conversational filler. Maintain the original line breaks. If the image contains code, remember to preserve the formatting.",
+                    prompt = "OCR this image.",
+                    temperature = 0.1,
+                    enable_thinking = false,
+                };
+
+                if (aiConfig != null && aiConfig.modes != null && aiConfig.modes.Count > 0)
+                {
+                    // 2. 尝试读取配置文件中保存的“模式名称”
+                    string savedModeName = IniHelper.GetValue("OpenAICompatible", "SelectedMode");
+                    AIMode foundMode = null;
+
+                    if (!string.IsNullOrEmpty(savedModeName))
+                    {
+                        // 查找名称匹配的模式
+                        foundMode = aiConfig.modes.FirstOrDefault(m => m.mode == savedModeName);
+                    }
+
+                    // 3. 赋值逻辑：
+                    // 如果找到了保存的模式 -> 使用找到的 (foundMode)
+                    // 如果【没找到】(foundMode is null) -> 使用 defaultSafeMode (内置默认)
+                    // 【关键点】：这里不再使用 aiConfig.modes[0]，没找到也不回退到第一项
+                    //currentMode = foundMode ?? defaultSafeMode;
+                    if (foundMode == null)
+                    {
+                        // === 【直接报错】 ===
+                        return $"配置错误：无法找到模式“{savedModeName}”。\r\n原因：该模式可能已被从配置文件中删除或重命名。\r\n解决方法：请点击菜单重新选择一个有效的模式。";
+                    }
+
+                    currentMode = foundMode;
+                }
+                else
+                {
+                    //CommonHelper.ShowHelpMsg("配置文件不存在，将使用程序内置的默认模式");
+                    Debug.WriteLine("配置文件不存在，将使用程序内置的默认模式");
+                    // 4. 连配置文件都读不到 -> 直接用内置默认
+                    currentMode = defaultSafeMode;
+                }
+
             }
             System.Diagnostics.Debug.WriteLine($"[Helper] 最终使用的模式名称: {currentMode.mode}");
             System.Diagnostics.Debug.WriteLine($"[Helper] 最终使用的模式详情: {JsonConvert.SerializeObject(currentMode, Formatting.Indented)}");

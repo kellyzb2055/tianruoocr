@@ -2268,8 +2268,9 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 		/// <param name="e">事件参数</param>
 		public void tray_Set_Click(object sender, EventArgs e)
 		{
-			// 取消注册所有热键
-			HelpWin32.UnregisterHotKey(Handle, 200);
+            string oldPath = IniHelper.GetValue("OpenAICompatible", "Config");
+            // 取消注册所有热键
+            HelpWin32.UnregisterHotKey(Handle, 200);
 			HelpWin32.UnregisterHotKey(Handle, 205);
 			HelpWin32.UnregisterHotKey(Handle, 206);
 			HelpWin32.UnregisterHotKey(Handle, 235);
@@ -2283,6 +2284,14 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 			fmSetting.ShowDialog();
 			//刷新 AI 菜单，这行代码写在fmsetting.Form1_FormClosed里也行，写在这里也行
     		LoadAIConfigMenus();
+			//更新AI接口设置后，清理ini里的AI模式
+            string newPath = IniHelper.GetValue("OpenAICompatible", "Config");
+            if (newPath != oldPath)
+            {
+                string iniFile = AppDomain.CurrentDomain.BaseDirectory + "Data\\config.ini";
+                IniHelper.RemoveKey("OpenAICompatible", "SelectedMode", iniFile);
+            }
+            IniHelper.RemoveKey("OpenAICompatible", "SelectedMode", AppDomain.CurrentDomain.BaseDirectory + "Data\\config.ini");
 			if (fmSetting.DialogResult == DialogResult.OK)
 			{
 				// 在重新加载配置前，保存旧的百度密钥
