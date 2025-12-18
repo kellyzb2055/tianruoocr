@@ -18,6 +18,7 @@ namespace TrOCR
         // 初始化设置界面组件
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FmSetting));
             this.Page_翻译接口 = new System.Windows.Forms.TabPage();
             this.tabControl_Trans = new System.Windows.Forms.TabControl();
             this.tabPage_Google = new System.Windows.Forms.TabPage();
@@ -430,6 +431,140 @@ namespace TrOCR
             this.label_更新日期 = new System.Windows.Forms.Label();
             this.pictureBox6 = new System.Windows.Forms.PictureBox();
             this.txt_更新说明 = new System.Windows.Forms.TextBox();
+            this.tabControl_AI_Trans = new System.Windows.Forms.TabControl();
+            this.tabPage12 = new System.Windows.Forms.TabPage();
+            this.groupBox49 = new System.Windows.Forms.GroupBox();
+            this.textBox36 = new System.Windows.Forms.TextBox();
+            this.button28 = new System.Windows.Forms.Button();
+            this.groupBox48 = new System.Windows.Forms.GroupBox();
+            this.textBox35 = new System.Windows.Forms.TextBox();
+            this.button27 = new System.Windows.Forms.Button();
+            this.groupBox47 = new System.Windows.Forms.GroupBox();
+            this.label53 = new System.Windows.Forms.Label();
+            this.tabPage11 = new System.Windows.Forms.TabPage();
+            this.groupBox46 = new System.Windows.Forms.GroupBox();
+            this.textBox34 = new System.Windows.Forms.TextBox();
+            this.button26 = new System.Windows.Forms.Button();
+            this.groupBox45 = new System.Windows.Forms.GroupBox();
+            this.textBox33 = new System.Windows.Forms.TextBox();
+            this.button25 = new System.Windows.Forms.Button();
+            this.groupBox44 = new System.Windows.Forms.GroupBox();
+            this.label52 = new System.Windows.Forms.Label();
+            this.textBox32 = new System.Windows.Forms.TextBox();
+            this.tabPage10 = new System.Windows.Forms.TabPage();
+            this.groupBox43 = new System.Windows.Forms.GroupBox();
+            this.textBox31 = new System.Windows.Forms.TextBox();
+            this.button24 = new System.Windows.Forms.Button();
+            this.groupBox42 = new System.Windows.Forms.GroupBox();
+            this.textBox30 = new System.Windows.Forms.TextBox();
+            this.button23 = new System.Windows.Forms.Button();
+            this.groupBox41 = new System.Windows.Forms.GroupBox();
+            this.label51 = new System.Windows.Forms.Label();
+            this.tabPage9 = new System.Windows.Forms.TabPage();
+            this.groupBox40 = new System.Windows.Forms.GroupBox();
+            this.textBox29 = new System.Windows.Forms.TextBox();
+            this.button22 = new System.Windows.Forms.Button();
+            this.groupBox39 = new System.Windows.Forms.GroupBox();
+            this.textBox28 = new System.Windows.Forms.TextBox();
+            this.button21 = new System.Windows.Forms.Button();
+            this.groupBox38 = new System.Windows.Forms.GroupBox();
+            this.label50 = new System.Windows.Forms.Label();
+            this.tabPage8 = new System.Windows.Forms.TabPage();
+            this.groupBox37 = new System.Windows.Forms.GroupBox();
+            this.textBox27 = new System.Windows.Forms.TextBox();
+            this.button20 = new System.Windows.Forms.Button();
+            this.groupBox36 = new System.Windows.Forms.GroupBox();
+            this.textBox26 = new System.Windows.Forms.TextBox();
+            this.button19 = new System.Windows.Forms.Button();
+            this.groupBox35 = new System.Windows.Forms.GroupBox();
+            this.label49 = new System.Windows.Forms.Label();
+            this.tabPage7 = new System.Windows.Forms.TabPage();
+            this.groupBox34 = new System.Windows.Forms.GroupBox();
+            this.textBox25 = new System.Windows.Forms.TextBox();
+            this.button18 = new System.Windows.Forms.Button();
+            this.groupBox33 = new System.Windows.Forms.GroupBox();
+            this.textBox24 = new System.Windows.Forms.TextBox();
+            this.button17 = new System.Windows.Forms.Button();
+            this.groupBox32 = new System.Windows.Forms.GroupBox();
+            this.label48 = new System.Windows.Forms.Label();
+            this.tabPage6 = new System.Windows.Forms.TabPage();
+            this.groupBox31 = new System.Windows.Forms.GroupBox();
+            this.textBox23 = new System.Windows.Forms.TextBox();
+            this.button16 = new System.Windows.Forms.Button();
+            this.groupBox30 = new System.Windows.Forms.GroupBox();
+            this.textBox22 = new System.Windows.Forms.TextBox();
+            this.button15 = new System.Windows.Forms.Button();
+            this.groupBox29 = new System.Windows.Forms.GroupBox();
+            this.label47 = new System.Windows.Forms.Label();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.groupBox28 = new System.Windows.Forms.GroupBox();
+            this.textBox21 = new System.Windows.Forms.TextBox();
+            this.button14 = new System.Windows.Forms.Button();
+            this.groupBox27 = new System.Windows.Forms.GroupBox();
+            this.textBox20 = new System.Windows.Forms.TextBox();
+            this.button13 = new System.Windows.Forms.Button();
+            this.groupBox26 = new System.Windows.Forms.GroupBox();
+            this.label46 = new System.Windows.Forms.Label();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.groupBox25 = new System.Windows.Forms.GroupBox();
+            this.textBox19 = new System.Windows.Forms.TextBox();
+            this.button12 = new System.Windows.Forms.Button();
+            this.groupBox24 = new System.Windows.Forms.GroupBox();
+            this.textBox18 = new System.Windows.Forms.TextBox();
+            this.button11 = new System.Windows.Forms.Button();
+            this.groupBox23 = new System.Windows.Forms.GroupBox();
+            this.label45 = new System.Windows.Forms.Label();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.groupBox22 = new System.Windows.Forms.GroupBox();
+            this.textBox17 = new System.Windows.Forms.TextBox();
+            this.button10 = new System.Windows.Forms.Button();
+            this.groupBox21 = new System.Windows.Forms.GroupBox();
+            this.textBox16 = new System.Windows.Forms.TextBox();
+            this.button9 = new System.Windows.Forms.Button();
+            this.groupBox20 = new System.Windows.Forms.GroupBox();
+            this.label44 = new System.Windows.Forms.Label();
+            this.textBox15 = new System.Windows.Forms.TextBox();
+            this.label43 = new System.Windows.Forms.Label();
+            this.textBox14 = new System.Windows.Forms.TextBox();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.groupBox19 = new System.Windows.Forms.GroupBox();
+            this.textBox13 = new System.Windows.Forms.TextBox();
+            this.button8 = new System.Windows.Forms.Button();
+            this.groupBox18 = new System.Windows.Forms.GroupBox();
+            this.textBox12 = new System.Windows.Forms.TextBox();
+            this.button7 = new System.Windows.Forms.Button();
+            this.groupBox17 = new System.Windows.Forms.GroupBox();
+            this.label42 = new System.Windows.Forms.Label();
+            this.textBox11 = new System.Windows.Forms.TextBox();
+            this.label41 = new System.Windows.Forms.Label();
+            this.textBox10 = new System.Windows.Forms.TextBox();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.groupBox16 = new System.Windows.Forms.GroupBox();
+            this.textBox9 = new System.Windows.Forms.TextBox();
+            this.button6 = new System.Windows.Forms.Button();
+            this.groupBox15 = new System.Windows.Forms.GroupBox();
+            this.textBox8 = new System.Windows.Forms.TextBox();
+            this.button5 = new System.Windows.Forms.Button();
+            this.groupBox14 = new System.Windows.Forms.GroupBox();
+            this.label32 = new System.Windows.Forms.Label();
+            this.Page_AI翻译接口 = new System.Windows.Forms.TabPage();
+            this.tabPage_Trans_OpenAICompatible = new System.Windows.Forms.TabPage();
+            this.groupBox_Trans_OpenAICompatible = new System.Windows.Forms.GroupBox();
+            this.btn_OpenAICompatible_Trans_Config_Browse = new System.Windows.Forms.Button();
+            this.txtOpenAICompatibleTransConfig = new System.Windows.Forms.TextBox();
+            this.label54 = new System.Windows.Forms.Label();
+            this.txtOpenAICompatibleTransApiKey = new System.Windows.Forms.TextBox();
+            this.label55 = new System.Windows.Forms.Label();
+            this.txtOpenAICompatibleTransModel = new System.Windows.Forms.TextBox();
+            this.label56 = new System.Windows.Forms.Label();
+            this.txtOpenAICompatibleTransBaseUrl = new System.Windows.Forms.TextBox();
+            this.label57 = new System.Windows.Forms.Label();
+            this.label58 = new System.Windows.Forms.Label();
+            this.label59 = new System.Windows.Forms.Label();
+            this.textBox_OpenAICompatible_Source = new System.Windows.Forms.TextBox();
+            this.textBox_OpenAICompatible_Target = new System.Windows.Forms.TextBox();
+            this.groupBox_AI_Trans_Help = new System.Windows.Forms.GroupBox();
+            this.label60 = new System.Windows.Forms.Label();
             this.Page_翻译接口.SuspendLayout();
             this.tabControl_Trans.SuspendLayout();
             this.tabPage_Google.SuspendLayout();
@@ -545,6 +680,11 @@ namespace TrOCR
             ((System.ComponentModel.ISupportInitialize)(this.numbox_间隔时间)).BeginInit();
             this.Page_反馈.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).BeginInit();
+            this.tabControl_AI_Trans.SuspendLayout();
+            this.Page_AI翻译接口.SuspendLayout();
+            this.tabPage_Trans_OpenAICompatible.SuspendLayout();
+            this.groupBox_Trans_OpenAICompatible.SuspendLayout();
+            this.groupBox_AI_Trans_Help.SuspendLayout();
             this.SuspendLayout();
             // 
             // Page_翻译接口
@@ -1909,10 +2049,12 @@ namespace TrOCR
             // 
             // groupBox_AI_Help
             // 
+            this.groupBox_AI_Help.AutoSize = true;
+            this.groupBox_AI_Help.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.groupBox_AI_Help.Controls.Add(this.label_AI_Help);
             this.groupBox_AI_Help.Location = new System.Drawing.Point(0, 274);
             this.groupBox_AI_Help.Name = "groupBox_AI_Help";
-            this.groupBox_AI_Help.Size = new System.Drawing.Size(527, 238);
+            this.groupBox_AI_Help.Size = new System.Drawing.Size(492, 264);
             this.groupBox_AI_Help.TabIndex = 1;
             this.groupBox_AI_Help.TabStop = false;
             this.groupBox_AI_Help.Text = "说明";
@@ -1924,10 +2066,11 @@ namespace TrOCR
             this.label_AI_Help.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label_AI_Help.Location = new System.Drawing.Point(3, 21);
             this.label_AI_Help.Name = "label_AI_Help";
-            this.label_AI_Help.Size = new System.Drawing.Size(486, 200);
+            this.label_AI_Help.Size = new System.Drawing.Size(486, 240);
             this.label_AI_Help.TabIndex = 0;
-            this.label_AI_Help.Text = "通过修改配置文件(.json)里的提示词(Prompt)，可以使 AI 接口识别多种\r\n格式，比如：\r\n\r\n1. 公式识别\r\n2. 表格识别（支持 Markdow" +
-    "n 表格、Excel 表格等）\r\n3. 图片翻译\r\n4. 物体识别\r\n......\r\n\r\n注意：具体效果取决于所选模型的能力。";
+            this.label_AI_Help.Text = "配置文件不设置时，将使用程序内置的提示词\r\n\r\n通过修改配置文件(.json)里的提示词(Prompt)，可以使 AI 接口识别多种\r\n格式，比如：\r\n\r\n1. " +
+    "公式识别\r\n2. 表格识别（支持 Markdown 表格、Excel 表格等）\r\n3. 图片翻译\r\n4. 物体识别\r\n......\r\n\r\n注意：具体效果取决于所" +
+    "选模型的能力。";
             // 
             // tabControl_AI
             // 
@@ -4590,6 +4733,7 @@ namespace TrOCR
             this.tab_标签.Controls.Add(this.Page_密钥);
             this.tab_标签.Controls.Add(this.Page_AI密钥);
             this.tab_标签.Controls.Add(this.Page_翻译接口);
+            this.tab_标签.Controls.Add(this.Page_AI翻译接口);
             this.tab_标签.Controls.Add(this.Page_显示的接口);
             this.tab_标签.Controls.Add(this.Page_工具栏);
             this.tab_标签.Controls.Add(this.Page_代理);
@@ -5128,6 +5272,1274 @@ namespace TrOCR
             this.txt_更新说明.Size = new System.Drawing.Size(366, 155);
             this.txt_更新说明.TabIndex = 4;
             // 
+            // tabControl_AI_Trans
+            // 
+            this.tabControl_AI_Trans.Controls.Add(this.tabPage_Trans_OpenAICompatible);
+            this.tabControl_AI_Trans.Location = new System.Drawing.Point(3, 3);
+            this.tabControl_AI_Trans.Margin = new System.Windows.Forms.Padding(4);
+            this.tabControl_AI_Trans.Name = "tabControl_AI_Trans";
+            this.tabControl_AI_Trans.SelectedIndex = 0;
+            this.tabControl_AI_Trans.Size = new System.Drawing.Size(517, 294);
+            this.tabControl_AI_Trans.TabIndex = 1;
+            // 
+            // tabPage12
+            // 
+            this.tabPage12.Location = new System.Drawing.Point(4, 25);
+            this.tabPage12.Name = "tabPage12";
+            this.tabPage12.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage12.Size = new System.Drawing.Size(515, 486);
+            this.tabPage12.TabIndex = 11;
+            this.tabPage12.Text = "Baidu2";
+            this.tabPage12.UseVisualStyleBackColor = true;
+            // 
+            // groupBox49
+            // 
+            this.groupBox49.Location = new System.Drawing.Point(8, 8);
+            this.groupBox49.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox49.Name = "groupBox49";
+            this.groupBox49.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox49.Size = new System.Drawing.Size(493, 69);
+            this.groupBox49.TabIndex = 1;
+            this.groupBox49.TabStop = false;
+            // 
+            // textBox36
+            // 
+            this.textBox36.Location = new System.Drawing.Point(8, 25);
+            this.textBox36.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox36.Name = "textBox36";
+            this.textBox36.Size = new System.Drawing.Size(401, 25);
+            this.textBox36.TabIndex = 0;
+            // 
+            // button28
+            // 
+            this.button28.Location = new System.Drawing.Point(419, 24);
+            this.button28.Margin = new System.Windows.Forms.Padding(4);
+            this.button28.Name = "button28";
+            this.button28.Size = new System.Drawing.Size(67, 29);
+            this.button28.TabIndex = 1;
+            this.button28.Text = "重置";
+            this.button28.UseVisualStyleBackColor = true;
+            // 
+            // groupBox48
+            // 
+            this.groupBox48.Location = new System.Drawing.Point(8, 84);
+            this.groupBox48.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox48.Name = "groupBox48";
+            this.groupBox48.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox48.Size = new System.Drawing.Size(493, 69);
+            this.groupBox48.TabIndex = 2;
+            this.groupBox48.TabStop = false;
+            // 
+            // textBox35
+            // 
+            this.textBox35.Location = new System.Drawing.Point(8, 25);
+            this.textBox35.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox35.Name = "textBox35";
+            this.textBox35.Size = new System.Drawing.Size(401, 25);
+            this.textBox35.TabIndex = 0;
+            // 
+            // button27
+            // 
+            this.button27.Location = new System.Drawing.Point(419, 24);
+            this.button27.Margin = new System.Windows.Forms.Padding(4);
+            this.button27.Name = "button27";
+            this.button27.Size = new System.Drawing.Size(67, 29);
+            this.button27.TabIndex = 1;
+            this.button27.Text = "重置";
+            this.button27.UseVisualStyleBackColor = true;
+            // 
+            // groupBox47
+            // 
+            this.groupBox47.Location = new System.Drawing.Point(8, 160);
+            this.groupBox47.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox47.Name = "groupBox47";
+            this.groupBox47.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox47.Size = new System.Drawing.Size(493, 69);
+            this.groupBox47.TabIndex = 3;
+            this.groupBox47.TabStop = false;
+            // 
+            // label53
+            // 
+            this.label53.AutoSize = true;
+            this.label53.Location = new System.Drawing.Point(111, 32);
+            this.label53.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label53.Name = "label53";
+            this.label53.Size = new System.Drawing.Size(232, 15);
+            this.label53.TabIndex = 0;
+            // 
+            // tabPage11
+            // 
+            this.tabPage11.Location = new System.Drawing.Point(4, 25);
+            this.tabPage11.Margin = new System.Windows.Forms.Padding(4);
+            this.tabPage11.Name = "tabPage11";
+            this.tabPage11.Padding = new System.Windows.Forms.Padding(4);
+            this.tabPage11.Size = new System.Drawing.Size(515, 486);
+            this.tabPage11.TabIndex = 10;
+            this.tabPage11.Text = "彩云小译2";
+            this.tabPage11.UseVisualStyleBackColor = true;
+            // 
+            // groupBox46
+            // 
+            this.groupBox46.Location = new System.Drawing.Point(8, 8);
+            this.groupBox46.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox46.Name = "groupBox46";
+            this.groupBox46.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox46.Size = new System.Drawing.Size(493, 69);
+            this.groupBox46.TabIndex = 0;
+            this.groupBox46.TabStop = false;
+            // 
+            // textBox34
+            // 
+            this.textBox34.Location = new System.Drawing.Point(8, 25);
+            this.textBox34.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox34.Name = "textBox34";
+            this.textBox34.Size = new System.Drawing.Size(401, 25);
+            this.textBox34.TabIndex = 0;
+            // 
+            // button26
+            // 
+            this.button26.Location = new System.Drawing.Point(419, 24);
+            this.button26.Margin = new System.Windows.Forms.Padding(4);
+            this.button26.Name = "button26";
+            this.button26.Size = new System.Drawing.Size(67, 29);
+            this.button26.TabIndex = 1;
+            this.button26.Text = "重置";
+            this.button26.UseVisualStyleBackColor = true;
+            // 
+            // groupBox45
+            // 
+            this.groupBox45.Location = new System.Drawing.Point(8, 84);
+            this.groupBox45.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox45.Name = "groupBox45";
+            this.groupBox45.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox45.Size = new System.Drawing.Size(493, 69);
+            this.groupBox45.TabIndex = 1;
+            this.groupBox45.TabStop = false;
+            // 
+            // textBox33
+            // 
+            this.textBox33.Location = new System.Drawing.Point(8, 25);
+            this.textBox33.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox33.Name = "textBox33";
+            this.textBox33.Size = new System.Drawing.Size(401, 25);
+            this.textBox33.TabIndex = 0;
+            // 
+            // button25
+            // 
+            this.button25.Location = new System.Drawing.Point(419, 24);
+            this.button25.Margin = new System.Windows.Forms.Padding(4);
+            this.button25.Name = "button25";
+            this.button25.Size = new System.Drawing.Size(67, 29);
+            this.button25.TabIndex = 1;
+            this.button25.Text = "重置";
+            this.button25.UseVisualStyleBackColor = true;
+            // 
+            // groupBox44
+            // 
+            this.groupBox44.Location = new System.Drawing.Point(8, 160);
+            this.groupBox44.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox44.Name = "groupBox44";
+            this.groupBox44.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox44.Size = new System.Drawing.Size(493, 69);
+            this.groupBox44.TabIndex = 2;
+            this.groupBox44.TabStop = false;
+            // 
+            // label52
+            // 
+            this.label52.AutoSize = true;
+            this.label52.Location = new System.Drawing.Point(9, 29);
+            this.label52.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label52.Name = "label52";
+            this.label52.Size = new System.Drawing.Size(55, 15);
+            this.label52.TabIndex = 0;
+            // 
+            // textBox32
+            // 
+            this.textBox32.Location = new System.Drawing.Point(107, 25);
+            this.textBox32.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox32.Name = "textBox32";
+            this.textBox32.Size = new System.Drawing.Size(377, 25);
+            this.textBox32.TabIndex = 1;
+            // 
+            // tabPage10
+            // 
+            this.tabPage10.Location = new System.Drawing.Point(4, 25);
+            this.tabPage10.Margin = new System.Windows.Forms.Padding(4);
+            this.tabPage10.Name = "tabPage10";
+            this.tabPage10.Padding = new System.Windows.Forms.Padding(4);
+            this.tabPage10.Size = new System.Drawing.Size(515, 486);
+            this.tabPage10.TabIndex = 9;
+            this.tabPage10.Text = "火山翻译";
+            this.tabPage10.UseVisualStyleBackColor = true;
+            // 
+            // groupBox43
+            // 
+            this.groupBox43.Location = new System.Drawing.Point(8, 8);
+            this.groupBox43.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox43.Name = "groupBox43";
+            this.groupBox43.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox43.Size = new System.Drawing.Size(493, 69);
+            this.groupBox43.TabIndex = 0;
+            this.groupBox43.TabStop = false;
+            // 
+            // textBox31
+            // 
+            this.textBox31.Location = new System.Drawing.Point(8, 25);
+            this.textBox31.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox31.Name = "textBox31";
+            this.textBox31.Size = new System.Drawing.Size(401, 25);
+            this.textBox31.TabIndex = 0;
+            // 
+            // button24
+            // 
+            this.button24.Location = new System.Drawing.Point(419, 24);
+            this.button24.Margin = new System.Windows.Forms.Padding(4);
+            this.button24.Name = "button24";
+            this.button24.Size = new System.Drawing.Size(67, 29);
+            this.button24.TabIndex = 1;
+            this.button24.Text = "重置";
+            this.button24.UseVisualStyleBackColor = true;
+            // 
+            // groupBox42
+            // 
+            this.groupBox42.Location = new System.Drawing.Point(8, 84);
+            this.groupBox42.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox42.Name = "groupBox42";
+            this.groupBox42.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox42.Size = new System.Drawing.Size(493, 69);
+            this.groupBox42.TabIndex = 1;
+            this.groupBox42.TabStop = false;
+            // 
+            // textBox30
+            // 
+            this.textBox30.Location = new System.Drawing.Point(8, 25);
+            this.textBox30.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox30.Name = "textBox30";
+            this.textBox30.Size = new System.Drawing.Size(401, 25);
+            this.textBox30.TabIndex = 0;
+            // 
+            // button23
+            // 
+            this.button23.Location = new System.Drawing.Point(419, 24);
+            this.button23.Margin = new System.Windows.Forms.Padding(4);
+            this.button23.Name = "button23";
+            this.button23.Size = new System.Drawing.Size(67, 29);
+            this.button23.TabIndex = 1;
+            this.button23.Text = "重置";
+            this.button23.UseVisualStyleBackColor = true;
+            // 
+            // groupBox41
+            // 
+            this.groupBox41.Location = new System.Drawing.Point(8, 160);
+            this.groupBox41.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox41.Name = "groupBox41";
+            this.groupBox41.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox41.Size = new System.Drawing.Size(493, 69);
+            this.groupBox41.TabIndex = 2;
+            this.groupBox41.TabStop = false;
+            // 
+            // label51
+            // 
+            this.label51.AutoSize = true;
+            this.label51.Location = new System.Drawing.Point(200, 31);
+            this.label51.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label51.Name = "label51";
+            this.label51.Size = new System.Drawing.Size(67, 15);
+            this.label51.TabIndex = 0;
+            // 
+            // tabPage9
+            // 
+            this.tabPage9.Location = new System.Drawing.Point(4, 25);
+            this.tabPage9.Margin = new System.Windows.Forms.Padding(4);
+            this.tabPage9.Name = "tabPage9";
+            this.tabPage9.Padding = new System.Windows.Forms.Padding(4);
+            this.tabPage9.Size = new System.Drawing.Size(515, 486);
+            this.tabPage9.TabIndex = 8;
+            this.tabPage9.Text = "彩云小译";
+            this.tabPage9.UseVisualStyleBackColor = true;
+            // 
+            // groupBox40
+            // 
+            this.groupBox40.Location = new System.Drawing.Point(8, 8);
+            this.groupBox40.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox40.Name = "groupBox40";
+            this.groupBox40.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox40.Size = new System.Drawing.Size(493, 69);
+            this.groupBox40.TabIndex = 0;
+            this.groupBox40.TabStop = false;
+            // 
+            // textBox29
+            // 
+            this.textBox29.Location = new System.Drawing.Point(8, 25);
+            this.textBox29.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox29.Name = "textBox29";
+            this.textBox29.Size = new System.Drawing.Size(401, 25);
+            this.textBox29.TabIndex = 0;
+            // 
+            // button22
+            // 
+            this.button22.Location = new System.Drawing.Point(419, 24);
+            this.button22.Margin = new System.Windows.Forms.Padding(4);
+            this.button22.Name = "button22";
+            this.button22.Size = new System.Drawing.Size(67, 29);
+            this.button22.TabIndex = 1;
+            this.button22.Text = "重置";
+            this.button22.UseVisualStyleBackColor = true;
+            // 
+            // groupBox39
+            // 
+            this.groupBox39.Location = new System.Drawing.Point(8, 84);
+            this.groupBox39.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox39.Name = "groupBox39";
+            this.groupBox39.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox39.Size = new System.Drawing.Size(493, 69);
+            this.groupBox39.TabIndex = 1;
+            this.groupBox39.TabStop = false;
+            // 
+            // textBox28
+            // 
+            this.textBox28.Location = new System.Drawing.Point(8, 25);
+            this.textBox28.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox28.Name = "textBox28";
+            this.textBox28.Size = new System.Drawing.Size(401, 25);
+            this.textBox28.TabIndex = 0;
+            // 
+            // button21
+            // 
+            this.button21.Location = new System.Drawing.Point(419, 24);
+            this.button21.Margin = new System.Windows.Forms.Padding(4);
+            this.button21.Name = "button21";
+            this.button21.Size = new System.Drawing.Size(67, 29);
+            this.button21.TabIndex = 1;
+            this.button21.Text = "重置";
+            this.button21.UseVisualStyleBackColor = true;
+            // 
+            // groupBox38
+            // 
+            this.groupBox38.Location = new System.Drawing.Point(8, 160);
+            this.groupBox38.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox38.Name = "groupBox38";
+            this.groupBox38.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox38.Size = new System.Drawing.Size(493, 69);
+            this.groupBox38.TabIndex = 2;
+            this.groupBox38.TabStop = false;
+            // 
+            // label50
+            // 
+            this.label50.AutoSize = true;
+            this.label50.Location = new System.Drawing.Point(200, 31);
+            this.label50.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label50.Name = "label50";
+            this.label50.Size = new System.Drawing.Size(67, 15);
+            this.label50.TabIndex = 0;
+            // 
+            // tabPage8
+            // 
+            this.tabPage8.Location = new System.Drawing.Point(4, 25);
+            this.tabPage8.Margin = new System.Windows.Forms.Padding(4);
+            this.tabPage8.Name = "tabPage8";
+            this.tabPage8.Padding = new System.Windows.Forms.Padding(4);
+            this.tabPage8.Size = new System.Drawing.Size(515, 486);
+            this.tabPage8.TabIndex = 7;
+            this.tabPage8.Text = "腾讯交互";
+            this.tabPage8.UseVisualStyleBackColor = true;
+            // 
+            // groupBox37
+            // 
+            this.groupBox37.Location = new System.Drawing.Point(8, 8);
+            this.groupBox37.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox37.Name = "groupBox37";
+            this.groupBox37.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox37.Size = new System.Drawing.Size(493, 69);
+            this.groupBox37.TabIndex = 0;
+            this.groupBox37.TabStop = false;
+            // 
+            // textBox27
+            // 
+            this.textBox27.Location = new System.Drawing.Point(8, 25);
+            this.textBox27.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox27.Name = "textBox27";
+            this.textBox27.Size = new System.Drawing.Size(401, 25);
+            this.textBox27.TabIndex = 0;
+            // 
+            // button20
+            // 
+            this.button20.Location = new System.Drawing.Point(419, 24);
+            this.button20.Margin = new System.Windows.Forms.Padding(4);
+            this.button20.Name = "button20";
+            this.button20.Size = new System.Drawing.Size(67, 29);
+            this.button20.TabIndex = 1;
+            this.button20.Text = "重置";
+            this.button20.UseVisualStyleBackColor = true;
+            // 
+            // groupBox36
+            // 
+            this.groupBox36.Location = new System.Drawing.Point(8, 84);
+            this.groupBox36.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox36.Name = "groupBox36";
+            this.groupBox36.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox36.Size = new System.Drawing.Size(493, 69);
+            this.groupBox36.TabIndex = 1;
+            this.groupBox36.TabStop = false;
+            // 
+            // textBox26
+            // 
+            this.textBox26.Location = new System.Drawing.Point(8, 25);
+            this.textBox26.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox26.Name = "textBox26";
+            this.textBox26.Size = new System.Drawing.Size(401, 25);
+            this.textBox26.TabIndex = 0;
+            // 
+            // button19
+            // 
+            this.button19.Location = new System.Drawing.Point(419, 24);
+            this.button19.Margin = new System.Windows.Forms.Padding(4);
+            this.button19.Name = "button19";
+            this.button19.Size = new System.Drawing.Size(67, 29);
+            this.button19.TabIndex = 1;
+            this.button19.Text = "重置";
+            this.button19.UseVisualStyleBackColor = true;
+            // 
+            // groupBox35
+            // 
+            this.groupBox35.Location = new System.Drawing.Point(8, 160);
+            this.groupBox35.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox35.Name = "groupBox35";
+            this.groupBox35.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox35.Size = new System.Drawing.Size(493, 69);
+            this.groupBox35.TabIndex = 2;
+            this.groupBox35.TabStop = false;
+            // 
+            // label49
+            // 
+            this.label49.AutoSize = true;
+            this.label49.Location = new System.Drawing.Point(200, 31);
+            this.label49.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label49.Name = "label49";
+            this.label49.Size = new System.Drawing.Size(67, 15);
+            this.label49.TabIndex = 0;
+            // 
+            // tabPage7
+            // 
+            this.tabPage7.Location = new System.Drawing.Point(4, 25);
+            this.tabPage7.Margin = new System.Windows.Forms.Padding(4);
+            this.tabPage7.Name = "tabPage7";
+            this.tabPage7.Size = new System.Drawing.Size(515, 486);
+            this.tabPage7.TabIndex = 5;
+            this.tabPage7.Text = "Yandex";
+            this.tabPage7.UseVisualStyleBackColor = true;
+            // 
+            // groupBox34
+            // 
+            this.groupBox34.Location = new System.Drawing.Point(8, 8);
+            this.groupBox34.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox34.Name = "groupBox34";
+            this.groupBox34.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox34.Size = new System.Drawing.Size(493, 69);
+            this.groupBox34.TabIndex = 0;
+            this.groupBox34.TabStop = false;
+            // 
+            // textBox25
+            // 
+            this.textBox25.Location = new System.Drawing.Point(8, 25);
+            this.textBox25.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox25.Name = "textBox25";
+            this.textBox25.Size = new System.Drawing.Size(401, 25);
+            this.textBox25.TabIndex = 0;
+            // 
+            // button18
+            // 
+            this.button18.Location = new System.Drawing.Point(419, 24);
+            this.button18.Margin = new System.Windows.Forms.Padding(4);
+            this.button18.Name = "button18";
+            this.button18.Size = new System.Drawing.Size(67, 29);
+            this.button18.TabIndex = 1;
+            this.button18.Text = "重置";
+            this.button18.UseVisualStyleBackColor = true;
+            // 
+            // groupBox33
+            // 
+            this.groupBox33.Location = new System.Drawing.Point(8, 84);
+            this.groupBox33.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox33.Name = "groupBox33";
+            this.groupBox33.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox33.Size = new System.Drawing.Size(493, 69);
+            this.groupBox33.TabIndex = 1;
+            this.groupBox33.TabStop = false;
+            // 
+            // textBox24
+            // 
+            this.textBox24.Location = new System.Drawing.Point(8, 25);
+            this.textBox24.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox24.Name = "textBox24";
+            this.textBox24.Size = new System.Drawing.Size(401, 25);
+            this.textBox24.TabIndex = 0;
+            // 
+            // button17
+            // 
+            this.button17.Location = new System.Drawing.Point(419, 24);
+            this.button17.Margin = new System.Windows.Forms.Padding(4);
+            this.button17.Name = "button17";
+            this.button17.Size = new System.Drawing.Size(67, 29);
+            this.button17.TabIndex = 1;
+            this.button17.Text = "重置";
+            this.button17.UseVisualStyleBackColor = true;
+            // 
+            // groupBox32
+            // 
+            this.groupBox32.Location = new System.Drawing.Point(8, 160);
+            this.groupBox32.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox32.Name = "groupBox32";
+            this.groupBox32.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox32.Size = new System.Drawing.Size(493, 69);
+            this.groupBox32.TabIndex = 2;
+            this.groupBox32.TabStop = false;
+            // 
+            // label48
+            // 
+            this.label48.AutoSize = true;
+            this.label48.Location = new System.Drawing.Point(200, 31);
+            this.label48.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label48.Name = "label48";
+            this.label48.Size = new System.Drawing.Size(67, 15);
+            this.label48.TabIndex = 0;
+            // 
+            // tabPage6
+            // 
+            this.tabPage6.Location = new System.Drawing.Point(4, 25);
+            this.tabPage6.Margin = new System.Windows.Forms.Padding(4);
+            this.tabPage6.Name = "tabPage6";
+            this.tabPage6.Size = new System.Drawing.Size(515, 486);
+            this.tabPage6.TabIndex = 4;
+            this.tabPage6.Text = "Microsoft";
+            this.tabPage6.UseVisualStyleBackColor = true;
+            // 
+            // groupBox31
+            // 
+            this.groupBox31.Location = new System.Drawing.Point(8, 8);
+            this.groupBox31.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox31.Name = "groupBox31";
+            this.groupBox31.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox31.Size = new System.Drawing.Size(493, 69);
+            this.groupBox31.TabIndex = 0;
+            this.groupBox31.TabStop = false;
+            // 
+            // textBox23
+            // 
+            this.textBox23.Location = new System.Drawing.Point(8, 25);
+            this.textBox23.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox23.Name = "textBox23";
+            this.textBox23.Size = new System.Drawing.Size(401, 25);
+            this.textBox23.TabIndex = 0;
+            // 
+            // button16
+            // 
+            this.button16.Location = new System.Drawing.Point(419, 24);
+            this.button16.Margin = new System.Windows.Forms.Padding(4);
+            this.button16.Name = "button16";
+            this.button16.Size = new System.Drawing.Size(67, 29);
+            this.button16.TabIndex = 1;
+            this.button16.Text = "重置";
+            this.button16.UseVisualStyleBackColor = true;
+            // 
+            // groupBox30
+            // 
+            this.groupBox30.Location = new System.Drawing.Point(8, 84);
+            this.groupBox30.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox30.Name = "groupBox30";
+            this.groupBox30.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox30.Size = new System.Drawing.Size(493, 69);
+            this.groupBox30.TabIndex = 1;
+            this.groupBox30.TabStop = false;
+            // 
+            // textBox22
+            // 
+            this.textBox22.Location = new System.Drawing.Point(8, 25);
+            this.textBox22.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox22.Name = "textBox22";
+            this.textBox22.Size = new System.Drawing.Size(401, 25);
+            this.textBox22.TabIndex = 0;
+            // 
+            // button15
+            // 
+            this.button15.Location = new System.Drawing.Point(419, 24);
+            this.button15.Margin = new System.Windows.Forms.Padding(4);
+            this.button15.Name = "button15";
+            this.button15.Size = new System.Drawing.Size(67, 29);
+            this.button15.TabIndex = 1;
+            this.button15.Text = "重置";
+            this.button15.UseVisualStyleBackColor = true;
+            // 
+            // groupBox29
+            // 
+            this.groupBox29.Location = new System.Drawing.Point(8, 160);
+            this.groupBox29.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox29.Name = "groupBox29";
+            this.groupBox29.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox29.Size = new System.Drawing.Size(493, 69);
+            this.groupBox29.TabIndex = 2;
+            this.groupBox29.TabStop = false;
+            // 
+            // label47
+            // 
+            this.label47.AutoSize = true;
+            this.label47.Location = new System.Drawing.Point(200, 31);
+            this.label47.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label47.Name = "label47";
+            this.label47.Size = new System.Drawing.Size(67, 15);
+            this.label47.TabIndex = 0;
+            // 
+            // tabPage5
+            // 
+            this.tabPage5.Location = new System.Drawing.Point(4, 25);
+            this.tabPage5.Margin = new System.Windows.Forms.Padding(4);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Size = new System.Drawing.Size(515, 486);
+            this.tabPage5.TabIndex = 6;
+            this.tabPage5.Text = "Bing2";
+            this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // groupBox28
+            // 
+            this.groupBox28.Location = new System.Drawing.Point(8, 8);
+            this.groupBox28.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox28.Name = "groupBox28";
+            this.groupBox28.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox28.Size = new System.Drawing.Size(493, 69);
+            this.groupBox28.TabIndex = 3;
+            this.groupBox28.TabStop = false;
+            // 
+            // textBox21
+            // 
+            this.textBox21.Location = new System.Drawing.Point(8, 25);
+            this.textBox21.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox21.Name = "textBox21";
+            this.textBox21.Size = new System.Drawing.Size(401, 25);
+            this.textBox21.TabIndex = 0;
+            // 
+            // button14
+            // 
+            this.button14.Location = new System.Drawing.Point(419, 24);
+            this.button14.Margin = new System.Windows.Forms.Padding(4);
+            this.button14.Name = "button14";
+            this.button14.Size = new System.Drawing.Size(67, 29);
+            this.button14.TabIndex = 1;
+            this.button14.Text = "重置";
+            this.button14.UseVisualStyleBackColor = true;
+            // 
+            // groupBox27
+            // 
+            this.groupBox27.Location = new System.Drawing.Point(8, 84);
+            this.groupBox27.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox27.Name = "groupBox27";
+            this.groupBox27.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox27.Size = new System.Drawing.Size(493, 69);
+            this.groupBox27.TabIndex = 4;
+            this.groupBox27.TabStop = false;
+            // 
+            // textBox20
+            // 
+            this.textBox20.Location = new System.Drawing.Point(8, 25);
+            this.textBox20.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox20.Name = "textBox20";
+            this.textBox20.Size = new System.Drawing.Size(401, 25);
+            this.textBox20.TabIndex = 0;
+            // 
+            // button13
+            // 
+            this.button13.Location = new System.Drawing.Point(419, 24);
+            this.button13.Margin = new System.Windows.Forms.Padding(4);
+            this.button13.Name = "button13";
+            this.button13.Size = new System.Drawing.Size(67, 29);
+            this.button13.TabIndex = 1;
+            this.button13.Text = "重置";
+            this.button13.UseVisualStyleBackColor = true;
+            // 
+            // groupBox26
+            // 
+            this.groupBox26.Location = new System.Drawing.Point(8, 160);
+            this.groupBox26.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox26.Name = "groupBox26";
+            this.groupBox26.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox26.Size = new System.Drawing.Size(493, 100);
+            this.groupBox26.TabIndex = 5;
+            this.groupBox26.TabStop = false;
+            // 
+            // label46
+            // 
+            this.label46.AutoSize = true;
+            this.label46.Location = new System.Drawing.Point(8, 25);
+            this.label46.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label46.Name = "label46";
+            this.label46.Size = new System.Drawing.Size(267, 45);
+            this.label46.TabIndex = 0;
+            // 
+            // tabPage4
+            // 
+            this.tabPage4.Location = new System.Drawing.Point(4, 25);
+            this.tabPage4.Margin = new System.Windows.Forms.Padding(4);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Size = new System.Drawing.Size(515, 486);
+            this.tabPage4.TabIndex = 3;
+            this.tabPage4.Text = "Bing";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // groupBox25
+            // 
+            this.groupBox25.Location = new System.Drawing.Point(8, 8);
+            this.groupBox25.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox25.Name = "groupBox25";
+            this.groupBox25.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox25.Size = new System.Drawing.Size(493, 69);
+            this.groupBox25.TabIndex = 0;
+            this.groupBox25.TabStop = false;
+            // 
+            // textBox19
+            // 
+            this.textBox19.Location = new System.Drawing.Point(8, 25);
+            this.textBox19.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox19.Name = "textBox19";
+            this.textBox19.Size = new System.Drawing.Size(401, 25);
+            this.textBox19.TabIndex = 0;
+            // 
+            // button12
+            // 
+            this.button12.Location = new System.Drawing.Point(419, 24);
+            this.button12.Margin = new System.Windows.Forms.Padding(4);
+            this.button12.Name = "button12";
+            this.button12.Size = new System.Drawing.Size(67, 29);
+            this.button12.TabIndex = 1;
+            this.button12.Text = "重置";
+            this.button12.UseVisualStyleBackColor = true;
+            // 
+            // groupBox24
+            // 
+            this.groupBox24.Location = new System.Drawing.Point(8, 84);
+            this.groupBox24.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox24.Name = "groupBox24";
+            this.groupBox24.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox24.Size = new System.Drawing.Size(493, 69);
+            this.groupBox24.TabIndex = 1;
+            this.groupBox24.TabStop = false;
+            // 
+            // textBox18
+            // 
+            this.textBox18.Location = new System.Drawing.Point(8, 25);
+            this.textBox18.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox18.Name = "textBox18";
+            this.textBox18.Size = new System.Drawing.Size(401, 25);
+            this.textBox18.TabIndex = 0;
+            // 
+            // button11
+            // 
+            this.button11.Location = new System.Drawing.Point(419, 24);
+            this.button11.Margin = new System.Windows.Forms.Padding(4);
+            this.button11.Name = "button11";
+            this.button11.Size = new System.Drawing.Size(67, 29);
+            this.button11.TabIndex = 1;
+            this.button11.Text = "重置";
+            this.button11.UseVisualStyleBackColor = true;
+            // 
+            // groupBox23
+            // 
+            this.groupBox23.Location = new System.Drawing.Point(8, 160);
+            this.groupBox23.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox23.Name = "groupBox23";
+            this.groupBox23.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox23.Size = new System.Drawing.Size(493, 69);
+            this.groupBox23.TabIndex = 2;
+            this.groupBox23.TabStop = false;
+            // 
+            // label45
+            // 
+            this.label45.AutoSize = true;
+            this.label45.Location = new System.Drawing.Point(200, 31);
+            this.label45.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label45.Name = "label45";
+            this.label45.Size = new System.Drawing.Size(67, 15);
+            this.label45.TabIndex = 0;
+            // 
+            // tabPage3
+            // 
+            this.tabPage3.Location = new System.Drawing.Point(4, 25);
+            this.tabPage3.Margin = new System.Windows.Forms.Padding(4);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Size = new System.Drawing.Size(515, 486);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "Tencent";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // groupBox22
+            // 
+            this.groupBox22.Location = new System.Drawing.Point(8, 8);
+            this.groupBox22.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox22.Name = "groupBox22";
+            this.groupBox22.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox22.Size = new System.Drawing.Size(493, 69);
+            this.groupBox22.TabIndex = 3;
+            this.groupBox22.TabStop = false;
+            // 
+            // textBox17
+            // 
+            this.textBox17.Location = new System.Drawing.Point(8, 25);
+            this.textBox17.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox17.Name = "textBox17";
+            this.textBox17.Size = new System.Drawing.Size(401, 25);
+            this.textBox17.TabIndex = 0;
+            // 
+            // button10
+            // 
+            this.button10.Location = new System.Drawing.Point(419, 24);
+            this.button10.Margin = new System.Windows.Forms.Padding(4);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(67, 29);
+            this.button10.TabIndex = 1;
+            this.button10.Text = "重置";
+            this.button10.UseVisualStyleBackColor = true;
+            // 
+            // groupBox21
+            // 
+            this.groupBox21.Location = new System.Drawing.Point(8, 84);
+            this.groupBox21.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox21.Name = "groupBox21";
+            this.groupBox21.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox21.Size = new System.Drawing.Size(493, 69);
+            this.groupBox21.TabIndex = 4;
+            this.groupBox21.TabStop = false;
+            // 
+            // textBox16
+            // 
+            this.textBox16.Location = new System.Drawing.Point(8, 25);
+            this.textBox16.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox16.Name = "textBox16";
+            this.textBox16.Size = new System.Drawing.Size(401, 25);
+            this.textBox16.TabIndex = 0;
+            // 
+            // button9
+            // 
+            this.button9.Location = new System.Drawing.Point(419, 24);
+            this.button9.Margin = new System.Windows.Forms.Padding(4);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(67, 29);
+            this.button9.TabIndex = 1;
+            this.button9.Text = "重置";
+            this.button9.UseVisualStyleBackColor = true;
+            // 
+            // groupBox20
+            // 
+            this.groupBox20.Location = new System.Drawing.Point(8, 160);
+            this.groupBox20.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox20.Name = "groupBox20";
+            this.groupBox20.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox20.Size = new System.Drawing.Size(493, 100);
+            this.groupBox20.TabIndex = 5;
+            this.groupBox20.TabStop = false;
+            // 
+            // label44
+            // 
+            this.label44.AutoSize = true;
+            this.label44.Location = new System.Drawing.Point(9, 29);
+            this.label44.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label44.Name = "label44";
+            this.label44.Size = new System.Drawing.Size(79, 15);
+            this.label44.TabIndex = 0;
+            // 
+            // textBox15
+            // 
+            this.textBox15.Location = new System.Drawing.Point(107, 25);
+            this.textBox15.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox15.Name = "textBox15";
+            this.textBox15.Size = new System.Drawing.Size(377, 25);
+            this.textBox15.TabIndex = 1;
+            // 
+            // label43
+            // 
+            this.label43.AutoSize = true;
+            this.label43.Location = new System.Drawing.Point(9, 62);
+            this.label43.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label43.Name = "label43";
+            this.label43.Size = new System.Drawing.Size(87, 15);
+            this.label43.TabIndex = 2;
+            // 
+            // textBox14
+            // 
+            this.textBox14.Location = new System.Drawing.Point(107, 59);
+            this.textBox14.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox14.Name = "textBox14";
+            this.textBox14.Size = new System.Drawing.Size(377, 25);
+            this.textBox14.TabIndex = 3;
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Location = new System.Drawing.Point(4, 25);
+            this.tabPage2.Margin = new System.Windows.Forms.Padding(4);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(4);
+            this.tabPage2.Size = new System.Drawing.Size(515, 486);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Baidu";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // groupBox19
+            // 
+            this.groupBox19.Location = new System.Drawing.Point(8, 8);
+            this.groupBox19.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox19.Name = "groupBox19";
+            this.groupBox19.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox19.Size = new System.Drawing.Size(493, 69);
+            this.groupBox19.TabIndex = 3;
+            this.groupBox19.TabStop = false;
+            // 
+            // textBox13
+            // 
+            this.textBox13.Location = new System.Drawing.Point(8, 25);
+            this.textBox13.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox13.Name = "textBox13";
+            this.textBox13.Size = new System.Drawing.Size(401, 25);
+            this.textBox13.TabIndex = 0;
+            // 
+            // button8
+            // 
+            this.button8.Location = new System.Drawing.Point(419, 24);
+            this.button8.Margin = new System.Windows.Forms.Padding(4);
+            this.button8.Name = "button8";
+            this.button8.Size = new System.Drawing.Size(67, 29);
+            this.button8.TabIndex = 1;
+            this.button8.Text = "重置";
+            this.button8.UseVisualStyleBackColor = true;
+            // 
+            // groupBox18
+            // 
+            this.groupBox18.Location = new System.Drawing.Point(8, 84);
+            this.groupBox18.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox18.Name = "groupBox18";
+            this.groupBox18.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox18.Size = new System.Drawing.Size(493, 69);
+            this.groupBox18.TabIndex = 4;
+            this.groupBox18.TabStop = false;
+            // 
+            // textBox12
+            // 
+            this.textBox12.Location = new System.Drawing.Point(8, 25);
+            this.textBox12.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox12.Name = "textBox12";
+            this.textBox12.Size = new System.Drawing.Size(401, 25);
+            this.textBox12.TabIndex = 0;
+            // 
+            // button7
+            // 
+            this.button7.Location = new System.Drawing.Point(419, 24);
+            this.button7.Margin = new System.Windows.Forms.Padding(4);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(67, 29);
+            this.button7.TabIndex = 1;
+            this.button7.Text = "重置";
+            this.button7.UseVisualStyleBackColor = true;
+            // 
+            // groupBox17
+            // 
+            this.groupBox17.Location = new System.Drawing.Point(8, 160);
+            this.groupBox17.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox17.Name = "groupBox17";
+            this.groupBox17.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox17.Size = new System.Drawing.Size(493, 100);
+            this.groupBox17.TabIndex = 5;
+            this.groupBox17.TabStop = false;
+            // 
+            // label42
+            // 
+            this.label42.AutoSize = true;
+            this.label42.Location = new System.Drawing.Point(9, 29);
+            this.label42.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label42.Name = "label42";
+            this.label42.Size = new System.Drawing.Size(63, 15);
+            this.label42.TabIndex = 0;
+            // 
+            // textBox11
+            // 
+            this.textBox11.Location = new System.Drawing.Point(107, 25);
+            this.textBox11.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox11.Name = "textBox11";
+            this.textBox11.Size = new System.Drawing.Size(377, 25);
+            this.textBox11.TabIndex = 1;
+            // 
+            // label41
+            // 
+            this.label41.AutoSize = true;
+            this.label41.Location = new System.Drawing.Point(9, 62);
+            this.label41.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(95, 15);
+            this.label41.TabIndex = 2;
+            // 
+            // textBox10
+            // 
+            this.textBox10.Location = new System.Drawing.Point(107, 59);
+            this.textBox10.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox10.Name = "textBox10";
+            this.textBox10.Size = new System.Drawing.Size(377, 25);
+            this.textBox10.TabIndex = 3;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Location = new System.Drawing.Point(4, 25);
+            this.tabPage1.Margin = new System.Windows.Forms.Padding(4);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(4);
+            this.tabPage1.Size = new System.Drawing.Size(509, 480);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "Google";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // groupBox16
+            // 
+            this.groupBox16.Location = new System.Drawing.Point(8, 8);
+            this.groupBox16.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox16.Name = "groupBox16";
+            this.groupBox16.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox16.Size = new System.Drawing.Size(493, 69);
+            this.groupBox16.TabIndex = 0;
+            this.groupBox16.TabStop = false;
+            // 
+            // textBox9
+            // 
+            this.textBox9.Location = new System.Drawing.Point(8, 25);
+            this.textBox9.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox9.Name = "textBox9";
+            this.textBox9.Size = new System.Drawing.Size(401, 25);
+            this.textBox9.TabIndex = 0;
+            // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(419, 24);
+            this.button6.Margin = new System.Windows.Forms.Padding(4);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(67, 29);
+            this.button6.TabIndex = 1;
+            this.button6.Text = "重置";
+            this.button6.UseVisualStyleBackColor = true;
+            // 
+            // groupBox15
+            // 
+            this.groupBox15.Location = new System.Drawing.Point(8, 84);
+            this.groupBox15.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox15.Name = "groupBox15";
+            this.groupBox15.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox15.Size = new System.Drawing.Size(493, 69);
+            this.groupBox15.TabIndex = 1;
+            this.groupBox15.TabStop = false;
+            // 
+            // textBox8
+            // 
+            this.textBox8.Location = new System.Drawing.Point(8, 25);
+            this.textBox8.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox8.Name = "textBox8";
+            this.textBox8.Size = new System.Drawing.Size(401, 25);
+            this.textBox8.TabIndex = 0;
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(419, 24);
+            this.button5.Margin = new System.Windows.Forms.Padding(4);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(67, 29);
+            this.button5.TabIndex = 1;
+            this.button5.Text = "重置";
+            this.button5.UseVisualStyleBackColor = true;
+            // 
+            // groupBox14
+            // 
+            this.groupBox14.Location = new System.Drawing.Point(8, 160);
+            this.groupBox14.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox14.Name = "groupBox14";
+            this.groupBox14.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox14.Size = new System.Drawing.Size(493, 69);
+            this.groupBox14.TabIndex = 2;
+            this.groupBox14.TabStop = false;
+            // 
+            // label32
+            // 
+            this.label32.AutoSize = true;
+            this.label32.Location = new System.Drawing.Point(200, 31);
+            this.label32.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(67, 15);
+            this.label32.TabIndex = 0;
+            // 
+            // Page_AI翻译接口
+            // 
+            this.Page_AI翻译接口.Controls.Add(this.groupBox_AI_Trans_Help);
+            this.Page_AI翻译接口.Controls.Add(this.tabControl_AI_Trans);
+            this.Page_AI翻译接口.Location = new System.Drawing.Point(4, 25);
+            this.Page_AI翻译接口.Name = "Page_AI翻译接口";
+            this.Page_AI翻译接口.Padding = new System.Windows.Forms.Padding(3);
+            this.Page_AI翻译接口.Size = new System.Drawing.Size(523, 515);
+            this.Page_AI翻译接口.TabIndex = 15;
+            this.Page_AI翻译接口.Text = "AI翻译接口";
+            this.Page_AI翻译接口.UseVisualStyleBackColor = true;
+            // 
+            // tabPage_Trans_OpenAICompatible
+            // 
+            this.tabPage_Trans_OpenAICompatible.Controls.Add(this.groupBox_Trans_OpenAICompatible);
+            this.tabPage_Trans_OpenAICompatible.Location = new System.Drawing.Point(4, 25);
+            this.tabPage_Trans_OpenAICompatible.Name = "tabPage_Trans_OpenAICompatible";
+            this.tabPage_Trans_OpenAICompatible.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_Trans_OpenAICompatible.Size = new System.Drawing.Size(509, 265);
+            this.tabPage_Trans_OpenAICompatible.TabIndex = 1;
+            this.tabPage_Trans_OpenAICompatible.Text = "OpenAICompatible";
+            this.tabPage_Trans_OpenAICompatible.UseVisualStyleBackColor = true;
+            // 
+            // groupBox_Trans_OpenAICompatible
+            // 
+            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.textBox_OpenAICompatible_Target);
+            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.textBox_OpenAICompatible_Source);
+            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.label59);
+            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.label58);
+            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.btn_OpenAICompatible_Trans_Config_Browse);
+            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.txtOpenAICompatibleTransConfig);
+            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.label54);
+            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.txtOpenAICompatibleTransApiKey);
+            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.label55);
+            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.txtOpenAICompatibleTransModel);
+            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.label56);
+            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.txtOpenAICompatibleTransBaseUrl);
+            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.label57);
+            this.groupBox_Trans_OpenAICompatible.Location = new System.Drawing.Point(8, 8);
+            this.groupBox_Trans_OpenAICompatible.Name = "groupBox_Trans_OpenAICompatible";
+            this.groupBox_Trans_OpenAICompatible.Size = new System.Drawing.Size(490, 241);
+            this.groupBox_Trans_OpenAICompatible.TabIndex = 0;
+            this.groupBox_Trans_OpenAICompatible.TabStop = false;
+            this.groupBox_Trans_OpenAICompatible.Text = "配置";
+            // 
+            // btn_OpenAICompatible_Trans_Config_Browse
+            // 
+            this.btn_OpenAICompatible_Trans_Config_Browse.Location = new System.Drawing.Point(430, 147);
+            this.btn_OpenAICompatible_Trans_Config_Browse.Name = "btn_OpenAICompatible_Trans_Config_Browse";
+            this.btn_OpenAICompatible_Trans_Config_Browse.Size = new System.Drawing.Size(40, 25);
+            this.btn_OpenAICompatible_Trans_Config_Browse.TabIndex = 8;
+            this.btn_OpenAICompatible_Trans_Config_Browse.Text = "...";
+            this.btn_OpenAICompatible_Trans_Config_Browse.UseVisualStyleBackColor = true;
+            // 
+            // txtOpenAICompatibleTransConfig
+            // 
+            this.txtOpenAICompatibleTransConfig.Location = new System.Drawing.Point(100, 147);
+            this.txtOpenAICompatibleTransConfig.Name = "txtOpenAICompatibleTransConfig";
+            this.txtOpenAICompatibleTransConfig.Size = new System.Drawing.Size(324, 25);
+            this.txtOpenAICompatibleTransConfig.TabIndex = 7;
+            // 
+            // label54
+            // 
+            this.label54.AutoSize = true;
+            this.label54.Location = new System.Drawing.Point(20, 150);
+            this.label54.Name = "label54";
+            this.label54.Size = new System.Drawing.Size(75, 15);
+            this.label54.TabIndex = 6;
+            this.label54.Text = "配置文件:";
+            // 
+            // txtOpenAICompatibleTransApiKey
+            // 
+            this.txtOpenAICompatibleTransApiKey.Location = new System.Drawing.Point(100, 107);
+            this.txtOpenAICompatibleTransApiKey.Name = "txtOpenAICompatibleTransApiKey";
+            this.txtOpenAICompatibleTransApiKey.PasswordChar = '*';
+            this.txtOpenAICompatibleTransApiKey.Size = new System.Drawing.Size(370, 25);
+            this.txtOpenAICompatibleTransApiKey.TabIndex = 5;
+            // 
+            // label55
+            // 
+            this.label55.AutoSize = true;
+            this.label55.Location = new System.Drawing.Point(20, 110);
+            this.label55.Name = "label55";
+            this.label55.Size = new System.Drawing.Size(71, 15);
+            this.label55.TabIndex = 4;
+            this.label55.Text = "API Key:";
+            // 
+            // txtOpenAICompatibleTransModel
+            // 
+            this.txtOpenAICompatibleTransModel.Location = new System.Drawing.Point(100, 67);
+            this.txtOpenAICompatibleTransModel.Name = "txtOpenAICompatibleTransModel";
+            this.txtOpenAICompatibleTransModel.Size = new System.Drawing.Size(370, 25);
+            this.txtOpenAICompatibleTransModel.TabIndex = 3;
+            // 
+            // label56
+            // 
+            this.label56.AutoSize = true;
+            this.label56.Location = new System.Drawing.Point(20, 70);
+            this.label56.Name = "label56";
+            this.label56.Size = new System.Drawing.Size(45, 15);
+            this.label56.TabIndex = 2;
+            this.label56.Text = "模型:";
+            // 
+            // txtOpenAICompatibleTransBaseUrl
+            // 
+            this.txtOpenAICompatibleTransBaseUrl.Location = new System.Drawing.Point(100, 27);
+            this.txtOpenAICompatibleTransBaseUrl.Name = "txtOpenAICompatibleTransBaseUrl";
+            this.txtOpenAICompatibleTransBaseUrl.Size = new System.Drawing.Size(370, 25);
+            this.txtOpenAICompatibleTransBaseUrl.TabIndex = 1;
+            // 
+            // label57
+            // 
+            this.label57.AutoSize = true;
+            this.label57.Location = new System.Drawing.Point(20, 30);
+            this.label57.Name = "label57";
+            this.label57.Size = new System.Drawing.Size(79, 15);
+            this.label57.TabIndex = 0;
+            this.label57.Text = "Base URL:";
+            // 
+            // label58
+            // 
+            this.label58.AutoSize = true;
+            this.label58.Location = new System.Drawing.Point(20, 193);
+            this.label58.Name = "label58";
+            this.label58.Size = new System.Drawing.Size(67, 15);
+            this.label58.TabIndex = 9;
+            this.label58.Text = "源语言：";
+            // 
+            // label59
+            // 
+            this.label59.AutoSize = true;
+            this.label59.Location = new System.Drawing.Point(218, 193);
+            this.label59.Name = "label59";
+            this.label59.Size = new System.Drawing.Size(82, 15);
+            this.label59.TabIndex = 10;
+            this.label59.Text = "目标语言：";
+            // 
+            // textBox_OpenAICompatible_Source
+            // 
+            this.textBox_OpenAICompatible_Source.Location = new System.Drawing.Point(100, 190);
+            this.textBox_OpenAICompatible_Source.Name = "textBox_OpenAICompatible_Source";
+            this.textBox_OpenAICompatible_Source.Size = new System.Drawing.Size(99, 25);
+            this.textBox_OpenAICompatible_Source.TabIndex = 11;
+            // 
+            // textBox_OpenAICompatible_Target
+            // 
+            this.textBox_OpenAICompatible_Target.Location = new System.Drawing.Point(306, 190);
+            this.textBox_OpenAICompatible_Target.Name = "textBox_OpenAICompatible_Target";
+            this.textBox_OpenAICompatible_Target.Size = new System.Drawing.Size(99, 25);
+            this.textBox_OpenAICompatible_Target.TabIndex = 12;
+            // 
+            // groupBox_AI_Trans_Help
+            // 
+            this.groupBox_AI_Trans_Help.AutoSize = true;
+            this.groupBox_AI_Trans_Help.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.groupBox_AI_Trans_Help.Controls.Add(this.label60);
+            this.groupBox_AI_Trans_Help.Location = new System.Drawing.Point(6, 304);
+            this.groupBox_AI_Trans_Help.Name = "groupBox_AI_Trans_Help";
+            this.groupBox_AI_Trans_Help.Size = new System.Drawing.Size(514, 344);
+            this.groupBox_AI_Trans_Help.TabIndex = 2;
+            this.groupBox_AI_Trans_Help.TabStop = false;
+            this.groupBox_AI_Trans_Help.Text = "说明";
+            // 
+            // label60
+            // 
+            this.label60.AutoSize = true;
+            this.label60.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label60.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label60.Location = new System.Drawing.Point(3, 21);
+            this.label60.Name = "label60";
+            this.label60.Size = new System.Drawing.Size(508, 320);
+            this.label60.TabIndex = 0;
+            this.label60.Text = resources.GetString("label60.Text");
+            // 
             // FmSetting
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -5233,6 +6645,7 @@ namespace TrOCR
             this.tabPage_白描接口.ResumeLayout(false);
             this.tabPage_白描接口.PerformLayout();
             this.Page_AI密钥.ResumeLayout(false);
+            this.Page_AI密钥.PerformLayout();
             this.groupBox_AI_Help.ResumeLayout(false);
             this.groupBox_AI_Help.PerformLayout();
             this.tabControl_AI.ResumeLayout(false);
@@ -5329,6 +6742,14 @@ namespace TrOCR
             this.Page_反馈.ResumeLayout(false);
             this.Page_反馈.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).EndInit();
+            this.tabControl_AI_Trans.ResumeLayout(false);
+            this.Page_AI翻译接口.ResumeLayout(false);
+            this.Page_AI翻译接口.PerformLayout();
+            this.tabPage_Trans_OpenAICompatible.ResumeLayout(false);
+            this.groupBox_Trans_OpenAICompatible.ResumeLayout(false);
+            this.groupBox_Trans_OpenAICompatible.PerformLayout();
+            this.groupBox_AI_Trans_Help.ResumeLayout(false);
+            this.groupBox_AI_Trans_Help.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -5753,5 +7174,139 @@ namespace TrOCR
         private System.Windows.Forms.CheckBox checkBox_合并去除所有空格;
         private System.Windows.Forms.GroupBox groupBox_AI_Help;
         private System.Windows.Forms.Label label_AI_Help;
+        private System.Windows.Forms.TabPage Page_AI翻译接口;
+        private System.Windows.Forms.TabControl tabControl_AI_Trans;
+        private System.Windows.Forms.TabPage tabPage_Trans_OpenAICompatible;
+        private System.Windows.Forms.GroupBox groupBox_Trans_OpenAICompatible;
+        private System.Windows.Forms.Button btn_OpenAICompatible_Trans_Config_Browse;
+        private System.Windows.Forms.TextBox txtOpenAICompatibleTransConfig;
+        private System.Windows.Forms.Label label54;
+        private System.Windows.Forms.TextBox txtOpenAICompatibleTransApiKey;
+        private System.Windows.Forms.Label label55;
+        private System.Windows.Forms.TextBox txtOpenAICompatibleTransModel;
+        private System.Windows.Forms.Label label56;
+        private System.Windows.Forms.TextBox txtOpenAICompatibleTransBaseUrl;
+        private System.Windows.Forms.Label label57;
+        private System.Windows.Forms.TabPage tabPage12;
+        private System.Windows.Forms.GroupBox groupBox49;
+        private System.Windows.Forms.TextBox textBox36;
+        private System.Windows.Forms.Button button28;
+        private System.Windows.Forms.GroupBox groupBox48;
+        private System.Windows.Forms.TextBox textBox35;
+        private System.Windows.Forms.Button button27;
+        private System.Windows.Forms.GroupBox groupBox47;
+        private System.Windows.Forms.Label label53;
+        private System.Windows.Forms.TabPage tabPage11;
+        private System.Windows.Forms.GroupBox groupBox46;
+        private System.Windows.Forms.TextBox textBox34;
+        private System.Windows.Forms.Button button26;
+        private System.Windows.Forms.GroupBox groupBox45;
+        private System.Windows.Forms.TextBox textBox33;
+        private System.Windows.Forms.Button button25;
+        private System.Windows.Forms.GroupBox groupBox44;
+        private System.Windows.Forms.Label label52;
+        private System.Windows.Forms.TextBox textBox32;
+        private System.Windows.Forms.TabPage tabPage10;
+        private System.Windows.Forms.GroupBox groupBox43;
+        private System.Windows.Forms.TextBox textBox31;
+        private System.Windows.Forms.Button button24;
+        private System.Windows.Forms.GroupBox groupBox42;
+        private System.Windows.Forms.TextBox textBox30;
+        private System.Windows.Forms.Button button23;
+        private System.Windows.Forms.GroupBox groupBox41;
+        private System.Windows.Forms.Label label51;
+        private System.Windows.Forms.TabPage tabPage9;
+        private System.Windows.Forms.GroupBox groupBox40;
+        private System.Windows.Forms.TextBox textBox29;
+        private System.Windows.Forms.Button button22;
+        private System.Windows.Forms.GroupBox groupBox39;
+        private System.Windows.Forms.TextBox textBox28;
+        private System.Windows.Forms.Button button21;
+        private System.Windows.Forms.GroupBox groupBox38;
+        private System.Windows.Forms.Label label50;
+        private System.Windows.Forms.TabPage tabPage8;
+        private System.Windows.Forms.GroupBox groupBox37;
+        private System.Windows.Forms.TextBox textBox27;
+        private System.Windows.Forms.Button button20;
+        private System.Windows.Forms.GroupBox groupBox36;
+        private System.Windows.Forms.TextBox textBox26;
+        private System.Windows.Forms.Button button19;
+        private System.Windows.Forms.GroupBox groupBox35;
+        private System.Windows.Forms.Label label49;
+        private System.Windows.Forms.TabPage tabPage7;
+        private System.Windows.Forms.GroupBox groupBox34;
+        private System.Windows.Forms.TextBox textBox25;
+        private System.Windows.Forms.Button button18;
+        private System.Windows.Forms.GroupBox groupBox33;
+        private System.Windows.Forms.TextBox textBox24;
+        private System.Windows.Forms.Button button17;
+        private System.Windows.Forms.GroupBox groupBox32;
+        private System.Windows.Forms.Label label48;
+        private System.Windows.Forms.TabPage tabPage6;
+        private System.Windows.Forms.GroupBox groupBox31;
+        private System.Windows.Forms.TextBox textBox23;
+        private System.Windows.Forms.Button button16;
+        private System.Windows.Forms.GroupBox groupBox30;
+        private System.Windows.Forms.TextBox textBox22;
+        private System.Windows.Forms.Button button15;
+        private System.Windows.Forms.GroupBox groupBox29;
+        private System.Windows.Forms.Label label47;
+        private System.Windows.Forms.TabPage tabPage5;
+        private System.Windows.Forms.GroupBox groupBox28;
+        private System.Windows.Forms.TextBox textBox21;
+        private System.Windows.Forms.Button button14;
+        private System.Windows.Forms.GroupBox groupBox27;
+        private System.Windows.Forms.TextBox textBox20;
+        private System.Windows.Forms.Button button13;
+        private System.Windows.Forms.GroupBox groupBox26;
+        private System.Windows.Forms.Label label46;
+        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.GroupBox groupBox25;
+        private System.Windows.Forms.TextBox textBox19;
+        private System.Windows.Forms.Button button12;
+        private System.Windows.Forms.GroupBox groupBox24;
+        private System.Windows.Forms.TextBox textBox18;
+        private System.Windows.Forms.Button button11;
+        private System.Windows.Forms.GroupBox groupBox23;
+        private System.Windows.Forms.Label label45;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.GroupBox groupBox22;
+        private System.Windows.Forms.TextBox textBox17;
+        private System.Windows.Forms.Button button10;
+        private System.Windows.Forms.GroupBox groupBox21;
+        private System.Windows.Forms.TextBox textBox16;
+        private System.Windows.Forms.Button button9;
+        private System.Windows.Forms.GroupBox groupBox20;
+        private System.Windows.Forms.Label label44;
+        private System.Windows.Forms.TextBox textBox15;
+        private System.Windows.Forms.Label label43;
+        private System.Windows.Forms.TextBox textBox14;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.GroupBox groupBox19;
+        private System.Windows.Forms.TextBox textBox13;
+        private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.GroupBox groupBox18;
+        private System.Windows.Forms.TextBox textBox12;
+        private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.GroupBox groupBox17;
+        private System.Windows.Forms.Label label42;
+        private System.Windows.Forms.TextBox textBox11;
+        private System.Windows.Forms.Label label41;
+        private System.Windows.Forms.TextBox textBox10;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.GroupBox groupBox16;
+        private System.Windows.Forms.TextBox textBox9;
+        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.GroupBox groupBox15;
+        private System.Windows.Forms.TextBox textBox8;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.GroupBox groupBox14;
+        private System.Windows.Forms.Label label32;
+        private System.Windows.Forms.TextBox textBox_OpenAICompatible_Target;
+        private System.Windows.Forms.TextBox textBox_OpenAICompatible_Source;
+        private System.Windows.Forms.Label label59;
+        private System.Windows.Forms.Label label58;
+        private System.Windows.Forms.GroupBox groupBox_AI_Trans_Help;
+        private System.Windows.Forms.Label label60;
     }
 }
