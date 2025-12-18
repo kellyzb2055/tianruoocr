@@ -353,6 +353,7 @@
     <Compile Include="Helper\IniHelper.cs" />
     <Compile Include="Helper\NetworkInitializer.cs" />
     <Compile Include="Helper\OcrHelper.cs" />
+    <Compile Include="Helper\OpenAICompatibleTranslate.cs" />
     <Compile Include="Helper\OpenAICompatibleHelper.cs" />
     <Compile Include="Helper\Pangu.cs" />
     <Compile Include="Helper\TranslateHelper.cs" />
