@@ -56,6 +56,12 @@ namespace TrOCR.Helper
                     {
                         string jsonContent = File.ReadAllText(configJsonPath, Encoding.UTF8);
                         aiConfig = JsonConvert.DeserializeObject<AIConfig>(jsonContent);
+                        // === 【新增功能 1】检查配置文件类型是否为 ocr ===
+                        // 如果 type 字段存在但不是 "ocr" (忽略大小写)，则报错
+                        if (aiConfig != null && !string.Equals(aiConfig.type, "ocr", StringComparison.OrdinalIgnoreCase))
+                        {
+                            return "配置错误：所选配置文件类型不匹配。\r\n当前文件 type 为: " + (aiConfig.type ?? "null") + "，OCR 功能仅支持 type: \"ocr\"。";
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -84,33 +90,101 @@ namespace TrOCR.Helper
                 string base64Image = ImageToBase64(image);
                 if (string.IsNullOrEmpty(base64Image)) return "错误：图片转换失败";
 
-                // 4. 构造请求体
+                // === 4. 动态组装请求体 ===
+
+                // 4.1 动态构建 messages 列表
+                var messagesList = new List<object>();
+
+                // (A) System Message: 有才加
+                if (!string.IsNullOrEmpty(currentMode.system_prompt))
+                {
+                    messagesList.Add(new { role = "system", content = currentMode.system_prompt });
+                }
+                // (B) User Message Content: 动态构建
+                var userContentList = new List<object>();
+
+                // 只有当 prompt 不为空时，才添加 text 类型的节点
+                if (!string.IsNullOrEmpty(currentMode.prompt))
+                {
+                    userContentList.Add(new { type = "text", text = currentMode.prompt });
+                }
+
+                // 图片是必须添加的
+                userContentList.Add(new { type = "image_url", image_url = new { url = $"data:image/jpeg;base64,{base64Image}" } });
+
+                // 将构建好的 content 放入 user message
+                messagesList.Add(new
+                {
+                    role = "user",
+                    content = userContentList
+                });
+
+                //var requestBody = new
+                //{
+                //    model =  modelName,
+                //    messages = new object[]
+                //    {
+                //        new { role = "system", content = currentMode.system_prompt },
+                //        new {
+                //            role = "user",
+                //            content = new object[]
+                //            {
+                //                new { type = "text", text = currentMode.prompt },
+                //                new { type = "image_url", image_url = new { url = $"data:image/jpeg;base64,{base64Image}" } }
+                //            }
+                //        }
+                //    },
+                //    temperature = currentMode.temperature,
+                //    thinking = new
+                //    {
+                //        type = currentMode.enable_thinking?"enabled":"disabled",
+                //    },
+                //    //max_tokens = 4096
+                //};
+                // 4.2 构造请求体
                 var requestBody = new
                 {
-                    model = string.IsNullOrEmpty(modelName) ? "gpt-4-vision-preview" : modelName,
-                    messages = new object[]
-                    {
-                        new { role = "system", content = currentMode.system_prompt },
-                        new {
-                            role = "user",
-                            content = new object[]
-                            {
-                                new { type = "text", text = currentMode.prompt },
-                                new { type = "image_url", image_url = new { url = $"data:image/jpeg;base64,{base64Image}" } }
-                            }
-                        }
-                    },
+                    // 1. 必填项：直接赋值
+                    model = modelName,
+                    messages = messagesList,
+
+                    // 利用可空类型 + Ignore Null
+                    // 2. 温度 (Temperature) - 处理可空数值
+                    // currentMode.temperature 是 double? 类型 (可空)
+                    // ---------------------------------------------------------
+                    // 情况 A：如果配置文件里没写 temperature，它是 null。
+                    //         -> requestBody.temperature = null
+                    //         -> 序列化时被忽略，JSON 里完全没有 "temperature" 字段。
+                    //         -> 接口收到请求后，会使用它自己的默认值 (比如 1.0)。
+                    //
+                    // 情况 B：如果配置文件写了 0.5。
+                    //         -> requestBody.temperature = 0.5
+                    //         -> 序列化结果： "temperature": 0.5
                     temperature = currentMode.temperature,
-                    thinking = new
+
+                    // 3. 思考模式 (Thinking) - 处理复杂的嵌套对象逻辑
+                    // currentMode.enable_thinking 是 bool? 类型 (可空)
+                    // ---------------------------------------------------------
+                    thinking = currentMode.enable_thinking.HasValue
+                    // [分支 1] 如果 HasValue 为 true (即配置文件里写了 true 或 false)
+                    ? new
                     {
-                        type = currentMode.enable_thinking?"enabled":"disabled",
-                    },
-                    //max_tokens = 4096
+                        // 再进行一次判断：如果是 true -> "enabled", 如果是 false -> "disabled"
+                        type = currentMode.enable_thinking.Value ? "enabled" : "disabled"
+                    }
+                    // [分支 2] 如果 HasValue 为 false (即配置文件里没写，或者删了)
+                    : null
                 };
+            
+
 
                 // 5. 发送请求
                 string endpoint = baseUrl.TrimEnd('/');
                 if (!endpoint.EndsWith("/chat/completions")) endpoint += "/chat/completions";
+                var jsonSettings = new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore
+                };
 
                 var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
                 httpClient.DefaultRequestHeaders.Clear();
@@ -168,7 +242,10 @@ namespace TrOCR.Helper
         public string description { get; set; }
         public string system_prompt { get; set; }
         public string prompt { get; set; }
-        public double temperature { get; set; }
-        public bool enable_thinking { get; set; }
+        // 改为可空类型 (double?)，如果 json 里没填，值为 null
+        public double? temperature { get; set; }
+
+        // 改为可空类型 (bool?)，如果 json 里没填，值为 null
+        public bool? enable_thinking { get; set; }
     }
 }

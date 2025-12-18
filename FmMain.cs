@@ -1948,12 +1948,7 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 			OCR_foreach("RapidOCR");
 		}
 
-		private void OCR_ai_openai_compatible_Click(object sender, EventArgs e)
-		{
-            // 【新增】使用默认模式，清除子菜单的勾选
-            ClearAIConfigSelection();
-            OCR_foreach("OpenAICompatible");
-		}
+		
 		#endregion
 // ====================================================================================================================
 		// **文本操作与格式化**

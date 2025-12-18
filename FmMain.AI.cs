@@ -15,6 +15,13 @@ namespace TrOCR
         // 用于存储当前选中的 AI 模式，如果为 null 则使用默认逻辑
         private AIMode currentSelectedAIMode = null;
 
+        private void OCR_ai_openai_compatible_Click(object sender, EventArgs e)
+		{
+            // 【新增】使用默认模式，清除子菜单的勾选
+            ClearAIConfigSelection();
+            OCR_foreach("OpenAICompatible");
+		}
+
         /// <summary>
         /// 加载 AI 配置文件并初始化动态菜单
         /// </summary>
