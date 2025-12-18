@@ -76,10 +76,10 @@
   </PropertyGroup>
   <!-- 解决使用pathmap无法调试的问题：只在release配置下使用pathmap，这样debug配置下调试，断点就正常了 -->
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
-    <PathMap>$(SolutionDir)=/src/</PathMap> 
+    <PathMap>$(SolutionDir)=/src/</PathMap>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <PathMap>$(SolutionDir)=/src/</PathMap> 
+    <PathMap>$(SolutionDir)=/src/</PathMap>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ClosedXML, Version=0.105.0.0, Culture=neutral, PublicKeyToken=fd1eb21b62ae805b, processorArchitecture=MSIL">
@@ -350,6 +350,7 @@
     <Compile Include="Helper\IniHelper.cs" />
     <Compile Include="Helper\NetworkInitializer.cs" />
     <Compile Include="Helper\OcrHelper.cs" />
+    <Compile Include="Helper\OpenAICompatibleHelper.cs" />
     <Compile Include="Helper\Pangu.cs" />
     <Compile Include="Helper\TranslateHelper.cs" />
     <Compile Include="Helper\BingTranslator.cs" />

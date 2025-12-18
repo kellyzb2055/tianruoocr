@@ -4378,8 +4378,7 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 			if (interface_flag == "OpenAICompatible")
 			{
 				// OpenAICompatible OCR 占位符
-				typeset_txt = "OpenAICompatible OCR 尚未实现接口调用。";
-				split_txt = typeset_txt;
+				OCR_OpenAICompatible();
 				fmloading.FmlClose = "窗体已关闭";
 				Invoke(new OcrThread(Main_OCR_Thread_last));
 				return;
@@ -5679,7 +5678,30 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 				}
 			}
 		}
+		public void OCR_OpenAICompatible()
+		{
+			try
+			{
+                string result = OpenAICompatibleHelper.OCR(image_screen);
 
+                if (string.IsNullOrEmpty(result))
+                {
+                    typeset_txt = "未识别到文本或接口返回为空。";
+                }
+                else
+                {
+                    typeset_txt = result;
+                }
+                // 必须同时设置 split_txt
+                split_txt = typeset_txt;
+			}
+			catch(Exception ex)
+            {
+                typeset_txt = "OpenAICompatible 接口调用出错: " + ex.Message;
+                split_txt = typeset_txt;
+            }
+        	
+		}
 		/// <summary>
 		/// 在输入图像中查找轮廓并为每个轮廓绘制边界框，将结果绘制到目标图像上
 		/// </summary>
