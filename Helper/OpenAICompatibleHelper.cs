@@ -68,35 +68,7 @@ namespace TrOCR.Helper
                         return "读取配置文件出错" + ex.Message;
                     }
                 }
-                //if(aiConfig != null && aiConfig.modes != null && aiConfig.modes.Count > 0)
-                //{
-                //    // 1. 尝试读取配置文件中保存的“模式名称”
-                //    string savedModeName = IniHelper.GetValue("OpenAICompatible", "SelectedMode");
-                //    AIMode foundMode = null;
-
-                //    // 2. 如果有保存的名字，在列表中查找匹配项
-                //    if (!string.IsNullOrEmpty(savedModeName))
-                //    {
-                //        // 使用 LINQ 查找第一个名字匹配的模式
-                //        foundMode = aiConfig.modes.FirstOrDefault(m => m.mode == savedModeName);
-                //    }
-
-                //    // 3. 赋值：如果找到了就用找到的，没找到(比如改名了)就回退到第一个
-                //    currentMode = foundMode ?? aiConfig.modes[0];
-                //}
-                //else
-                //{
-                //    // 4. 只有配置文件读不到时，才用硬编码默认值
-                //    currentMode = new AIMode
-                //    {
-                //        // 默认模式
-                //        mode = "默认模式",
-                //        system_prompt = "You are a professional OCR engine. Recognize the text in the image and output it directly. Do not use markdown code blocks. Do not output any conversational filler. Maintain the original line breaks. If the image contains code, remember to preserve the formatting.",
-                //        prompt = "OCR this image.",
-                //        temperature = 0.1,
-                //        enable_thinking = false,
-                //    };
-                //}
+               
                 // 1. 先准备一个“兜底”的内置安全模式 (Hardcoded Default)
                 // 作用：当配置文件不存在、或者配置文件里找不到对应的模式时，使用这个模式。
                 AIMode defaultSafeMode = new AIMode
@@ -179,28 +151,7 @@ namespace TrOCR.Helper
                     content = userContentList
                 });
 
-                //var requestBody = new
-                //{
-                //    model =  modelName,
-                //    messages = new object[]
-                //    {
-                //        new { role = "system", content = currentMode.system_prompt },
-                //        new {
-                //            role = "user",
-                //            content = new object[]
-                //            {
-                //                new { type = "text", text = currentMode.prompt },
-                //                new { type = "image_url", image_url = new { url = $"data:image/jpeg;base64,{base64Image}" } }
-                //            }
-                //        }
-                //    },
-                //    temperature = currentMode.temperature,
-                //    thinking = new
-                //    {
-                //        type = currentMode.enable_thinking?"enabled":"disabled",
-                //    },
-                //    //max_tokens = 4096
-                //};
+                
                 // 4.2 构造请求体
                 var requestBody = new
                 {
