@@ -135,10 +135,28 @@ namespace TrOCR
             {
                 translationTimer = new Timer();
                 translationTimer.Tick += TranslationTimer_Tick;
-				// 【核心】如果解析出来是0或负数，给个默认值（比如5000）防止程序错误，原因：定时器的Interval 属性值必须 大于 0，不然抛异常报错
-				translationTimer.Interval = (StaticValue.TextChangeAutotranslateDelay > 0) 
-											? StaticValue.TextChangeAutotranslateDelay 
-											: 5000;
+				// 【修改】从 Raw 字符串中解析出基础时间间隔
+				int initDelay = 5000; // 默认安全值 (万一还没加载配置或配置为空)
+				string rawConfig = StaticValue.TextChangeAutotranslateDelayRaw;
+
+				if (!string.IsNullOrWhiteSpace(rawConfig))
+				{
+					// 分割字符串 (处理 "2000,OpenAI" 这种情况)，取逗号前的第一项
+					var parts = rawConfig.Split(new[] { ',', '，' }, StringSplitOptions.RemoveEmptyEntries);
+					
+					// 尝试解析第一个部分为数字
+					if (parts.Length > 0 && int.TryParse(parts[0].Trim(), out int parsedVal))
+					{
+						// 只有大于0才是合法的 Interval
+						if (parsedVal > 0) 
+						{
+							initDelay = parsedVal;
+						}
+					}
+				}
+
+				// 赋值给 Timer (确保 > 0，防止崩溃)
+				translationTimer.Interval = initDelay;
             }
 
 
@@ -2959,16 +2977,80 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
             }
         }
         /// <summary>
+        /// 解析自动翻译配置字符串，判断当前接口是否允许自动翻译，并获取延时时间
+        /// </summary>
+        /// <param name="configStr">配置字符串 (例如: "1000,百度,谷歌" 或 "1000,-Bing")</param>
+        /// <param name="currentApi">当前选中的翻译接口名称</param>
+        /// <param name="delayMs">输出：解析出的延时时间</param>
+        /// <returns>是否允许自动翻译</returns>
+        private bool CheckTextChangeAutoTranslateConfig(string configStr, string currentApi, out int delayMs)
+        {
+            delayMs = 0;
+            if (string.IsNullOrWhiteSpace(configStr)) return false;
+
+            // 1. 分割字符串，支持中文或英文逗号
+            var parts = configStr.Split(new[] { ',', '，' }, StringSplitOptions.RemoveEmptyEntries)
+                                 .Select(p => p.Trim()) // 去除空格
+                                 .ToArray();
+
+            // 2. 解析时间 (第一部分必须是数字)
+            if (parts.Length == 0 || !int.TryParse(parts[0], out delayMs))
+            {
+                return false; // 格式错误，第一项不是数字
+            }
+
+            // 如果时间 <= 0，直接视为关闭
+            if (delayMs <= 0) return false;
+
+            // 3. 如果只有时间 (例如 "1000")，则对所有接口生效
+            if (parts.Length == 1) return true;
+
+            // 4. 获取后面的接口列表
+            var filters = parts.Skip(1).ToList();
+
+            // 5. 校验格式一致性：要么全是排除(-)，要么全是包含(无-)
+            bool isBlacklist = filters.All(f => f.StartsWith("-"));
+            bool isWhitelist = filters.All(f => !f.StartsWith("-"));
+
+            if (!isBlacklist && !isWhitelist)
+            {
+                // 混用了（例如 "1000,百度,-谷歌"），视为配置错误，为了安全不执行
+                System.Diagnostics.Debug.WriteLine($"[配置错误] 自动翻译配置不能混用黑白名单: {configStr}");
+                return false;
+            }
+
+            // 6. 处理接口名称对比
+            // 去掉开头的 "-" 号，并使用不区分大小写的比较
+            var targetList = filters.Select(f => f.TrimStart('-')).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            if (isWhitelist)
+            {
+                // 白名单模式：当前接口 必须在 列表中才开启
+                // 比如配置 "1000,百度,Bing"，当前是 "百度" -> true
+                return targetList.Contains(currentApi);
+            }
+            else // isBlacklist
+            {
+                // 黑名单模式：当前接口 不能在 列表中才开启
+                // 比如配置 "1000,-Bing"，当前是 "百度" -> true，当前是 "Bing" -> false
+                return !targetList.Contains(currentApi);
+            }
+        }
+        /// <summary>
         /// 原始文本框内容改变事件，用于实现编辑后自动翻译
         /// </summary>
         private void RichBoxBody_TextChanged(object sender, EventArgs e)
 		{
-            // 1. 获取当前配置的延时
-            int currentDelay = StaticValue.TextChangeAutotranslateDelay;
-
-            // 【判断 1】如果设置为 0 或负数，直接退出，不启动定时器（功能关闭）
-            if (currentDelay <= 0)
+            // === 【修改步骤 1】读取原始配置字符串 ===
+            string rawConfig = StaticValue.TextChangeAutotranslateDelayRaw;
+            // === 【修改步骤 2】调用解析方法 ===
+            // CheckTextChangeAutoTranslateConfig 会处理：
+            // 1. 解析时间，如果非数字或<=0，返回 false
+            // 2. 解析黑白名单，判断当前接口是否允许
+            // 3. 将解析出的时间赋值给 validDelay
+            if (!CheckTextChangeAutoTranslateConfig(rawConfig, StaticValue.Translate_Current_API, out int validDelay))
             {
+                // 如果不允许（时间为0、格式错误、或当前接口被排除），直接退出
                 return;
             }
 
@@ -3001,7 +3083,8 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
                     // 这样可以确保：
                     // 1. 此时 currentDelay 肯定 > 0，赋值安全，不会崩溃
                     // 2. 如果用户在设置里修改了时间，这里会立即生效，无需重启
-                    translationTimer.Interval = currentDelay;
+                    // === 【修改步骤 3】使用解析出的有效时间 ===
+                    translationTimer.Interval = validDelay;
                     translationTimer.Start();
 				}
 				Debug.WriteLine("    |<-- 场景1 结束,定时器已开始或重置。");
@@ -3025,7 +3108,8 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
                 // 这样可以确保：
                 // 1. 此时 currentDelay 肯定 > 0，赋值安全，不会崩溃
                 // 2. 如果用户在设置里修改了时间，这里会立即生效，无需重启
-                translationTimer.Interval = currentDelay;
+                // === 【修改步骤 3】使用解析出的有效时间 ===
+                translationTimer.Interval = validDelay;
                 translationTimer.Start();
 
 					Debug.WriteLine("        |--> 定时器已重置。");
@@ -3035,7 +3119,7 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 			Debug.WriteLine("---> TextChanged 事件结束。");
 
 		}
-
+		
 		/// <summary>
 		/// 延时翻译定时器的Tick事件，在用户停止输入后触发翻译
 		/// </summary>

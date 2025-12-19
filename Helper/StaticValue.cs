@@ -176,7 +176,8 @@ namespace TrOCR.Helper
         public static string OpenAICompatible_Trans_Source { get; set; }
         public static string OpenAICompatible_Trans_Target { get; set; }
         //文本改变自动翻译延时
-        public static int TextChangeAutotranslateDelay { get; set; }
+        // public static int TextChangeAutotranslateDelay { get; set; }
+        public static string TextChangeAutotranslateDelayRaw { get; set; }
 
 
         /// <summary>
@@ -228,7 +229,8 @@ namespace TrOCR.Helper
             OpenAICompatible_Trans_Source= GetValue("OpenAICompatibleTrans", "Source", "Auto Detect");
             OpenAICompatible_Trans_Target= GetValue("OpenAICompatibleTrans", "Target", "Simplified Chinese");
 
-            TextChangeAutotranslateDelay=GetIntValue("配置", "文本改变自动翻译延时", 5000);
+            // TextChangeAutotranslateDelay=GetIntValue("配置", "文本改变自动翻译延时", 5000);
+            TextChangeAutotranslateDelayRaw=GetValue("配置", "文本改变自动翻译延时", "5000");
 
         }
         // 1. 定义读取 Int 的辅助方法
