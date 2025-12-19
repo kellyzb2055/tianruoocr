@@ -131,7 +131,7 @@ namespace TrOCR
 			LogState("Constructor End (Initial State)"); // <--- 添加这一行
 														 // ====================【新增代码结束】====================
 			translationTimer = new Timer();
-			translationTimer.Interval = 800;
+			translationTimer.Interval = 5000;
 			translationTimer.Tick += TranslationTimer_Tick;
 			RichBoxBody.richTextBox1.TextChanged += RichBoxBody_TextChanged;
 
@@ -2932,6 +2932,16 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 			Debug.WriteLine($"Trans_close_Click-----{sender}------{e}");
 			LogState("Trans_close_Click Start"); // <--- 添加这一行
 												 // 只有当这是用户主动点击关闭时 (isUserAction 为 true)，才执行检查
+			// ====================【新增代码】开始 ====================
+			//这里的代码加不加都行，加上虽然更健壮，但是其实TranslationTimer_Tick里的双重检查就足够了
+    		// 1. 强制停止翻译定时器
+    		// 这样即使用户在第 9 秒关闭了窗口，第 10 秒也不会触发请求
+			// if (translationTimer != null)
+			// {
+			// 	translationTimer.Stop();
+			// 	Debug.WriteLine("窗口关闭，已强制停止翻译定时器");
+			// }
+			// ====================【新增代码】结束 ====================
 			if (isUserAction && isOriginalTextHidden)
 			{
 				// 如果原文是隐藏的，则弹出提示，并阻止后续的关闭操作
@@ -3093,6 +3103,16 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 			Debug.WriteLine("===> TranslationTimer_Tick 事件触发！ <===");
 			
 			translationTimer.Stop();
+			// ====================【新增代码】开始 ====================
+    		// 【核心双重保险】
+    		// 检查：如果翻译功能已关闭(transtalate_fla == "关闭") 或者 窗口不可见
+    		// 直接返回，绝不发送请求！
+    		if (transtalate_fla == "关闭" || !this.Visible)
+    		{
+        		Debug.WriteLine("警告：定时器触发时窗口已关闭或隐藏，拦截请求，不执行翻译。");
+        		return; 
+    		}
+    		// ====================【新增代码】结束 ====================
 			// 职责单一：只负责计算和更新翻译结果，不处理UI界面切换
 
 			if (string.IsNullOrWhiteSpace(RichBoxBody.Text))
