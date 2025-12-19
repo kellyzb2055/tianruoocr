@@ -19,6 +19,16 @@ namespace TrOCR.Helper
 
         private static readonly HttpClient httpClient = new HttpClient();
 
+        // === 缓存相关的静态变量 (新增) ===
+        // 线程锁，防止并发读写文件冲突
+        private static readonly object _configLock = new object();
+        // 缓存的配置对象（内存变量）
+        private static AIConfig _cachedConfig = null;
+        // 上次读取配置文件的时间
+        private static DateTime _lastConfigWriteTime = DateTime.MinValue;
+        // 用于保留顺序的 JObject
+        private static JObject _cachedJsonRoot = null;
+
 
         /// <summary>
         /// 执行 AI 翻译 / 文本处理
@@ -32,7 +42,7 @@ namespace TrOCR.Helper
         {
             Debug.WriteLine("传入AI翻译接口的模式是" + JsonConvert.SerializeObject(manualMode, Formatting.Indented));
 
-            // 1. 从 StaticValue 缓存读取配置
+            // 1. 从 StaticValue 缓存读取配置路径等信息
             string baseUrl = StaticValue.OpenAICompatible_Trans_BASE_URL;
             string apiKey = StaticValue.OpenAICompatible_Trans_API_KEY;
             string modelName = StaticValue.OpenAICompatible_Trans_MODEL;
@@ -42,70 +52,119 @@ namespace TrOCR.Helper
             if (string.IsNullOrEmpty(baseUrl)) return "错误：未配置 AI 翻译接口地址 (Base URL)";
             if (string.IsNullOrEmpty(apiKey)) return "错误：未配置 AI 翻译 API Key";
             if (string.IsNullOrEmpty(modelName)) return "错误：未配置 AI 翻译模型";
-            AIMode currentMode = null;
-            if (manualMode != null)
+
+            // === 智能刷新配置逻辑 (检测文件变动，热重载) ===
+            AIConfig freshConfig = null;
+            JObject freshJsonRoot = null;
+
+            lock (_configLock)
             {
-                // 情况A：从菜单选中了特定模式
-                currentMode = manualMode;
-            }
-            else
-            {
-                // 情况B：没有特定模式（默认行为），尝试读取 Config 文件
-                // 如果没有配置文件，使用默认的 Config 对象，防止报错
-                AIConfig aiConfig = null;
                 if (!string.IsNullOrEmpty(configJsonPath) && File.Exists(configJsonPath))
                 {
                     try
                     {
-                        string jsonContent = File.ReadAllText(configJsonPath, Encoding.UTF8);
-                        aiConfig = JsonConvert.DeserializeObject<AIConfig>(jsonContent);
-                        // === 检查配置文件类型是否为 translate ===
-                        // 如果 type 字段存在但不是 "translate" (忽略大小写)，则报错
-                        if (aiConfig != null && !string.Equals(aiConfig.type, "translate", StringComparison.OrdinalIgnoreCase))
+                        // 获取配置文件当前的修改时间 (不读取内容，速度极快)
+                        var fileInfo = new FileInfo(configJsonPath);
+                        DateTime currentWriteTime = fileInfo.LastWriteTime;
+
+                        // 比较时间：如果文件被修改过(时间变了)，或者缓存是空的 -> 重新读取
+                        if (_cachedConfig == null || currentWriteTime != _lastConfigWriteTime)
                         {
-                            return "配置错误：所选配置文件类型不匹配。\r\n当前文件 type 为: " + (aiConfig.type ?? "null") + "，翻译 功能仅支持 type: \"translate\"。";
+                            Debug.WriteLine("[配置更新] 检测到文件变化，正在重新读取...");
+                            string jsonContent = File.ReadAllText(configJsonPath, Encoding.UTF8);
+                            
+                            // 1. 反序列化为强类型对象 (用于取值)
+                            var loadedConfig = JsonConvert.DeserializeObject<AIConfig>(jsonContent);
+                            // 2. 解析为 JObject (用于取顺序)
+                            var loadedJsonRoot = JObject.Parse(jsonContent);
+
+                            // === 检查配置文件类型是否为 translate ===
+                            if (loadedConfig != null && !string.Equals(loadedConfig.type, "translate", StringComparison.OrdinalIgnoreCase))
+                            {
+                                return "配置错误：所选配置文件类型不匹配。\r\n当前文件 type 为: " + (loadedConfig.type ?? "null") + "，翻译 功能仅支持 type: \"translate\"。";
+                            }
+                            else
+                            {
+                                // 更新缓存和时间戳
+                                _cachedConfig = loadedConfig;
+                                _lastConfigWriteTime = currentWriteTime;
+                                _cachedJsonRoot = loadedJsonRoot; // 更新 JObject 缓存
+                            }
                         }
+
+                        // 拿到最新的配置
+                        freshConfig = _cachedConfig;
+                        freshJsonRoot = _cachedJsonRoot;
                     }
                     catch (Exception ex)
                     {
                         return "读取配置文件出错" + ex.Message;
                     }
                 }
-               
-                // 1. 先准备一个“兜底”的内置安全模式 (Hardcoded Default)
-                // 作用：当配置文件不存在、或者配置文件里找不到对应的模式时，使用这个模式。
-                AIMode defaultSafeMode = new AIMode
-                {
-                    mode = "默认模式翻译 (内置)",
-                    system_prompt = " You are a professional translator. Translate the user input directly, without any explanations",
-                    prompt = "Translate the following text. If it is in Chinese, translate to English. Otherwise, translate to Simplified Chinese. Do not explain:",
-                    temperature = 1.0,
-                    enable_thinking = false,
-                };
+            }
 
-                if (aiConfig != null && aiConfig.modes != null && aiConfig.modes.Count > 0)
+            // 1. 先准备一个“兜底”的内置安全模式 (Hardcoded Default)
+            // 作用：当配置文件不存在、或者配置文件里找不到对应的模式时，使用这个模式。
+            AIMode defaultSafeMode = new AIMode
+            {
+                mode = "默认模式翻译 (内置)",
+                system_prompt = "You are a professional translator. Translate the user input directly, without any explanations",
+                prompt = "Translate the following text. If it is in Chinese, translate to English. Otherwise, translate to Simplified Chinese. Do not explain:",
+                temperature = 1.0,
+                enable_thinking = false,
+            };
+
+            // 2. 确定使用的模式
+            AIMode currentMode = null;
+            JToken currentModeJToken = null; // 对应模式的 JToken 节点 (用于获取顺序)
+
+            if (manualMode != null)
+            {
+                // 情况A：从菜单选中了特定模式
+                // === 即使传入了 manualMode，也尝试从 freshConfig 里找同名的最新版 ===
+                if (freshConfig != null && freshConfig.modes != null)
                 {
-                    // 2. 尝试读取配置文件中保存的“模式名称”
-                    string savedModeName = TrOCRUtils.LoadSetting("OpenAICompatibleTrans", "SelectedMode","");
+                    var foundFreshMode = freshConfig.modes.FirstOrDefault(m => m.mode == manualMode.mode);
+                    // 找到了就用新的（热更新生效），找不到就用传入的旧的
+                    currentMode = foundFreshMode ?? manualMode;
+
+                    // 同时找到对应的 JToken 节点
+                    if (freshJsonRoot != null && freshJsonRoot["modes"] is JArray modesArray)
+                    {
+                        currentModeJToken = modesArray.FirstOrDefault(m => m["mode"]?.ToString() == manualMode.mode);
+                    }
+                }
+                else
+                {
+                    currentMode = manualMode;
+                }
+            }
+            else
+            {
+                // 情况B：没有特定模式（默认行为），尝试读取 Config 文件
+                if (freshConfig != null && freshConfig.modes != null && freshConfig.modes.Count > 0)
+                {
+                    // 尝试读取配置文件中保存的“模式名称”
+                    string savedModeName = TrOCRUtils.LoadSetting("OpenAICompatibleTrans", "SelectedMode", "");
                     AIMode foundMode = null;
 
                     if (!string.IsNullOrEmpty(savedModeName))
                     {
                         // 查找名称匹配的模式
-                        foundMode = aiConfig.modes.FirstOrDefault(m => m.mode == savedModeName);
+                        foundMode = freshConfig.modes.FirstOrDefault(m => m.mode == savedModeName);
                     }
 
-                    // 3. 赋值逻辑：
-                    // 如果找到了保存的模式 -> 使用找到的 (foundMode)
-                    // 如果【没找到】(foundMode is null) -> 使用 defaultSafeMode (内置默认)
-                    //currentMode = foundMode ?? defaultSafeMode;
                     if (foundMode == null)
                     {
-                        // === 【直接报错】 ===
                         return $"配置错误：无法找到模式“{savedModeName}”。\r\n原因：该模式可能已被从配置文件中删除或重命名。\r\n解决方法：请点击菜单重新选择一个有效的模式。";
                     }
 
                     currentMode = foundMode;
+                    // 同时查找 JToken
+                    if (freshJsonRoot != null && freshJsonRoot["modes"] is JArray modesArray)
+                    {
+                        currentModeJToken = modesArray.FirstOrDefault(m => m["mode"]?.ToString() == savedModeName);
+                    }
                 }
                 else
                 {
@@ -113,78 +172,92 @@ namespace TrOCR.Helper
                     Debug.WriteLine("配置文件不存在，将使用程序内置的默认模式翻译");
                     // 4. 连配置文件都读不到 -> 直接用内置默认
                     currentMode = defaultSafeMode;
-                    
                 }
-
             }
+
             System.Diagnostics.Debug.WriteLine($"[TranslateHelper] 最终使用的模式名称: {currentMode.mode}");
             System.Diagnostics.Debug.WriteLine($"[TranslateHelper] 最终使用的模式详情: {JsonConvert.SerializeObject(currentMode, Formatting.Indented)}");          
 
             try
             {
-                // 2. 处理 Prompt 中的占位符
-                // 如果 system_prompt 里写了 {target_lang}，就替换成 UI 传进来的值
-                // 如果没写（比如润色模式），Replace 不会生效，保持原样，不会报错
-                string finalSystemPrompt = (currentMode.system_prompt ?? "")
-                    .Replace("${tolang}", targetLang)
-                    .Replace("${fromlang}", sourceLang);
-                string finalUserPrompt = (currentMode.prompt ?? "")
-                    .Replace("${tolang}", targetLang)
-                    .Replace("${fromlang}", sourceLang);
-                // === 处理 Assistant Prompt 变量替换 ===
-                string finalAssistantPrompt = (currentMode.assistant_prompt ?? "")
-                    .Replace("${tolang}", targetLang) 
-                    .Replace("${fromlang}", sourceLang);
-
-                // 可选优化：如果 UI 选的是 "自动检测"，把 Prompt 里的 "from Auto Detect" 稍微润色一下
-                //if (sourceLang == "Auto Detect" || sourceLang == "Auto")
-                //{
-                //    finalSystemPrompt = finalSystemPrompt.Replace("from Auto Detect", "by detecting the source language automatically");
-                //    finalUserPrompt = finalUserPrompt.Replace("from Auto Detect", "by detecting the source language automatically");
-                //}
-
-                // === 动态组装请求体 ===
-
-                // 1. 动态构建 messages 列表
+                // === 3. 动态组装请求体 (按 JSON 顺序) ===
                 var messagesList = new List<object>();
 
-                // (A) System Message: 有才加
-                if (!string.IsNullOrEmpty(currentMode.system_prompt))
+                if (currentModeJToken != null && currentModeJToken is JObject modeObj)
                 {
-                    messagesList.Add(new { role = "system", content = finalSystemPrompt });
+                    // 【方案 A】: 按照 JSON 文件里的顺序遍历属性
+                    foreach (var property in modeObj.Properties())
+                    {
+                        string key = property.Name;
+
+                        // 1. 处理 System Prompt
+                        if (key == "system_prompt")
+                        {
+                            string rawVal = currentMode.system_prompt; // 从强类型取值
+                            if (!string.IsNullOrEmpty(rawVal))
+                            {
+                                string finalVal = rawVal.Replace("${tolang}", targetLang).Replace("${fromlang}", sourceLang);
+                                messagesList.Add(new { role = "system", content = finalVal });
+                            }
+                        }
+                        // 2. 处理 Assistant Prompt
+                        else if (key == "assistant_prompt")
+                        {
+                            string rawVal = currentMode.assistant_prompt;
+                            if (!string.IsNullOrEmpty(rawVal))
+                            {
+                                string finalVal = rawVal.Replace("${tolang}", targetLang).Replace("${fromlang}", sourceLang);
+                                messagesList.Add(new { role = "assistant", content = finalVal });
+                            }
+                        }
+                        // 3. 处理 User Prompt (prompt 键) -> 拼接用户输入
+                        else if (key == "prompt")
+                        {
+                            string rawTemplate = currentMode.prompt;
+                            
+                            // 构造最终的用户内容 = Template + 输入文本
+                            string finalUserContent = inputContent;
+
+                            if (!string.IsNullOrEmpty(rawTemplate))
+                            {
+                                string finalTemplate = rawTemplate.Replace("${tolang}", targetLang).Replace("${fromlang}", sourceLang);
+                                finalUserContent = finalTemplate + "\n\n" + inputContent;
+                            }
+                            
+                            // 只要遇到了 "prompt" 键，就发送 User 消息 (包含输入文本)
+                            messagesList.Add(new { role = "user", content = finalUserContent });
+                        }
+                    }
                 }
-                // ===  (A.5) Assistant Message: 有才加 ===
-                if (!string.IsNullOrEmpty(finalAssistantPrompt))
+                else
                 {
-                    messagesList.Add(new { role = "assistant", content = finalAssistantPrompt });
+                    // 【方案 B】: 兜底逻辑 (固定顺序 System -> Assistant -> User)
+                    
+                    // System
+                    if (!string.IsNullOrEmpty(currentMode.system_prompt))
+                    {
+                        string val = currentMode.system_prompt.Replace("${tolang}", targetLang).Replace("${fromlang}", sourceLang);
+                        messagesList.Add(new { role = "system", content = val });
+                    }
+
+                    // Assistant
+                    if (!string.IsNullOrEmpty(currentMode.assistant_prompt))
+                    {
+                        string val = currentMode.assistant_prompt.Replace("${tolang}", targetLang).Replace("${fromlang}", sourceLang);
+                        messagesList.Add(new { role = "assistant", content = val });
+                    }
+
+                    // User
+                    string finalUserContent = inputContent;
+                    if (!string.IsNullOrEmpty(currentMode.prompt))
+                    {
+                        string template = currentMode.prompt.Replace("${tolang}", targetLang).Replace("${fromlang}", sourceLang);
+                        finalUserContent = template + "\n\n" + inputContent;
+                    }
+                    messagesList.Add(new { role = "user", content = finalUserContent });
                 }
 
-                // (B) 添加 User Message (包含 inputContent)
-                // 逻辑：将 Config 里的 Prompt 和 用户输入的 inputContent 拼接，或者作为 User 消息
-                // 对于翻译，最简单直接的方式是：System给指令，User给原文
-
-                string finalUserContent = inputContent;
-
-                // 如果配置里还有额外的 prompt (例如 "Translate this code:")，拼接在前面
-                if (!string.IsNullOrEmpty(currentMode.prompt))
-                {
-                    finalUserContent = finalUserPrompt + "\n\n" + inputContent;
-                }
-
-                // 必须把输入文本加进去！
-                messagesList.Add(new { role = "user", content = finalUserContent });
-                
-                // 调试日志 
-                System.Diagnostics.Debug.WriteLine($"[Translate] System Prompt: {finalSystemPrompt}");
-                System.Diagnostics.Debug.WriteLine($"[Translate] User Prompt: {finalUserContent}");
-
-                // 3. 构造请求体 (翻译不需要 image_url，只需要纯文本)
-                //var messagesList = new List<object>
-                //{
-                //    new { role = "system", content = finalSystemPrompt },
-                //    new { role = "user", content = inputContent } // 直接放入用户文本
-                //};
-
+                // 4. 构造请求体
                 var requestBody = new
                 {
                     model = modelName,
@@ -199,12 +272,11 @@ namespace TrOCR.Helper
                         : null
                 };
 
-                // 4. 发送 HTTP 请求
+                // 5. 发送 HTTP 请求
                 // 处理 Endpoint 后缀
                 string endpoint = baseUrl.TrimEnd('/');
                 if (!endpoint.EndsWith("/chat/completions")) endpoint += "/chat/completions";
               
-
                 var jsonSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
                 var content = new StringContent(JsonConvert.SerializeObject(requestBody, jsonSettings), Encoding.UTF8, "application/json");
 
@@ -221,11 +293,11 @@ namespace TrOCR.Helper
                     return $"翻译请求失败: {response.StatusCode}\r\n详细信息: {responseString}";
                 }
 
-                // 5. 解析结果
+                // 6. 解析结果
                 JObject resultJson = JObject.Parse(responseString);
                 string textResult = resultJson["choices"]?[0]?["message"]?["content"]?.ToString();
 
-                // 6. 思考内容过滤 (如果模型输出了 <think> 标签，可选择过滤或保留，这里默认直接返回)
+                // 7. 思考内容过滤 (如果模型输出了 <think> 标签，可选择过滤或保留，这里默认直接返回)
                 return textResult ?? "未收到有效翻译内容";
             }
             catch (Exception ex)
