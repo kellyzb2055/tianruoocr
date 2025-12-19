@@ -121,6 +121,12 @@ namespace TrOCR
 			F_factor = Program.Factor;
 			components = null;
 
+			// 【新增】开启双缓冲，减少闪烁
+			// 怪了，加上这个闪烁就变成黑屏了，不加了
+			//SuspendLayout 是解决布局闪烁（控件乱跳）的，而 DoubleBuffered 是解决绘制闪烁（背景重绘）的？不知道对不对
+			// this.DoubleBuffered = true;
+			
+
 			// 初始化组件和系统设置
 			InitializeComponent();
 			this.lastNormalSize = this.Size;
@@ -2558,104 +2564,110 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
         }
         public void TransClick(bool hideOriginalDefault =false)
         {
-            LogState("TransClick Start"); // <--- 添加这一行
-            typeset_txt = RichBoxBody.Text;
-			// RichBoxBody_T.Visible = true;
-			WindowState = FormWindowState.Normal;
-			transtalate_fla = "开启";
-			RichBoxBody.Dock = DockStyle.None;
-			RichBoxBody_T.Dock = DockStyle.None;
-			RichBoxBody_T.BorderStyle = BorderStyle.Fixed3D;
-			RichBoxBody_T.Text = "";
-			RichBoxBody.Focus();
-			if (num_ok == 0)
-			{
-				// RichBoxBody.Size = new Size(ClientRectangle.Width, ClientRectangle.Height);
-				// Size = new Size(RichBoxBody.Width * 2, RichBoxBody.Height);
-				this.Size = new Size(this.lastNormalSize.Width * 2, this.lastNormalSize.Height);
-				RichBoxBody_T.Size = new Size(lastNormalSize.Width, lastNormalSize.Height);
-				RichBoxBody_T.Location = (Point)new Size(RichBoxBody.Width, 0);
-				RichBoxBody_T.Name = "rich_trans";
-				RichBoxBody_T.TabIndex = 1;
-				RichBoxBody_T.Text_flag = "我是翻译文本框";
-			}
-			num_ok++;
-			// ====================【新增代码】====================
-    		panelSeparator.Visible = true;
-    		panelSeparator.Dock = DockStyle.Left; // 临时停靠以调整高度
-    		panelSeparator.Dock = DockStyle.None; // 恢复手动布局
-    		// ===============================================
-			// PictureBox1.Visible = true;
-			// PictureBox1.BringToFront();
-			// // ====================【新增代码：动态居中PictureBox1】====================
-			// // 计算X坐标，使其水平居中：(窗口宽度 - 图片框宽度) / 2
-			// int centerX = (this.ClientSize.Width - PictureBox1.Width) / 2;
-			// // 计算Y坐标，使其垂直居中：(窗口高度 - 图片框高度) / 2
-			// int centerY = (this.ClientSize.Height - PictureBox1.Height) / 2;
-			// // 应用新的坐标
-			// PictureBox1.Location = new Point(Math.Max(0, centerX), Math.Max(0, centerY));
-		 // ====================【核心修正区域】====================
+            LogState("TransClick Start");
 
-			// 1. 暂停窗体布局，防止在调整多个控件时发生闪烁
-			this.SuspendLayout();
+            // 【优化1】立即暂停布局，阻止任何中间状态的绘制
+            this.SuspendLayout();
 
-		    // 2. 恢复原文窗口为可见状态，并设置双栏布局
-		    RichBoxBody.Visible = true;
-		    this.Size = new Size(this.lastNormalSize.Width * 2, this.lastNormalSize.Height);
-		    RichBoxBody.Width = this.ClientRectangle.Width / 2;
-		    RichBoxBody_T.Left = RichBoxBody.Width;
-		    RichBoxBody_T.Width = RichBoxBody.Width;
+            try
+            {
+                typeset_txt = RichBoxBody.Text;
+                // RichBoxBody_T.Visible = true;
+                WindowState = FormWindowState.Normal;
+                transtalate_fla = "开启";
 
-			// 3. 【关键】设置按钮的可见性、状态和初始位置
-			// 【核心修改】只有在全局开关未开启时，才显示和设置按钮
-			if (!StaticValue.DisableToggleOriginalButton)
-			{
-			    btnToggleOriginalText.Visible = true;
-			    btnToggleOriginalText.BringToFront();
-			    isOriginalTextHidden = false;
-			    btnToggleOriginalText.Text = "◀";
-			    // btnToggleOriginalText.Left = RichBoxBody.Right - btnToggleOriginalText.Width - 10;
-			    btnToggleOriginalText.Left = panelSeparator.Left - btnToggleOriginalText.Width - 10;
-			    // btnToggleOriginalText.Top = 5;
-			    // btnToggleOriginalText.Top = 2;
-			}
+                // 解除 Dock，准备手动布局
+                RichBoxBody.Dock = DockStyle.None;
+                RichBoxBody_T.Dock = DockStyle.None;
+                RichBoxBody_T.BorderStyle = BorderStyle.Fixed3D;
+                RichBoxBody_T.Text = "";
 
+                // 确保翻译框已初始化
+                if (num_ok == 0)
+                {
+                    RichBoxBody_T.Name = "rich_trans";
+                    RichBoxBody_T.TabIndex = 1;
+                    RichBoxBody_T.Text_flag = "我是翻译文本框";
+                    // 这里不需要设置 Size/Location，下面统一设置
+                }
+                num_ok++;
 
-			// ====================【新增的核心逻辑】====================
-			// 如果参数要求默认隐藏原文，则在显示窗口前，提前模拟一次“隐藏”操作
-			// 【核心修改】增加判断：必须在“显隐按钮”没有被全局禁用的前提下，才执行自动隐藏
-			if (hideOriginalDefault && !StaticValue.DisableToggleOriginalButton)
-			{
-				// 更新状态
-				isOriginalTextHidden = true;
-				btnToggleOriginalText.Text = "▶";
+                // 显示分隔条
+                panelSeparator.Visible = true;
+                panelSeparator.Dock = DockStyle.None;
 
-				// 隐藏原文相关的控件
-				RichBoxBody.Visible = false;
-				panelSeparator.Visible = false;
+                // ====================【核心布局逻辑】====================
 
-				// 提前将窗口设置为最终的单栏尺寸
-				this.Size = this.lastNormalSize;
-				
-				// 提前将译文窗口移动到左侧并填满
-				RichBoxBody_T.Left = 0;
-				RichBoxBody_T.Width = this.ClientRectangle.Width;
-				btnToggleOriginalText.Left = RichBoxBody_T.Right - btnToggleOriginalText.Width;
-			}
-			// =========================================================
-			// 4. 恢复窗体布局，并强制应用所有更改。此时按钮会和文本框一起被正确绘制出来。
-			this.ResumeLayout(true);
+                // 1. 设置主窗口大小 (此时布局已挂起，界面不会闪烁)
+                this.Size = new Size(this.lastNormalSize.Width * 2, this.lastNormalSize.Height);
 
-			// ========================================================
-			// MinimumSize = new Size((int)font_base.Width * 23 * 2, (int)font_base.Height * 24);
-			// this.Size = new Size(this.lastNormalSize.Width * 2, this.lastNormalSize.Height);
-			// ====================【核心优化点】====================
-			// 在所有布局都完成后，再调用我们的新方法来定位和显示加载图标
-			PositionLoadingIcon();
-			// ====================================================
+                // 2. 统一设置控件位置和大小
+                // 左侧：原文
+                RichBoxBody.Visible = true;
+                RichBoxBody.Location = new Point(0, 0);
+                RichBoxBody.Size = new Size(this.ClientRectangle.Width / 2, this.ClientRectangle.Height);
 
-			CheckForIllegalCrossThreadCalls = false;
-			trans_Calculate();
+                // 中间：分隔条 (确保位置紧贴原文)
+                panelSeparator.Location = new Point(RichBoxBody.Right, 0);
+                panelSeparator.Height = this.ClientRectangle.Height;
+
+                // 右侧：译文
+                RichBoxBody_T.Visible = true;
+                RichBoxBody_T.Location = new Point(RichBoxBody.Width, 0); // 或者 panelSeparator.Right
+                RichBoxBody_T.Size = new Size(RichBoxBody.Width, this.ClientRectangle.Height);
+
+                // 3. 设置按钮
+				//只有在全局开关未开启时，才显示和设置按钮
+                if (!StaticValue.DisableToggleOriginalButton)
+                {
+                    btnToggleOriginalText.Visible = true;
+                    btnToggleOriginalText.BringToFront();
+                    isOriginalTextHidden = false;
+                    btnToggleOriginalText.Text = "◀";
+                    // 按钮位置跟随分隔条
+					// btnToggleOriginalText.Left = RichBoxBody.Right - btnToggleOriginalText.Width - 10;
+                    btnToggleOriginalText.Left = panelSeparator.Left - btnToggleOriginalText.Width - 10;
+					// btnToggleOriginalText.Top = 5;//或者2
+                }
+
+                // 4. 处理“默认隐藏原文”的特殊逻辑
+                // 如果参数要求默认隐藏原文，则在显示窗口前，提前模拟一次“隐藏”操作
+                // 【核心修改】增加判断：必须在“显隐按钮”没有被全局禁用的前提下，才执行自动隐藏
+                if (hideOriginalDefault && !StaticValue.DisableToggleOriginalButton)
+                {
+					// 更新状态
+                    isOriginalTextHidden = true;
+                    btnToggleOriginalText.Text = "▶";
+
+                    // 隐藏原文相关的控件
+                    RichBoxBody.Visible = false;
+                    panelSeparator.Visible = false;
+
+                    // 调整回单栏大小
+                    this.Size = this.lastNormalSize;
+
+                    // 译文填满
+                    RichBoxBody_T.Location = new Point(0, 0);
+                    RichBoxBody_T.Size = this.ClientRectangle.Size;
+
+                    // 按钮靠右
+                    btnToggleOriginalText.Left = this.ClientRectangle.Width - btnToggleOriginalText.Width;
+                }
+
+                // =========================================================
+
+                // 定位加载图标
+                PositionLoadingIcon();
+                RichBoxBody.Focus();
+            }
+            finally
+            {
+                // 【优化2】恢复布局并强制立即重绘一次，跳过所有中间帧
+                this.ResumeLayout(true);
+            }
+
+            CheckForIllegalCrossThreadCalls = false;
+            trans_Calculate();
             LogState("TransClick End");
         }
 
