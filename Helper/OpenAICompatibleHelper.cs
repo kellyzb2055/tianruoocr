@@ -184,6 +184,8 @@ namespace TrOCR.Helper
                 var messagesList = new List<object>();
                 if (currentModeJToken != null && currentModeJToken is JObject modeObj)
                 {
+                    // 1. 定义一个标记，记录循环里是否处理过 User 消息
+                    bool hasUserMessage = false;
                     // 【方案 A】: 如果能读到 JObject，就按照 JSON 文件里的顺序遍历属性
                     foreach (var property in modeObj.Properties())
                     {
@@ -206,17 +208,31 @@ namespace TrOCR.Helper
                         // 3. 处理 User Prompt (prompt) -> 必须附带图片
                         else if (key == "prompt")
                         {
+                            // 标记：我们在循环里找到了 prompt 键
+                            hasUserMessage = true;
                             string val = currentMode.prompt;
                             var userContentList = new List<object>();
                             if (!string.IsNullOrEmpty(val)) // 即使为空也需要发图片
                             {
                                 userContentList.Add(new { type = "text", text = val });                              
                             }
-                            // 图片是必须添加的
+                            // 立刻把图片加进去，并立刻把消息加入列表
+                            // 这样才能保证它出现在 JSON 指定的位置
                             userContentList.Add(new { type = "image_url", image_url = new { url = $"data:image/jpeg;base64,{base64Image}" } });
 
                             messagesList.Add(new { role = "user", content = userContentList });
                         }
+                    }
+                    // === 【兜底逻辑】 ===
+                    // 循环跑完了，如果发现 hasUserMessage 依然是 false
+                    // 说明 JSON 文件里根本没有 "prompt" 这个键
+                    if (!hasUserMessage)
+                    {
+                        // 手动补发一个只包含图片的 User 消息
+                        var userContentList = new List<object>();
+                        userContentList.Add(new { type = "image_url", image_url = new { url = $"data:image/jpeg;base64,{base64Image}" } });
+                        
+                        messagesList.Add(new { role = "user", content = userContentList });
                     }
                 }
                 else
@@ -261,7 +277,9 @@ namespace TrOCR.Helper
                         type = currentMode.enable_thinking.Value ? "enabled" : "disabled"
                     }
                     // [分支 2] 如果 HasValue 为 false
-                    : null
+                    : null,
+
+                    stream=false
                 };
             
 

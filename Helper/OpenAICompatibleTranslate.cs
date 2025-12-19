@@ -19,7 +19,7 @@ namespace TrOCR.Helper
 
         private static readonly HttpClient httpClient = new HttpClient();
 
-        // === 缓存相关的静态变量 (新增) ===
+        // === 缓存相关的静态变量 ===
         // 线程锁，防止并发读写文件冲突
         private static readonly object _configLock = new object();
         // 缓存的配置对象（内存变量）
@@ -63,7 +63,7 @@ namespace TrOCR.Helper
                 {
                     try
                     {
-                        // 获取配置文件当前的修改时间 (不读取内容，速度极快)
+                        // 获取配置文件当前的修改时间
                         var fileInfo = new FileInfo(configJsonPath);
                         DateTime currentWriteTime = fileInfo.LastWriteTime;
 
@@ -185,6 +185,9 @@ namespace TrOCR.Helper
 
                 if (currentModeJToken != null && currentModeJToken is JObject modeObj)
                 {
+                    // 定义标记：是否已处理 User 消息
+                    bool hasUserMessage = false;
+
                     // 【方案 A】: 按照 JSON 文件里的顺序遍历属性
                     foreach (var property in modeObj.Properties())
                     {
@@ -213,6 +216,8 @@ namespace TrOCR.Helper
                         // 3. 处理 User Prompt (prompt 键) -> 拼接用户输入
                         else if (key == "prompt")
                         {
+                            hasUserMessage = true; // 标记已处理
+
                             string rawTemplate = currentMode.prompt;
                             
                             // 构造最终的用户内容 = Template + 输入文本
@@ -227,6 +232,15 @@ namespace TrOCR.Helper
                             // 只要遇到了 "prompt" 键，就发送 User 消息 (包含输入文本)
                             messagesList.Add(new { role = "user", content = finalUserContent });
                         }
+                    }
+
+                    // === 【兜底逻辑】 ===
+                    // 如果循环结束了，发现 JSON 里压根没写 "prompt" 键
+                    // 强制补发用户输入的内容，防止请求为空
+                    if (!hasUserMessage)
+                    {
+                        // 这里没有 Template 可用，直接发原文
+                        messagesList.Add(new { role = "user", content = inputContent });
                     }
                 }
                 else
@@ -269,7 +283,9 @@ namespace TrOCR.Helper
                         { 
                             type = currentMode.enable_thinking.Value ? "enabled" : "disabled" 
                         }
-                        : null
+                        : null,
+                        
+                    stream=false
                 };
 
                 // 5. 发送 HTTP 请求
