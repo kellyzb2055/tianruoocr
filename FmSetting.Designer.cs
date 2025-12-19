@@ -403,6 +403,25 @@ namespace TrOCR
             this.cbBox_AutoCopyListenClipboardTranslation = new System.Windows.Forms.CheckBox();
             this.cbBox_ListenClipboard = new System.Windows.Forms.CheckBox();
             this.label34 = new System.Windows.Forms.Label();
+            this.Page_AI翻译接口 = new System.Windows.Forms.TabPage();
+            this.groupBox_AI_Trans_Help = new System.Windows.Forms.GroupBox();
+            this.label60 = new System.Windows.Forms.Label();
+            this.tabControl_AI_Trans = new System.Windows.Forms.TabControl();
+            this.tabPage_Trans_OpenAICompatible = new System.Windows.Forms.TabPage();
+            this.groupBox_Trans_OpenAICompatible = new System.Windows.Forms.GroupBox();
+            this.textBox_OpenAICompatible_Target = new System.Windows.Forms.TextBox();
+            this.textBox_OpenAICompatible_Source = new System.Windows.Forms.TextBox();
+            this.label59 = new System.Windows.Forms.Label();
+            this.label58 = new System.Windows.Forms.Label();
+            this.btn_OpenAICompatible_Trans_Config_Browse = new System.Windows.Forms.Button();
+            this.txtOpenAICompatibleTransConfig = new System.Windows.Forms.TextBox();
+            this.label54 = new System.Windows.Forms.Label();
+            this.txtOpenAICompatibleTransKey = new System.Windows.Forms.TextBox();
+            this.label55 = new System.Windows.Forms.Label();
+            this.txtOpenAICompatibleTransModel = new System.Windows.Forms.TextBox();
+            this.label56 = new System.Windows.Forms.Label();
+            this.txtOpenAICompatibleTransBaseUrl = new System.Windows.Forms.TextBox();
+            this.label57 = new System.Windows.Forms.Label();
             this.Page_工具栏 = new System.Windows.Forms.TabPage();
             this.groupBox_拆分文本 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel_拆分文本 = new System.Windows.Forms.TableLayoutPanel();
@@ -431,7 +450,6 @@ namespace TrOCR
             this.label_更新日期 = new System.Windows.Forms.Label();
             this.pictureBox6 = new System.Windows.Forms.PictureBox();
             this.txt_更新说明 = new System.Windows.Forms.TextBox();
-            this.tabControl_AI_Trans = new System.Windows.Forms.TabControl();
             this.tabPage12 = new System.Windows.Forms.TabPage();
             this.groupBox49 = new System.Windows.Forms.GroupBox();
             this.textBox36 = new System.Windows.Forms.TextBox();
@@ -547,24 +565,10 @@ namespace TrOCR
             this.button5 = new System.Windows.Forms.Button();
             this.groupBox14 = new System.Windows.Forms.GroupBox();
             this.label32 = new System.Windows.Forms.Label();
-            this.Page_AI翻译接口 = new System.Windows.Forms.TabPage();
-            this.tabPage_Trans_OpenAICompatible = new System.Windows.Forms.TabPage();
-            this.groupBox_Trans_OpenAICompatible = new System.Windows.Forms.GroupBox();
-            this.btn_OpenAICompatible_Trans_Config_Browse = new System.Windows.Forms.Button();
-            this.txtOpenAICompatibleTransConfig = new System.Windows.Forms.TextBox();
-            this.label54 = new System.Windows.Forms.Label();
-            this.txtOpenAICompatibleTransKey = new System.Windows.Forms.TextBox();
-            this.label55 = new System.Windows.Forms.Label();
-            this.txtOpenAICompatibleTransModel = new System.Windows.Forms.TextBox();
-            this.label56 = new System.Windows.Forms.Label();
-            this.txtOpenAICompatibleTransBaseUrl = new System.Windows.Forms.TextBox();
-            this.label57 = new System.Windows.Forms.Label();
-            this.label58 = new System.Windows.Forms.Label();
-            this.label59 = new System.Windows.Forms.Label();
-            this.textBox_OpenAICompatible_Source = new System.Windows.Forms.TextBox();
-            this.textBox_OpenAICompatible_Target = new System.Windows.Forms.TextBox();
-            this.groupBox_AI_Trans_Help = new System.Windows.Forms.GroupBox();
-            this.label60 = new System.Windows.Forms.Label();
+            this.groupBox50 = new System.Windows.Forms.GroupBox();
+            this.label63 = new System.Windows.Forms.Label();
+            this.textBox38 = new System.Windows.Forms.TextBox();
+            this.label64 = new System.Windows.Forms.Label();
             this.Page_翻译接口.SuspendLayout();
             this.tabControl_Trans.SuspendLayout();
             this.tabPage_Google.SuspendLayout();
@@ -670,6 +674,11 @@ namespace TrOCR
             this.groupBox11.SuspendLayout();
             this.groupBox9.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            this.Page_AI翻译接口.SuspendLayout();
+            this.groupBox_AI_Trans_Help.SuspendLayout();
+            this.tabControl_AI_Trans.SuspendLayout();
+            this.tabPage_Trans_OpenAICompatible.SuspendLayout();
+            this.groupBox_Trans_OpenAICompatible.SuspendLayout();
             this.Page_工具栏.SuspendLayout();
             this.groupBox_拆分文本.SuspendLayout();
             this.tableLayoutPanel_拆分文本.SuspendLayout();
@@ -680,11 +689,7 @@ namespace TrOCR
             ((System.ComponentModel.ISupportInitialize)(this.numbox_间隔时间)).BeginInit();
             this.Page_反馈.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).BeginInit();
-            this.tabControl_AI_Trans.SuspendLayout();
-            this.Page_AI翻译接口.SuspendLayout();
-            this.tabPage_Trans_OpenAICompatible.SuspendLayout();
-            this.groupBox_Trans_OpenAICompatible.SuspendLayout();
-            this.groupBox_AI_Trans_Help.SuspendLayout();
+            this.groupBox50.SuspendLayout();
             this.SuspendLayout();
             // 
             // Page_翻译接口
@@ -4750,6 +4755,7 @@ namespace TrOCR
             // 
             // Page_常规2
             // 
+            this.Page_常规2.Controls.Add(this.groupBox50);
             this.Page_常规2.Controls.Add(this.groupBox13);
             this.Page_常规2.Controls.Add(this.groupBox12);
             this.Page_常规2.Controls.Add(this.groupBox11);
@@ -4844,7 +4850,7 @@ namespace TrOCR
             // groupBox11
             // 
             this.groupBox11.Controls.Add(this.cbBox_禁用隐藏原文按钮);
-            this.groupBox11.Location = new System.Drawing.Point(9, 277);
+            this.groupBox11.Location = new System.Drawing.Point(9, 383);
             this.groupBox11.Name = "groupBox11";
             this.groupBox11.Size = new System.Drawing.Size(511, 100);
             this.groupBox11.TabIndex = 1;
@@ -4942,6 +4948,191 @@ namespace TrOCR
             this.label34.Size = new System.Drawing.Size(232, 30);
             this.label34.TabIndex = 2;
             this.label34.Text = "说明：可托盘菜单快速开启和关闭\r\n剪贴板监听";
+            // 
+            // Page_AI翻译接口
+            // 
+            this.Page_AI翻译接口.Controls.Add(this.groupBox_AI_Trans_Help);
+            this.Page_AI翻译接口.Controls.Add(this.tabControl_AI_Trans);
+            this.Page_AI翻译接口.Location = new System.Drawing.Point(4, 25);
+            this.Page_AI翻译接口.Name = "Page_AI翻译接口";
+            this.Page_AI翻译接口.Padding = new System.Windows.Forms.Padding(3);
+            this.Page_AI翻译接口.Size = new System.Drawing.Size(523, 515);
+            this.Page_AI翻译接口.TabIndex = 15;
+            this.Page_AI翻译接口.Text = "AI翻译接口";
+            this.Page_AI翻译接口.UseVisualStyleBackColor = true;
+            // 
+            // groupBox_AI_Trans_Help
+            // 
+            this.groupBox_AI_Trans_Help.AutoSize = true;
+            this.groupBox_AI_Trans_Help.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.groupBox_AI_Trans_Help.Controls.Add(this.label60);
+            this.groupBox_AI_Trans_Help.Location = new System.Drawing.Point(6, 304);
+            this.groupBox_AI_Trans_Help.Name = "groupBox_AI_Trans_Help";
+            this.groupBox_AI_Trans_Help.Size = new System.Drawing.Size(514, 344);
+            this.groupBox_AI_Trans_Help.TabIndex = 2;
+            this.groupBox_AI_Trans_Help.TabStop = false;
+            this.groupBox_AI_Trans_Help.Text = "说明";
+            // 
+            // label60
+            // 
+            this.label60.AutoSize = true;
+            this.label60.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label60.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label60.Location = new System.Drawing.Point(3, 21);
+            this.label60.Name = "label60";
+            this.label60.Size = new System.Drawing.Size(508, 320);
+            this.label60.TabIndex = 0;
+            this.label60.Text = resources.GetString("label60.Text");
+            // 
+            // tabControl_AI_Trans
+            // 
+            this.tabControl_AI_Trans.Controls.Add(this.tabPage_Trans_OpenAICompatible);
+            this.tabControl_AI_Trans.Location = new System.Drawing.Point(3, 3);
+            this.tabControl_AI_Trans.Margin = new System.Windows.Forms.Padding(4);
+            this.tabControl_AI_Trans.Name = "tabControl_AI_Trans";
+            this.tabControl_AI_Trans.SelectedIndex = 0;
+            this.tabControl_AI_Trans.Size = new System.Drawing.Size(517, 294);
+            this.tabControl_AI_Trans.TabIndex = 1;
+            // 
+            // tabPage_Trans_OpenAICompatible
+            // 
+            this.tabPage_Trans_OpenAICompatible.Controls.Add(this.groupBox_Trans_OpenAICompatible);
+            this.tabPage_Trans_OpenAICompatible.Location = new System.Drawing.Point(4, 25);
+            this.tabPage_Trans_OpenAICompatible.Name = "tabPage_Trans_OpenAICompatible";
+            this.tabPage_Trans_OpenAICompatible.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_Trans_OpenAICompatible.Size = new System.Drawing.Size(509, 265);
+            this.tabPage_Trans_OpenAICompatible.TabIndex = 1;
+            this.tabPage_Trans_OpenAICompatible.Text = "OpenAICompatible";
+            this.tabPage_Trans_OpenAICompatible.UseVisualStyleBackColor = true;
+            // 
+            // groupBox_Trans_OpenAICompatible
+            // 
+            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.textBox_OpenAICompatible_Target);
+            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.textBox_OpenAICompatible_Source);
+            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.label59);
+            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.label58);
+            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.btn_OpenAICompatible_Trans_Config_Browse);
+            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.txtOpenAICompatibleTransConfig);
+            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.label54);
+            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.txtOpenAICompatibleTransKey);
+            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.label55);
+            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.txtOpenAICompatibleTransModel);
+            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.label56);
+            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.txtOpenAICompatibleTransBaseUrl);
+            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.label57);
+            this.groupBox_Trans_OpenAICompatible.Location = new System.Drawing.Point(8, 8);
+            this.groupBox_Trans_OpenAICompatible.Name = "groupBox_Trans_OpenAICompatible";
+            this.groupBox_Trans_OpenAICompatible.Size = new System.Drawing.Size(490, 241);
+            this.groupBox_Trans_OpenAICompatible.TabIndex = 0;
+            this.groupBox_Trans_OpenAICompatible.TabStop = false;
+            this.groupBox_Trans_OpenAICompatible.Text = "配置";
+            // 
+            // textBox_OpenAICompatible_Target
+            // 
+            this.textBox_OpenAICompatible_Target.Location = new System.Drawing.Point(306, 190);
+            this.textBox_OpenAICompatible_Target.Name = "textBox_OpenAICompatible_Target";
+            this.textBox_OpenAICompatible_Target.Size = new System.Drawing.Size(99, 25);
+            this.textBox_OpenAICompatible_Target.TabIndex = 12;
+            // 
+            // textBox_OpenAICompatible_Source
+            // 
+            this.textBox_OpenAICompatible_Source.Location = new System.Drawing.Point(100, 190);
+            this.textBox_OpenAICompatible_Source.Name = "textBox_OpenAICompatible_Source";
+            this.textBox_OpenAICompatible_Source.Size = new System.Drawing.Size(99, 25);
+            this.textBox_OpenAICompatible_Source.TabIndex = 11;
+            // 
+            // label59
+            // 
+            this.label59.AutoSize = true;
+            this.label59.Location = new System.Drawing.Point(218, 193);
+            this.label59.Name = "label59";
+            this.label59.Size = new System.Drawing.Size(82, 15);
+            this.label59.TabIndex = 10;
+            this.label59.Text = "目标语言：";
+            // 
+            // label58
+            // 
+            this.label58.AutoSize = true;
+            this.label58.Location = new System.Drawing.Point(20, 193);
+            this.label58.Name = "label58";
+            this.label58.Size = new System.Drawing.Size(67, 15);
+            this.label58.TabIndex = 9;
+            this.label58.Text = "源语言：";
+            // 
+            // btn_OpenAICompatible_Trans_Config_Browse
+            // 
+            this.btn_OpenAICompatible_Trans_Config_Browse.Location = new System.Drawing.Point(430, 147);
+            this.btn_OpenAICompatible_Trans_Config_Browse.Name = "btn_OpenAICompatible_Trans_Config_Browse";
+            this.btn_OpenAICompatible_Trans_Config_Browse.Size = new System.Drawing.Size(40, 25);
+            this.btn_OpenAICompatible_Trans_Config_Browse.TabIndex = 8;
+            this.btn_OpenAICompatible_Trans_Config_Browse.Text = "...";
+            this.btn_OpenAICompatible_Trans_Config_Browse.UseVisualStyleBackColor = true;
+            this.btn_OpenAICompatible_Trans_Config_Browse.Click += new System.EventHandler(this.btn_OpenAICompatible_Trans_Config_Browse_Click);
+            // 
+            // txtOpenAICompatibleTransConfig
+            // 
+            this.txtOpenAICompatibleTransConfig.Location = new System.Drawing.Point(100, 147);
+            this.txtOpenAICompatibleTransConfig.Name = "txtOpenAICompatibleTransConfig";
+            this.txtOpenAICompatibleTransConfig.Size = new System.Drawing.Size(324, 25);
+            this.txtOpenAICompatibleTransConfig.TabIndex = 7;
+            // 
+            // label54
+            // 
+            this.label54.AutoSize = true;
+            this.label54.Location = new System.Drawing.Point(20, 150);
+            this.label54.Name = "label54";
+            this.label54.Size = new System.Drawing.Size(75, 15);
+            this.label54.TabIndex = 6;
+            this.label54.Text = "配置文件:";
+            // 
+            // txtOpenAICompatibleTransKey
+            // 
+            this.txtOpenAICompatibleTransKey.Location = new System.Drawing.Point(100, 107);
+            this.txtOpenAICompatibleTransKey.Name = "txtOpenAICompatibleTransKey";
+            this.txtOpenAICompatibleTransKey.PasswordChar = '*';
+            this.txtOpenAICompatibleTransKey.Size = new System.Drawing.Size(370, 25);
+            this.txtOpenAICompatibleTransKey.TabIndex = 5;
+            // 
+            // label55
+            // 
+            this.label55.AutoSize = true;
+            this.label55.Location = new System.Drawing.Point(20, 110);
+            this.label55.Name = "label55";
+            this.label55.Size = new System.Drawing.Size(71, 15);
+            this.label55.TabIndex = 4;
+            this.label55.Text = "API Key:";
+            // 
+            // txtOpenAICompatibleTransModel
+            // 
+            this.txtOpenAICompatibleTransModel.Location = new System.Drawing.Point(100, 67);
+            this.txtOpenAICompatibleTransModel.Name = "txtOpenAICompatibleTransModel";
+            this.txtOpenAICompatibleTransModel.Size = new System.Drawing.Size(370, 25);
+            this.txtOpenAICompatibleTransModel.TabIndex = 3;
+            // 
+            // label56
+            // 
+            this.label56.AutoSize = true;
+            this.label56.Location = new System.Drawing.Point(20, 70);
+            this.label56.Name = "label56";
+            this.label56.Size = new System.Drawing.Size(45, 15);
+            this.label56.TabIndex = 2;
+            this.label56.Text = "模型:";
+            // 
+            // txtOpenAICompatibleTransBaseUrl
+            // 
+            this.txtOpenAICompatibleTransBaseUrl.Location = new System.Drawing.Point(100, 27);
+            this.txtOpenAICompatibleTransBaseUrl.Name = "txtOpenAICompatibleTransBaseUrl";
+            this.txtOpenAICompatibleTransBaseUrl.Size = new System.Drawing.Size(370, 25);
+            this.txtOpenAICompatibleTransBaseUrl.TabIndex = 1;
+            // 
+            // label57
+            // 
+            this.label57.AutoSize = true;
+            this.label57.Location = new System.Drawing.Point(20, 30);
+            this.label57.Name = "label57";
+            this.label57.Size = new System.Drawing.Size(79, 15);
+            this.label57.TabIndex = 0;
+            this.label57.Text = "Base URL:";
             // 
             // Page_工具栏
             // 
@@ -5271,16 +5462,6 @@ namespace TrOCR
             this.txt_更新说明.Name = "txt_更新说明";
             this.txt_更新说明.Size = new System.Drawing.Size(366, 155);
             this.txt_更新说明.TabIndex = 4;
-            // 
-            // tabControl_AI_Trans
-            // 
-            this.tabControl_AI_Trans.Controls.Add(this.tabPage_Trans_OpenAICompatible);
-            this.tabControl_AI_Trans.Location = new System.Drawing.Point(3, 3);
-            this.tabControl_AI_Trans.Margin = new System.Windows.Forms.Padding(4);
-            this.tabControl_AI_Trans.Name = "tabControl_AI_Trans";
-            this.tabControl_AI_Trans.SelectedIndex = 0;
-            this.tabControl_AI_Trans.Size = new System.Drawing.Size(517, 294);
-            this.tabControl_AI_Trans.TabIndex = 1;
             // 
             // tabPage12
             // 
@@ -6366,180 +6547,43 @@ namespace TrOCR
             this.label32.Size = new System.Drawing.Size(67, 15);
             this.label32.TabIndex = 0;
             // 
-            // Page_AI翻译接口
+            // groupBox50
             // 
-            this.Page_AI翻译接口.Controls.Add(this.groupBox_AI_Trans_Help);
-            this.Page_AI翻译接口.Controls.Add(this.tabControl_AI_Trans);
-            this.Page_AI翻译接口.Location = new System.Drawing.Point(4, 25);
-            this.Page_AI翻译接口.Name = "Page_AI翻译接口";
-            this.Page_AI翻译接口.Padding = new System.Windows.Forms.Padding(3);
-            this.Page_AI翻译接口.Size = new System.Drawing.Size(523, 515);
-            this.Page_AI翻译接口.TabIndex = 15;
-            this.Page_AI翻译接口.Text = "AI翻译接口";
-            this.Page_AI翻译接口.UseVisualStyleBackColor = true;
+            this.groupBox50.Controls.Add(this.label63);
+            this.groupBox50.Controls.Add(this.textBox38);
+            this.groupBox50.Controls.Add(this.label64);
+            this.groupBox50.Location = new System.Drawing.Point(9, 277);
+            this.groupBox50.Name = "groupBox50";
+            this.groupBox50.Size = new System.Drawing.Size(511, 100);
+            this.groupBox50.TabIndex = 5;
+            this.groupBox50.TabStop = false;
+            this.groupBox50.Text = "文本改变后自动翻译";
             // 
-            // tabPage_Trans_OpenAICompatible
+            // label63
             // 
-            this.tabPage_Trans_OpenAICompatible.Controls.Add(this.groupBox_Trans_OpenAICompatible);
-            this.tabPage_Trans_OpenAICompatible.Location = new System.Drawing.Point(4, 25);
-            this.tabPage_Trans_OpenAICompatible.Name = "tabPage_Trans_OpenAICompatible";
-            this.tabPage_Trans_OpenAICompatible.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_Trans_OpenAICompatible.Size = new System.Drawing.Size(509, 265);
-            this.tabPage_Trans_OpenAICompatible.TabIndex = 1;
-            this.tabPage_Trans_OpenAICompatible.Text = "OpenAICompatible";
-            this.tabPage_Trans_OpenAICompatible.UseVisualStyleBackColor = true;
+            this.label63.AutoSize = true;
+            this.label63.Location = new System.Drawing.Point(137, 30);
+            this.label63.Name = "label63";
+            this.label63.Size = new System.Drawing.Size(393, 15);
+            this.label63.TabIndex = 4;
+            this.label63.Text = "(单位：毫秒，设为0可关闭此功能，建议设置大于1000)，";
             // 
-            // groupBox_Trans_OpenAICompatible
+            // textBox38
             // 
-            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.textBox_OpenAICompatible_Target);
-            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.textBox_OpenAICompatible_Source);
-            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.label59);
-            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.label58);
-            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.btn_OpenAICompatible_Trans_Config_Browse);
-            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.txtOpenAICompatibleTransConfig);
-            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.label54);
-            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.txtOpenAICompatibleTransKey);
-            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.label55);
-            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.txtOpenAICompatibleTransModel);
-            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.label56);
-            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.txtOpenAICompatibleTransBaseUrl);
-            this.groupBox_Trans_OpenAICompatible.Controls.Add(this.label57);
-            this.groupBox_Trans_OpenAICompatible.Location = new System.Drawing.Point(8, 8);
-            this.groupBox_Trans_OpenAICompatible.Name = "groupBox_Trans_OpenAICompatible";
-            this.groupBox_Trans_OpenAICompatible.Size = new System.Drawing.Size(490, 241);
-            this.groupBox_Trans_OpenAICompatible.TabIndex = 0;
-            this.groupBox_Trans_OpenAICompatible.TabStop = false;
-            this.groupBox_Trans_OpenAICompatible.Text = "配置";
+            this.textBox38.Location = new System.Drawing.Point(54, 27);
+            this.textBox38.Multiline = true;
+            this.textBox38.Name = "textBox38";
+            this.textBox38.Size = new System.Drawing.Size(77, 20);
+            this.textBox38.TabIndex = 3;
             // 
-            // btn_OpenAICompatible_Trans_Config_Browse
+            // label64
             // 
-            this.btn_OpenAICompatible_Trans_Config_Browse.Location = new System.Drawing.Point(430, 147);
-            this.btn_OpenAICompatible_Trans_Config_Browse.Name = "btn_OpenAICompatible_Trans_Config_Browse";
-            this.btn_OpenAICompatible_Trans_Config_Browse.Size = new System.Drawing.Size(40, 25);
-            this.btn_OpenAICompatible_Trans_Config_Browse.TabIndex = 8;
-            this.btn_OpenAICompatible_Trans_Config_Browse.Text = "...";
-            this.btn_OpenAICompatible_Trans_Config_Browse.UseVisualStyleBackColor = true;
-            this.btn_OpenAICompatible_Trans_Config_Browse.Click += new System.EventHandler(this.btn_OpenAICompatible_Trans_Config_Browse_Click);
-            // 
-            // txtOpenAICompatibleTransConfig
-            // 
-            this.txtOpenAICompatibleTransConfig.Location = new System.Drawing.Point(100, 147);
-            this.txtOpenAICompatibleTransConfig.Name = "txtOpenAICompatibleTransConfig";
-            this.txtOpenAICompatibleTransConfig.Size = new System.Drawing.Size(324, 25);
-            this.txtOpenAICompatibleTransConfig.TabIndex = 7;
-            // 
-            // label54
-            // 
-            this.label54.AutoSize = true;
-            this.label54.Location = new System.Drawing.Point(20, 150);
-            this.label54.Name = "label54";
-            this.label54.Size = new System.Drawing.Size(75, 15);
-            this.label54.TabIndex = 6;
-            this.label54.Text = "配置文件:";
-            // 
-            // txtOpenAICompatibleTransKey
-            // 
-            this.txtOpenAICompatibleTransKey.Location = new System.Drawing.Point(100, 107);
-            this.txtOpenAICompatibleTransKey.Name = "txtOpenAICompatibleTransKey";
-            this.txtOpenAICompatibleTransKey.PasswordChar = '*';
-            this.txtOpenAICompatibleTransKey.Size = new System.Drawing.Size(370, 25);
-            this.txtOpenAICompatibleTransKey.TabIndex = 5;
-            // 
-            // label55
-            // 
-            this.label55.AutoSize = true;
-            this.label55.Location = new System.Drawing.Point(20, 110);
-            this.label55.Name = "label55";
-            this.label55.Size = new System.Drawing.Size(71, 15);
-            this.label55.TabIndex = 4;
-            this.label55.Text = "API Key:";
-            // 
-            // txtOpenAICompatibleTransModel
-            // 
-            this.txtOpenAICompatibleTransModel.Location = new System.Drawing.Point(100, 67);
-            this.txtOpenAICompatibleTransModel.Name = "txtOpenAICompatibleTransModel";
-            this.txtOpenAICompatibleTransModel.Size = new System.Drawing.Size(370, 25);
-            this.txtOpenAICompatibleTransModel.TabIndex = 3;
-            // 
-            // label56
-            // 
-            this.label56.AutoSize = true;
-            this.label56.Location = new System.Drawing.Point(20, 70);
-            this.label56.Name = "label56";
-            this.label56.Size = new System.Drawing.Size(45, 15);
-            this.label56.TabIndex = 2;
-            this.label56.Text = "模型:";
-            // 
-            // txtOpenAICompatibleTransBaseUrl
-            // 
-            this.txtOpenAICompatibleTransBaseUrl.Location = new System.Drawing.Point(100, 27);
-            this.txtOpenAICompatibleTransBaseUrl.Name = "txtOpenAICompatibleTransBaseUrl";
-            this.txtOpenAICompatibleTransBaseUrl.Size = new System.Drawing.Size(370, 25);
-            this.txtOpenAICompatibleTransBaseUrl.TabIndex = 1;
-            // 
-            // label57
-            // 
-            this.label57.AutoSize = true;
-            this.label57.Location = new System.Drawing.Point(20, 30);
-            this.label57.Name = "label57";
-            this.label57.Size = new System.Drawing.Size(79, 15);
-            this.label57.TabIndex = 0;
-            this.label57.Text = "Base URL:";
-            // 
-            // label58
-            // 
-            this.label58.AutoSize = true;
-            this.label58.Location = new System.Drawing.Point(20, 193);
-            this.label58.Name = "label58";
-            this.label58.Size = new System.Drawing.Size(67, 15);
-            this.label58.TabIndex = 9;
-            this.label58.Text = "源语言：";
-            // 
-            // label59
-            // 
-            this.label59.AutoSize = true;
-            this.label59.Location = new System.Drawing.Point(218, 193);
-            this.label59.Name = "label59";
-            this.label59.Size = new System.Drawing.Size(82, 15);
-            this.label59.TabIndex = 10;
-            this.label59.Text = "目标语言：";
-            // 
-            // textBox_OpenAICompatible_Source
-            // 
-            this.textBox_OpenAICompatible_Source.Location = new System.Drawing.Point(100, 190);
-            this.textBox_OpenAICompatible_Source.Name = "textBox_OpenAICompatible_Source";
-            this.textBox_OpenAICompatible_Source.Size = new System.Drawing.Size(99, 25);
-            this.textBox_OpenAICompatible_Source.TabIndex = 11;
-            // 
-            // textBox_OpenAICompatible_Target
-            // 
-            this.textBox_OpenAICompatible_Target.Location = new System.Drawing.Point(306, 190);
-            this.textBox_OpenAICompatible_Target.Name = "textBox_OpenAICompatible_Target";
-            this.textBox_OpenAICompatible_Target.Size = new System.Drawing.Size(99, 25);
-            this.textBox_OpenAICompatible_Target.TabIndex = 12;
-            // 
-            // groupBox_AI_Trans_Help
-            // 
-            this.groupBox_AI_Trans_Help.AutoSize = true;
-            this.groupBox_AI_Trans_Help.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.groupBox_AI_Trans_Help.Controls.Add(this.label60);
-            this.groupBox_AI_Trans_Help.Location = new System.Drawing.Point(6, 304);
-            this.groupBox_AI_Trans_Help.Name = "groupBox_AI_Trans_Help";
-            this.groupBox_AI_Trans_Help.Size = new System.Drawing.Size(514, 344);
-            this.groupBox_AI_Trans_Help.TabIndex = 2;
-            this.groupBox_AI_Trans_Help.TabStop = false;
-            this.groupBox_AI_Trans_Help.Text = "说明";
-            // 
-            // label60
-            // 
-            this.label60.AutoSize = true;
-            this.label60.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label60.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label60.Location = new System.Drawing.Point(3, 21);
-            this.label60.Name = "label60";
-            this.label60.Size = new System.Drawing.Size(508, 320);
-            this.label60.TabIndex = 0;
-            this.label60.Text = resources.GetString("label60.Text");
+            this.label64.AutoSize = true;
+            this.label64.Location = new System.Drawing.Point(6, 30);
+            this.label64.Name = "label64";
+            this.label64.Size = new System.Drawing.Size(52, 15);
+            this.label64.TabIndex = 2;
+            this.label64.Text = "时间：";
             // 
             // FmSetting
             // 
@@ -6729,6 +6773,14 @@ namespace TrOCR
             this.groupBox9.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
+            this.Page_AI翻译接口.ResumeLayout(false);
+            this.Page_AI翻译接口.PerformLayout();
+            this.groupBox_AI_Trans_Help.ResumeLayout(false);
+            this.groupBox_AI_Trans_Help.PerformLayout();
+            this.tabControl_AI_Trans.ResumeLayout(false);
+            this.tabPage_Trans_OpenAICompatible.ResumeLayout(false);
+            this.groupBox_Trans_OpenAICompatible.ResumeLayout(false);
+            this.groupBox_Trans_OpenAICompatible.PerformLayout();
             this.Page_工具栏.ResumeLayout(false);
             this.groupBox_拆分文本.ResumeLayout(false);
             this.tableLayoutPanel_拆分文本.ResumeLayout(false);
@@ -6743,14 +6795,8 @@ namespace TrOCR
             this.Page_反馈.ResumeLayout(false);
             this.Page_反馈.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).EndInit();
-            this.tabControl_AI_Trans.ResumeLayout(false);
-            this.Page_AI翻译接口.ResumeLayout(false);
-            this.Page_AI翻译接口.PerformLayout();
-            this.tabPage_Trans_OpenAICompatible.ResumeLayout(false);
-            this.groupBox_Trans_OpenAICompatible.ResumeLayout(false);
-            this.groupBox_Trans_OpenAICompatible.PerformLayout();
-            this.groupBox_AI_Trans_Help.ResumeLayout(false);
-            this.groupBox_AI_Trans_Help.PerformLayout();
+            this.groupBox50.ResumeLayout(false);
+            this.groupBox50.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -7309,5 +7355,9 @@ namespace TrOCR
         private System.Windows.Forms.Label label58;
         private System.Windows.Forms.GroupBox groupBox_AI_Trans_Help;
         private System.Windows.Forms.Label label60;
+        private System.Windows.Forms.GroupBox groupBox50;
+        private System.Windows.Forms.Label label63;
+        private System.Windows.Forms.TextBox textBox38;
+        private System.Windows.Forms.Label label64;
     }
 }

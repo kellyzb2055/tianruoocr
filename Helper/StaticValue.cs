@@ -175,6 +175,8 @@ namespace TrOCR.Helper
         public static string OpenAICompatible_Trans_CONFIG_PATH { get; set; }
         public static string OpenAICompatible_Trans_Source { get; set; }
         public static string OpenAICompatible_Trans_Target { get; set; }
+        //文本改变自动翻译延时
+        public static int TextChangeAutotranslateDelay { get; set; }
 
 
         /// <summary>
@@ -226,6 +228,29 @@ namespace TrOCR.Helper
             OpenAICompatible_Trans_Source= GetValue("OpenAICompatibleTrans", "Source", "Auto Detect");
             OpenAICompatible_Trans_Target= GetValue("OpenAICompatibleTrans", "Target", "Simplified Chinese");
 
+            TextChangeAutotranslateDelay=GetIntValue("配置", "文本改变自动翻译延时", 5000);
+
+        }
+        // 1. 定义读取 Int 的辅助方法
+        public static int GetIntValue(string section, string key, int defaultValue)
+        {
+            // 先获取字符串值
+            string valueStr = IniHelper.GetValue(section, key);
+
+            // 检查是否为空或读取错误
+            if (valueStr == "发生错误" || string.IsNullOrEmpty(valueStr))
+            {
+                return defaultValue;
+            }
+
+            // 尝试转换为 int
+            if (int.TryParse(valueStr, out int result))
+            {
+                return result; // 转换成功，返回读取到的值
+            }
+
+            // 如果内容是乱码或非数字，返回默认值
+            return defaultValue;
         }
 
         static StaticValue()

@@ -837,6 +837,8 @@ namespace TrOCR
 			txtOpenAICompatibleTransConfig.Text = TrOCRUtils.LoadSetting("OpenAICompatibleTrans", "Config", "") ;
 			textBox_OpenAICompatible_Source.Text = TrOCRUtils.LoadSetting("OpenAICompatibleTrans", "Source", "") ;
 			textBox_OpenAICompatible_Target.Text = TrOCRUtils.LoadSetting("OpenAICompatibleTrans", "Target", "") ;
+			//文本改变后自动翻译的延时
+			textBox38.Text=TrOCRUtils.LoadSetting("配置", "文本改变自动翻译延时", "5000");
 		}
 
 		/// <summary>
@@ -2102,6 +2104,9 @@ namespace TrOCR
 			IniHelper.SetValue("OpenAICompatibleTrans", "Config", txtOpenAICompatibleTransConfig.Text);
 			IniHelper.SetValue("OpenAICompatibleTrans", "Source", textBox_OpenAICompatible_Source.Text);
 			IniHelper.SetValue("OpenAICompatibleTrans", "Target", textBox_OpenAICompatible_Target.Text);
+
+			//文本改变后自动翻译的延时
+			IniHelper.SetValue("配置", "文本改变自动翻译延时",textBox38.Text );
 
 			ResetOcrEngineOnConfigChange();
 			DialogResult = DialogResult.OK;

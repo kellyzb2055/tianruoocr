@@ -129,10 +129,19 @@ namespace TrOCR
 			// 加载并应用记忆的窗口大小
 			LoadWindowState();
 			LogState("Constructor End (Initial State)"); // <--- 添加这一行
-														 // ====================【新增代码结束】====================
-			translationTimer = new Timer();
-			translationTimer.Interval = 5000;
-			translationTimer.Tick += TranslationTimer_Tick;
+            // ====================【新增代码结束】====================
+         
+            if (translationTimer == null)
+            {
+                translationTimer = new Timer();
+                translationTimer.Tick += TranslationTimer_Tick;
+				// 【核心】如果解析出来是0或负数，给个默认值（比如5000）防止程序错误，原因：定时器的Interval 属性值必须 大于 0，不然抛异常报错
+				translationTimer.Interval = (StaticValue.TextChangeAutotranslateDelay > 0) 
+											? StaticValue.TextChangeAutotranslateDelay 
+											: 5000;
+            }
+
+
 			RichBoxBody.richTextBox1.TextChanged += RichBoxBody_TextChanged;
 
 			// ====================【新增代码开始】====================
@@ -2953,11 +2962,19 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
         /// 原始文本框内容改变事件，用于实现编辑后自动翻译
         /// </summary>
         private void RichBoxBody_TextChanged(object sender, EventArgs e)
-		
 		{
-			// --- 日志: 事件触发入口 ---
-			// 为了日志清晰，将换行符替换为可见的转义字符
-			string currentTextForLog = RichBoxBody.Text.Replace("\r", "\\r").Replace("\n", "\\n");
+            // 1. 获取当前配置的延时
+            int currentDelay = StaticValue.TextChangeAutotranslateDelay;
+
+            // 【判断 1】如果设置为 0 或负数，直接退出，不启动定时器（功能关闭）
+            if (currentDelay <= 0)
+            {
+                return;
+            }
+
+            // --- 日志: 事件触发入口 ---
+            // 为了日志清晰，将换行符替换为可见的转义字符
+            string currentTextForLog = RichBoxBody.Text.Replace("\r", "\\r").Replace("\n", "\\n");
 			Debug.WriteLine($"---> TextChanged 事件触发。文本: \"{currentTextForLog}\" | isContentFromOcr: {isContentFromOcr} | transtalate_fla: {transtalate_fla}");
 			// 关键修复：添加一个“守卫”，如果文本是默认占位符，则直接忽略，不执行任何逻辑。
 			// 这一步不做也行，因为下面2880行做了事件临时解绑。
@@ -2980,7 +2997,12 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 				{
 					Debug.WriteLine("        |--> 文本不为空，准备调用 TransClick() 来打开翻译窗口...");
 					translationTimer.Stop();
-					translationTimer.Start();
+                    // 【修改后新增】在此处动态更新 Timer 的间隔
+                    // 这样可以确保：
+                    // 1. 此时 currentDelay 肯定 > 0，赋值安全，不会崩溃
+                    // 2. 如果用户在设置里修改了时间，这里会立即生效，无需重启
+                    translationTimer.Interval = currentDelay;
+                    translationTimer.Start();
 				}
 				Debug.WriteLine("    |<-- 场景1 结束,定时器已开始或重置。");
 				Debug.WriteLine("---> TextChanged 事件结束。");
@@ -2999,7 +3021,12 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 				// {
 					Debug.WriteLine("        |--> 满足 [isContentFromOcr 或 autoTranslateInputEnabled]，准备启动/重置 定时器...");
         		    translationTimer.Stop();
-        		    translationTimer.Start();
+                // 【修改后新增】在此处动态更新 Timer 的间隔
+                // 这样可以确保：
+                // 1. 此时 currentDelay 肯定 > 0，赋值安全，不会崩溃
+                // 2. 如果用户在设置里修改了时间，这里会立即生效，无需重启
+                translationTimer.Interval = currentDelay;
+                translationTimer.Start();
 
 					Debug.WriteLine("        |--> 定时器已重置。");
 
