@@ -864,15 +864,25 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
             }
 
             string toLang;
-            // 【修改】如果临时源语言(overrideSource)不为空，则使用它，否则才用配置文件中的
-            string fromLang = overrideSource ?? config.Source;
+			string fromLang;
+            //如果临时源语言(overrideSource)不为空，则使用它，否则才用配置文件中的
+            if (sectionName != "OpenAICompatible")
+			{
+                fromLang = overrideSource ?? config.Source;
+			}
+			else
+			{
+				fromLang= overrideSource ?? StaticValue.OpenAICompatible_Trans_Source;
+
+            }
+
             // 【修改】优先使用临时目标语言
             if (!string.IsNullOrEmpty(overrideTarget))
             {
                 toLang = overrideTarget;
             }
             // 根据目标语言配置自动判断需要翻译成的语言
-            else if (config.Target == "自动判断")
+            else if ((sectionName!= "OpenAICompatible" && config.Target == "自动判断")||((sectionName == "OpenAICompatible" && StaticValue.OpenAICompatible_Trans_Target == "自动判断")) )
             {
                 toLang = "en"; // 默认翻译为英文
                 if (StaticValue.ZH2EN)
@@ -934,7 +944,14 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
             else
             {
                 // 使用配置中指定的目标语言
-                toLang = config.Target;
+                    if (sectionName == "OpenAICompatible")
+					{	
+						toLang = StaticValue.OpenAICompatible_Trans_Target;
+					}
+                    else
+                    {
+                        toLang = config.Target;
+                    }
             }
 
             // 百度和腾讯翻译服务需要特殊处理语言代码

@@ -230,7 +230,7 @@ namespace TrOCR.Helper
             OpenAICompatible_Trans_MODEL = GetValue("OpenAICompatibleTrans", "Model", "");
             OpenAICompatible_Trans_CONFIG_PATH = GetValue("OpenAICompatibleTrans", "Config", "");
             OpenAICompatible_Trans_Source= GetValue("OpenAICompatibleTrans", "Source", "Auto Detect");
-            OpenAICompatible_Trans_Target= GetValue("OpenAICompatibleTrans", "Target", "Simplified Chinese");
+            OpenAICompatible_Trans_Target= GetValue("OpenAICompatibleTrans", "Target", "自动判断");
 
             // TextChangeAutotranslateDelay=GetIntValue("配置", "文本改变自动翻译延时", 5000);
             TextChangeAutotranslateDelayRaw=GetValue("配置", "文本改变自动翻译延时", "5000");

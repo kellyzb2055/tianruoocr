@@ -835,8 +835,8 @@ namespace TrOCR
 			txtOpenAICompatibleTransModel.Text = TrOCRUtils.LoadSetting("OpenAICompatibleTrans", "Model", "") ;
 			txtOpenAICompatibleTransKey.Text = TrOCRUtils.LoadSetting("OpenAICompatibleTrans", "APIKey", "") ;
 			txtOpenAICompatibleTransConfig.Text = TrOCRUtils.LoadSetting("OpenAICompatibleTrans", "Config", "") ;
-			textBox_OpenAICompatible_Source.Text = TrOCRUtils.LoadSetting("OpenAICompatibleTrans", "Source", "") ;
-			textBox_OpenAICompatible_Target.Text = TrOCRUtils.LoadSetting("OpenAICompatibleTrans", "Target", "") ;
+			textBox_OpenAICompatible_Source.Text = TrOCRUtils.LoadSetting("OpenAICompatibleTrans", "Source", "Auto Detect") ;
+			textBox_OpenAICompatible_Target.Text = TrOCRUtils.LoadSetting("OpenAICompatibleTrans", "Target", "自动判断") ;
 			//文本改变后自动翻译的延时
 			textBox38.Text=TrOCRUtils.LoadSetting("配置", "文本改变自动翻译延时", "5000");
 			//工具栏图标放大倍数
