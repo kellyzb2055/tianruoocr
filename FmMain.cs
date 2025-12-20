@@ -2288,9 +2288,7 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 			fmSetting.TopMost = true;
 			fmSetting.ShowDialog();
             //设置窗口关闭后
-            //刷新 AI 菜单，这行代码写在fmsetting里也行，写在这里也行
-            LoadAIConfigMenus();
-            LoadAITranConfigMenus();
+           
 			//更新AI缓存
 			OpenAICompatibleHelper.ResetCache();
             OpenAICompatibleTranslate.ResetCache();
@@ -2309,7 +2307,9 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
                 string iniFile = AppDomain.CurrentDomain.BaseDirectory + "Data\\config.ini";
                 IniHelper.RemoveKey("OpenAICompatibleTrans", "SelectedMode", iniFile);
             }
-			
+			 //刷新 AI 菜单，这行代码写在fmsetting里也行，写在这里也行
+            LoadAIConfigMenus();
+            LoadAITranConfigMenus();
 			if (fmSetting.DialogResult == DialogResult.OK)
 			{
 				// 在重新加载配置前，保存旧的百度密钥
