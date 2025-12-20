@@ -1,7 +1,6 @@
-﻿// 文件：TrOCR\FmMain.AI.cs
-
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text; // 确保引用
 using System.Windows.Forms;
@@ -91,6 +90,25 @@ namespace TrOCR
                         }
 
                         this.ai_openai_compatible_trans.DropDownItems.Add(modeItem);
+                    }
+                     // === 【关键修改点】 ===
+                    // 逻辑：没存就是第一个，存的找不到就不管它
+
+                    // 只有当 lastSelectedModeName 是空字符串（从未设置过）时，才自动选第一个
+                    if (string.IsNullOrEmpty(lastSelectedModeName) && this.ai_openai_compatible.DropDownItems.Count > 0)
+                    {
+                        if (this.ai_openai_compatible.DropDownItems[0] is ToolStripMenuItem firstItem)
+                        {
+                            firstItem.Checked = true;
+                            if (firstItem.Tag is AIMode firstMode)
+                            {
+                                this.currentSelectedAITransMode = firstMode;
+                                // 既然自动帮你选了第一个，顺便保存一下，下次就不算"没存过"了
+                                IniHelper.SetValue("OpenAICompatibleTrans", "SelectedMode", firstMode.mode);
+                                // CommonHelper.ShowHelpMsg("未选择模式，将使用配置文件里第一个模式");
+                                Debug.WriteLine("Fmmain.AI.Translate.cs--未选择模式，将使用配置文件里第一个模式");
+                            }
+                        }
                     }
                 }
             }

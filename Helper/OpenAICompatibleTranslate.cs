@@ -28,6 +28,9 @@ namespace TrOCR.Helper
         private static DateTime _lastConfigWriteTime = DateTime.MinValue;
         // 用于保留顺序的 JObject
         private static JObject _cachedJsonRoot = null;
+        // 是否已经显示过通知
+        private static bool hasnotified = false;
+        //通知相关代码移到fmmain.ai.translate.cs里比较好，暂时不移
 
 
         /// <summary>
@@ -152,19 +155,48 @@ namespace TrOCR.Helper
                     {
                         // 查找名称匹配的模式
                         foundMode = freshConfig.modes.FirstOrDefault(m => m.mode == savedModeName);
+
+                        if (foundMode == null)
+                        {
+                            return $"配置错误：无法找到模式“{savedModeName}”。\r\n原因：该模式可能已被从配置文件中删除或重命名。\r\n解决方法：请点击菜单重新选择一个有效的模式。";
+                        }
+                        hasnotified = false;
+                        currentMode = foundMode;
+                        // 同时查找 JToken
+                        if (freshJsonRoot != null && freshJsonRoot["modes"] is JArray modesArray)
+                        {
+                            currentModeJToken = modesArray.FirstOrDefault(m => m["mode"]?.ToString() == savedModeName);
+                        }
+                    }
+                    else
+                    {
+                        // === 用户没选模式 (savedModeName 为空) ===
+                        // 【优化策略】：优先尝试使用配置文件里的“第一个模式”
+                        if (freshConfig.modes != null && freshConfig.modes.Count > 0)
+                        {
+                            // 自动选中第一个
+                            currentMode = freshConfig.modes[0];
+
+                            // 顺便帮用户查找对应的 JToken（以便保持顺序）
+                            if (freshJsonRoot != null && freshJsonRoot["modes"] is JArray modesArray)
+                            {
+                                currentModeJToken = modesArray.FirstOrDefault(); // 取第一个 JObject
+                            }
+                            Debug.WriteLine($"用户未选模式，自动加载配置文件中的第一个模式: {currentMode.mode}");
+
+                            IniHelper.SetValue("OpenAICompatibleTrans", "SelectedMode", currentMode.mode);
+
+
+                            hasnotified = false;
+
+                            if (!hasnotified)
+                            {
+                                CommonHelper.ShowHelpMsg("未选择模式，将使用配置文件里第一个模式");
+                            }
+
+                        }
                     }
 
-                    if (foundMode == null)
-                    {
-                        return $"配置错误：无法找到模式“{savedModeName}”。\r\n原因：该模式可能已被从配置文件中删除或重命名。\r\n解决方法：请点击菜单重新选择一个有效的模式。";
-                    }
-
-                    currentMode = foundMode;
-                    // 同时查找 JToken
-                    if (freshJsonRoot != null && freshJsonRoot["modes"] is JArray modesArray)
-                    {
-                        currentModeJToken = modesArray.FirstOrDefault(m => m["mode"]?.ToString() == savedModeName);
-                    }
                 }
                 else
                 {
@@ -172,6 +204,11 @@ namespace TrOCR.Helper
                     Debug.WriteLine("配置文件不存在，将使用程序内置的默认模式翻译");
                     // 4. 连配置文件都读不到 -> 直接用内置默认
                     currentMode = defaultSafeMode;
+                    if (!hasnotified)
+                    {
+                        CommonHelper.ShowHelpMsg("配置文件不存在，将使用程序内置的默认翻译模式");
+                    }
+                    hasnotified = true;
                 }
             }
 
