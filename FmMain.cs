@@ -2281,15 +2281,17 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 			HelpWin32.UnregisterHotKey(Handle, 240);
 			HelpWin32.UnregisterHotKey(Handle, 250);
 			HelpWin32.UnregisterHotKey(Handle, 260);
-			//刷新 AI 菜单，这行代码写在fmsetting里也行，写在这里也行
-    		LoadAIConfigMenus();
-			LoadAITranConfigMenus();
+			
 
 			WindowState = FormWindowState.Minimized;
 			var fmSetting = new FmSetting();
 			fmSetting.TopMost = true;
 			fmSetting.ShowDialog();
-			//设置窗口关闭后
+            //设置窗口关闭后
+            //刷新 AI 菜单，这行代码写在fmsetting里也行，写在这里也行
+            LoadAIConfigMenus();
+            LoadAITranConfigMenus();
+            
 			//更新AI接口设置后，清理ini里的AI模式
             string newPath = TrOCRUtils.LoadSetting("OpenAICompatible", "Config", "");
             if (newPath != oldPath)
