@@ -30,6 +30,7 @@ namespace TrOCR.Helper
         private static JObject _cachedJsonRoot = null; 
         // 是否已经显示过通知
         private static bool hasnotified = false; 
+        //通知相关代码移到fmmain.ai.cs里比较好，暂时不移
 
         /// <summary>
         /// 执行 OCR 识别
@@ -165,12 +166,31 @@ namespace TrOCR.Helper
                         }
                     }else
                     {
-                        currentMode=defaultSafeMode;
-                        if (!hasnotified)
+                        // === 用户没选模式 (savedModeName 为空) ===
+                        // 【优化策略】：优先尝试使用配置文件里的“第一个模式”
+                        if (freshConfig.modes != null && freshConfig.modes.Count > 0)
                         {
-                            CommonHelper.ShowHelpMsg("未选择模式，将使用程序内置的默认模式");
+                            // 自动选中第一个
+                            currentMode = freshConfig.modes[0];
+                            
+                            // 顺便帮用户查找对应的 JToken（以便保持顺序）
+                            if (freshJsonRoot != null && freshJsonRoot["modes"] is JArray modesArray)
+                            {
+                                currentModeJToken = modesArray.FirstOrDefault(); // 取第一个 JObject
+                            }
+                            Debug.WriteLine($"用户未选模式，自动加载配置文件中的第一个模式: {currentMode.mode}");
+                          
+                            IniHelper.SetValue("OpenAICompatible", "SelectedMode", currentMode.mode);
+
+                           
+                            hasnotified = false;
+
+                            if (!hasnotified)
+                            {
+                                CommonHelper.ShowHelpMsg("未选择模式，将使用配置文件里第一个模式");
+                            }
+                            
                         }
-                        hasnotified=true;
                     }
                 }
                 else

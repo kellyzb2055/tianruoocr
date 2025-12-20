@@ -29,62 +29,47 @@ namespace TrOCR
         {
             try
             {
-                // === 第一步：先彻底重置菜单到默认状态（三级菜单模式） ===
-                // 1. 清空所有子菜单
+                // === 1. 重置工作 ===
                 this.ai_openai_compatible.DropDownItems.Clear();
-                // 2. 移除可能存在的子菜单点击逻辑（虽然清空了Items，但习惯上解绑是个好习惯）
-                // 3. 重新绑定默认的父级点击事件（防止重复绑定，先减后加）
                 this.ai_openai_compatible.Click -= new EventHandler(this.OCR_ai_openai_compatible_Click);
                 this.ai_openai_compatible.Click += new EventHandler(this.OCR_ai_openai_compatible_Click);
-                // 4. 重置当前选中的模式
                 this.currentSelectedAIMode = null;
-                // === 读取上次保存的模式名称 ===
+
+                // === 2. 读取配置 ===
                 string lastSelectedModeName = TrOCRUtils.LoadSetting("OpenAICompatible", "SelectedMode", "");
-                // 1. 获取配置文件路径 (假设在 Data 目录下)
-                // 这里我们优先使用 Ini 中配置的路径，如果没有则尝试默认路径
-                string configPath = TrOCRUtils.LoadSetting("OpenAICompatible", "Config","");
+
+                string configPath = TrOCRUtils.LoadSetting("OpenAICompatible", "Config", "");
                 if (string.IsNullOrEmpty(configPath))
                 {
                     configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "AIOCRConfig.json");
                 }
 
-                // 2. 如果文件不存在，直接结束（此时菜单已重置为默认的三级菜单）
-                if (!File.Exists(configPath))
-                {
-                    return;
-                }
+                if (!File.Exists(configPath)) return;
 
-                // 3. 读取并解析配置
                 string jsonContent = File.ReadAllText(configPath, Encoding.UTF8);
                 AIConfig aiConfig = JsonConvert.DeserializeObject<AIConfig>(jsonContent);
 
-                // 4. 如果配置有效且有 modes
+                // === 3. 生成菜单 ===
                 if (aiConfig != null && aiConfig.modes != null && aiConfig.modes.Count > 0)
                 {
-                    // === 核心逻辑：转换为四级菜单 ===
-
-                    // A. 移除父级菜单原有的点击事件 (使其点击只展开子菜单，不再直接触发 OCR)
+                    // 解绑父级点击（变为目录模式）
                     this.ai_openai_compatible.Click -= new EventHandler(this.OCR_ai_openai_compatible_Click);
-                    
-                    // B. 清空可能存在的旧项
                     this.ai_openai_compatible.DropDownItems.Clear();
 
-                    // C. 动态添加子菜单项
                     foreach (var mode in aiConfig.modes)
                     {
                         ToolStripMenuItem modeItem = new ToolStripMenuItem();
-                        modeItem.Text = mode.mode; // 显示名称
-                        modeItem.Tag = mode;       // 将 mode 对象存储在 Tag 中
-                        // === 【新增】比对并恢复选中状态 ===
-                        // 如果当前遍历的模式名称 等于 上次保存的名称
+                        modeItem.Text = mode.mode;
+                        modeItem.Tag = mode;
+
+                        // 尝试恢复选中状态
                         if (!string.IsNullOrEmpty(lastSelectedModeName) && mode.mode == lastSelectedModeName)
                         {
-                            modeItem.Checked = true;             // 恢复UI勾选
-                            this.currentSelectedAIMode = mode;   // 恢复内存变量
+                            modeItem.Checked = true;
+                            this.currentSelectedAIMode = mode;
                         }
-                        modeItem.Click += new EventHandler(this.AI_SubMenu_Click); // 绑定点击事件
+                        modeItem.Click += new EventHandler(this.AI_SubMenu_Click);
 
-                        // 可以根据描述添加 ToolTipText
                         if (!string.IsNullOrEmpty(mode.description))
                         {
                             modeItem.ToolTipText = mode.description;
@@ -92,11 +77,28 @@ namespace TrOCR
 
                         this.ai_openai_compatible.DropDownItems.Add(modeItem);
                     }
+
+                    // === 【关键修改点】 ===
+                    // 逻辑：没存就是第一个，存的找不到就不管它
+
+                    // 只有当 lastSelectedModeName 是空字符串（从未设置过）时，才自动选第一个
+                    if (string.IsNullOrEmpty(lastSelectedModeName) && this.ai_openai_compatible.DropDownItems.Count > 0)
+                    {
+                        if (this.ai_openai_compatible.DropDownItems[0] is ToolStripMenuItem firstItem)
+                        {
+                            firstItem.Checked = true;
+                            if (firstItem.Tag is AIMode firstMode)
+                            {
+                                this.currentSelectedAIMode = firstMode;
+                                // 既然自动帮你选了第一个，顺便保存一下，下次就不算"没存过"了
+                                //IniHelper.SetValue("OpenAICompatible", "SelectedMode", firstMode.mode);
+                            }
+                        }
+                    }
                 }
             }
             catch (Exception ex)
             {
-                // 如果解析出错，不抛出异常，保持默认的三级菜单状态，但在调试窗口输出
                 System.Diagnostics.Debug.WriteLine("加载 AI 菜单失败: " + ex.Message);
             }
         }
