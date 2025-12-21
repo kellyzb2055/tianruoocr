@@ -1,213 +1,465 @@
-﻿// 文件：TrOCR\FmMain.AI.cs
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text; // 确保引用
+using System.Text;
 using System.Windows.Forms;
 using Newtonsoft.Json;
-using TrOCR.Helper;
+using TrOCR.Helper; // 确保引用了 CustomAIProvider 类所在的命名空间
 
 namespace TrOCR
 {
     public partial class FmMain
     {
-        // 用于存储当前选中的 AI 模式，如果为 null 则使用默认逻辑
-        private AIMode currentSelectedAIMode = null;
+        // === 全局状态变量 ===
 
-        private void OCR_ai_openai_compatible_Click(object sender, EventArgs e)
-		{
-            //可选优化，不做也行，因为下面的事件解绑足够可靠.ai翻译接口也有这个可选优化
-            // 如果下拉菜单里有项目（Count > 0），说明当前处于“多模式选择”状态。
-            // 此时点击父菜单只是为了展开列表，不应该触发“清除勾选”或“运行默认OCR”的逻辑。
-            // if (this.ai_openai_compatible.DropDownItems.Count > 0)
-            // {
-            //     return;
-            // }
-            // 【新增】使用默认模式，清除子菜单的勾选
-            ClearAIConfigSelection();
-            OCR_foreach("OpenAICompatible");
-		}
+        // 当前选中的厂商 (例如: DeepSeek)
+        private CustomAIProvider _currentCustomProvider = null;
+
+        // 当前选中的模式 (例如: 精确识别，包含 Prompt/Temperature 等)
+        private AIMode _currentCustomMode = null;
 
         /// <summary>
-        /// 加载 AI 配置文件并初始化动态菜单
+        /// 【核心方法】加载所有自定义 AI 接口到菜单
+        /// 这个方法应该在 FmMain_Load 和 设置窗口关闭后被调用
         /// </summary>
-        private void LoadAIConfigMenus()
+        public void LoadCustomOpenAIMenus()
         {
             try
             {
-                // === 1. 重置工作 ===
-                this.ai_openai_compatible.DropDownItems.Clear();
-                this.ai_openai_compatible.Click -= new EventHandler(this.OCR_ai_openai_compatible_Click);
-                this.ai_openai_compatible.Click += new EventHandler(this.OCR_ai_openai_compatible_Click);
-                this.currentSelectedAIMode = null;
+                // 1. 获取父级菜单
+                // 请确保你的菜单栏里有一个叫 "AI" 的项，Name 是 ai_menu
+                ToolStripMenuItem parentMenu = this.ai_menu;
+                if (parentMenu == null) return;
 
-                // === 2. 读取配置 ===
-                string lastSelectedModeName = TrOCRUtils.LoadSetting("OpenAICompatible", "SelectedMode", "");
+                // 2. 【关键】彻底清空 AI 菜单下的旧内容
+                // 这行代码会把 Designer 里画的那个 "OpenAICompatible" 删掉
+                // 这样 DeepSeek、GLM 就会直接显示在 AI 菜单下面
+                //parentMenu.DropDownItems.Clear();//不加这个代码，手动修改designer.cs删除AI菜单下的OpenAICompatible菜单也行
 
-                string configPath = TrOCRUtils.LoadSetting("OpenAICompatible", "Config", "");
-                if (string.IsNullOrEmpty(configPath))
+                // 2. 清理旧的动态菜单
+                // 我们约定：所有动态生成的菜单 Tag 都是 "DynamicProvider"
+                for (int i = parentMenu.DropDownItems.Count - 1; i >= 0; i--)
                 {
-                    configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "AIOCRConfig.json");
-                    if (File.Exists(configPath))
+                    if (parentMenu.DropDownItems[i].Tag?.ToString() == "DynamicProvider")
                     {
-                        IniHelper.SetValue("OpenAICompatible", "Config", configPath);
+                        parentMenu.DropDownItems.RemoveAt(i);
                     }
                 }
 
-                if (!File.Exists(configPath)) return;
+                // 3. 读取厂商列表 (CustomOpenAIProviders.json)
+                string jsonPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "CustomOpenAIProviders.json");
+                if (!File.Exists(jsonPath)) return;
 
-                string jsonContent = File.ReadAllText(configPath, Encoding.UTF8);
-                AIConfig aiConfig = JsonConvert.DeserializeObject<AIConfig>(jsonContent);
+                var providers = JsonConvert.DeserializeObject<List<CustomAIProvider>>(File.ReadAllText(jsonPath));
+                if (providers == null) return;
 
-                // === 3. 生成菜单 ===
-                if (aiConfig != null && aiConfig.modes != null && aiConfig.modes.Count > 0)
+                // 添加一条分割线 (美观)
+                parentMenu.DropDownItems.Add(new ToolStripSeparator { Tag = "DynamicProvider" });
+                // === ★★★ 新增：读取上次保存的配置 ★★★ ===
+                string lastProviderName = IniHelper.GetValue("OpenAICompatible", "LastProvider");
+                string lastModeName = IniHelper.GetValue("OpenAICompatible", "LastMode");
+                // 标记是否已经成功恢复了状态
+                bool isRestored = false;
+
+                // 4. 循环生成菜单
+                foreach (var provider in providers)
                 {
-                    // 解绑父级点击（变为目录模式）
-                    this.ai_openai_compatible.Click -= new EventHandler(this.OCR_ai_openai_compatible_Click);
-                    this.ai_openai_compatible.DropDownItems.Clear();
+                   
+                    // === 一级菜单：厂商名 (如 "DeepSeek") ===
+                    ToolStripMenuItem providerItem = new ToolStripMenuItem(provider.Name);
+                    providerItem.Tag = "DynamicProvider"; // 标记，方便下次删除
 
-                    foreach (var mode in aiConfig.modes)
+                    // 检查是否配置了 Prompt 配置文件 (例如 Data/AIOCRConfig.json)
+                    bool hasSubMenu = false;
+                    if (!string.IsNullOrEmpty(provider.ModelConfigPath))
                     {
-                        ToolStripMenuItem modeItem = new ToolStripMenuItem();
-                        modeItem.Text = mode.mode;
-                        modeItem.Tag = mode;
+                        // 处理相对路径/绝对路径
+                        string configFullPath = provider.ModelConfigPath;
+                        if (!Path.IsPathRooted(configFullPath))
+                            configFullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, configFullPath);
 
-                        // 尝试恢复选中状态
-                        if (!string.IsNullOrEmpty(lastSelectedModeName) && mode.mode == lastSelectedModeName)
+                        if (File.Exists(configFullPath))
                         {
-                            modeItem.Checked = true;
-                            this.currentSelectedAIMode = mode;
-                        }
-                        modeItem.Click += new EventHandler(this.AI_SubMenu_Click);
+                            try
+                            {
+                                // 读取 Prompt 配置文件
+                                string configJson = File.ReadAllText(configFullPath, Encoding.UTF8);
+                                // ★ 使用您的实体类 AIConfig 进行解析
+                                var configObj = JsonConvert.DeserializeObject<AIConfig>(configJson);
 
-                        if (!string.IsNullOrEmpty(mode.description))
+                                if (configObj != null && configObj.modes != null)
+                                {
+                                    foreach (var mode in configObj.modes)
+                                    {
+                                        // === 二级菜单：模式名 (如 "精确识别") ===
+                                        ToolStripMenuItem modeItem = new ToolStripMenuItem(mode.mode);
+                                        modeItem.ToolTipText = mode.description;
+
+                                        // 点击事件：切换到该厂商 + 该模式
+                                        modeItem.Click += (s, e) => SwitchToCustomAI(provider, mode);
+
+                                        providerItem.DropDownItems.Add(modeItem);
+                                        // === ★★★ 核心恢复逻辑 1 (有子菜单情况) ★★★ ===
+                                        // 如果当前遍历到的厂商和模式，等于上次保存的 -> 自动切换过去
+                                        if (!isRestored &&
+                                            provider.Name == lastProviderName &&
+                                            mode.mode == lastModeName)
+                                        {
+                                            SwitchToCustomAI(provider, mode);
+                                            isRestored = true;
+                                        }
+                                    }
+                                    hasSubMenu = true;
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine($"加载 {provider.Name} 的子菜单失败: {ex.Message}");
+                            }
+                        }
+                    }
+                    // 创建一个临时的默认 mode
+                    var defaultMode = new AIMode
+                    {
+                        mode = "默认模式",
+                        prompt = "请识别图片中的文字：",
+                        temperature = 0.5 // 默认温度
+                    };
+
+                    // 如果没有子菜单配置 (或者加载失败)，添加一个默认项
+                    if (!hasSubMenu)
+                    {
+                       
+                        ToolStripMenuItem defaultItem = new ToolStripMenuItem(defaultMode.mode);
+                        defaultItem.Click += (s, e) =>
                         {
-                            modeItem.ToolTipText = mode.description;
-                        }
-
-                        this.ai_openai_compatible.DropDownItems.Add(modeItem);
+                   
+                          
+                            SwitchToCustomAI(provider, defaultMode);
+                            // 如果循环完了还没找到上次用的（可能被删了），或者第一次运行
+                            // 且当前 interface_flag 是 CustomOpenAI，则默认选第一个
+                            //if (!isRestored && this.interface_flag == "CustomOpenAI" && parentMenu.DropDownItems.Count > 0)
+                            //{
+                            //    // 这里可以写逻辑自动选中列表里的第一个，防止 _currentCustomProvider 为空
+                            //    // 简单处理：用户下次点击菜单时会生效，或者在这里强制选第一个
+                            //}
+                        };
+                        providerItem.DropDownItems.Add(defaultItem);
+                        
                     }
 
-                    // === 【关键修改点】 ===
-                    // 逻辑：没存就是第一个，存的找不到就不管它
-
-                    // 只有当 lastSelectedModeName 是空字符串（从未设置过）时，才自动选第一个
-                    if (string.IsNullOrEmpty(lastSelectedModeName) && this.ai_openai_compatible.DropDownItems.Count > 0)
+                    // 将厂商菜单加入到 "AI" 菜单下
+                    parentMenu.DropDownItems.Add(providerItem);
+                    // 如果还没恢复过，且当前厂商名字匹配 INI 记录
+                    if (!isRestored && provider.Name == lastProviderName)
                     {
-                        if (this.ai_openai_compatible.DropDownItems[0] is ToolStripMenuItem firstItem)
+                        
+
+                        // 只有当 INI 里的模式也是 "默认模式" (或者是空的) 时才恢复
+                        // 这样比较严谨，防止未来有其他模式时误判
+                        if (string.IsNullOrEmpty(lastModeName) || lastModeName == "默认模式")
                         {
-                            firstItem.Checked = true;
-                            if (firstItem.Tag is AIMode firstMode)
-                            {
-                                this.currentSelectedAIMode = firstMode;
-                                // 既然自动帮你选了第一个，顺便保存一下，下次就不算"没存过"了
-                                IniHelper.SetValue("OpenAICompatible", "SelectedMode", firstMode.mode);
-                                // CommonHelper.ShowHelpMsg("未选择模式，将使用配置文件里第一个模式");
-                                Debug.WriteLine("Fmmain.AI.cs--未选择模式，将使用配置文件里第一个模式");
-                            }
+                            SwitchToCustomAI(provider, defaultMode);
+                            isRestored = true;
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("加载 AI 菜单失败: " + ex.Message);
+                Debug.WriteLine("加载自定义 AI 菜单总流程失败: " + ex.Message);
             }
         }
 
         /// <summary>
-        /// 动态生成的四级子菜单点击事件
+        /// 切换当前使用的 AI 上下文 (点击菜单项时触发)
         /// </summary>
-        private void AI_SubMenu_Click(object sender, EventArgs e)
-        {
-            if (sender is ToolStripMenuItem clickedItem && clickedItem.Tag is AIMode mode)
-            {
-                // UI更新：实现单选效果
-                foreach (ToolStripItem item in this.ai_openai_compatible.DropDownItems)
-                {
-                    if (item is ToolStripMenuItem menuItem)
-                    {
-                        // 只有当前点击的项设为 true
-                        menuItem.Checked = (menuItem == clickedItem);
-                    }
-                }
-                // 1. 记录当前选中的模式
-                this.currentSelectedAIMode = mode;
-
-                // 2. 更新父菜单的选中状态或文本（可选，用于提示用户当前选了哪个）
-                // 比如：this.ai_openai_compatible.Text = $"OpenAICompatible ({mode.mode})";
-
-                // === 【新增】保存选中状态到配置文件 ===
-                IniHelper.SetValue("OpenAICompatible", "SelectedMode", mode.mode);
-                // 3. 触发 OCR 流程
-                // 注意：这里调用 OCR_foreach 会触发 Main_OCR_Thread，最终调用 OCR_OpenAICompatible
-                OCR_foreach("OpenAICompatible");
-            }
-        }
-
-        /// <summary>
-        /// 清除 OpenAI 菜单的所有勾选状态，并重置为默认模式
-        /// </summary>
-        public void ClearAIConfigSelection()
-        {
-            // 1. 遍历取消视觉上的勾选
-            foreach (ToolStripItem item in this.ai_openai_compatible.DropDownItems)
-            {
-                if (item is ToolStripMenuItem menuItem)
-                {
-                    menuItem.Checked = false;
-                }
-            }
-
-            // 2. 重置内部状态（下次点击父菜单时，将使用默认配置）
-            this.currentSelectedAIMode = null;
-        }
-
-        /// <summary>
-        /// OpenAICompatible OCR 执行入口 (被 Main_OCR_Thread 调用)
-        /// </summary>
-        public void OCR_OpenAICompatible()
+        private void SwitchToCustomAI(CustomAIProvider provider, AIMode mode)
         {
             try
             {
-                // === 【日志代码】开始 ===
-                //string logModeName = this.currentSelectedAIMode != null
-                //                     ? this.currentSelectedAIMode.mode
-                //                     : "null (将使用程序内部硬编码默认值)";
-                string logModeName = this.currentSelectedAIMode != null
-                                     ? JsonConvert.SerializeObject(currentSelectedAIMode, Formatting.Indented)
-                                     : "null (将使用程序内部硬编码默认值)";
+                // 1. 更新全局变量
+                this._currentCustomProvider = provider;
+                this._currentCustomMode = mode;
 
-                System.Diagnostics.Debug.WriteLine("--------------------------------------------------");
-                System.Diagnostics.Debug.WriteLine($"[FmMain] 准备开始 OCR");
-                System.Diagnostics.Debug.WriteLine($"[FmMain] 当前选中的 currentSelectedAIMode: {logModeName}");
-                // === 【日志代码】结束 ===
-                // 调用 Helper，并传入当前选中的模式 (currentSelectedAIMode)
-                // 如果是从三级菜单（默认无配置）进来的，currentSelectedAIMode 为 null，Helper 会处理
-                string result = OpenAICompatibleHelper.OCR(image_screen, this.currentSelectedAIMode);
+                // 重要：告诉程序当前选的是自定义类型
+                //StaticValue.OCR_Current_API = "CustomOpenAI";
+                // 2. ★★★ 关键修改：设置主窗体的接口标志 ★★★
+                // 告诉 Main_OCR_Thread，现在要用“自定义接口”了
+                //this.interface_flag = "CustomOpenAI";
+                // 2. ★★★ 调用标准切换流程 ★★★
+                // 这会自动设置 interface_flag = "CustomOpenAI" 并调用 Refresh() 重置菜单
+                OCR_foreach("CustomOpenAI");
+                /// === ★★★ 新增：保存选择到配置文件 ★★★ ===
+                // 这样下次启动时，我们就能知道上次选的是谁
+                try
+                {
+                    IniHelper.SetValue("OpenAICompatible", "LastProvider", provider.Name);
+                    IniHelper.SetValue("OpenAICompatible", "LastMode", mode.mode);
+                    // 同时也把主接口设为 CustomOpenAI (虽然 OCR_foreach 会做，但这里双重保险)
+                    IniHelper.SetValue("配置", "接口", "CustomOpenAI");
+                }
+                catch { /* 忽略保存错误 */ }
 
+                // ================== 2. UI 视觉更新 ==================
+
+                // --- A. 第一级：更新 "AI" 主菜单 ---
+                //this.ai_menu.Checked = true; // 给 "AI" 大标题打勾
+                 // 更新显示文本 (例如: "AI: DeepSeek - 精确识别")，直观提示用户
+                this.ai_menu.Text = $"AI√: {provider.Name} - {mode.mode}";
+
+                // --- B & C. 第二级(厂商) 和 第三级(模式) 遍历更新 ---
+                foreach (ToolStripItem item in this.ai_menu.DropDownItems)
+                {   // 1. 【调试明确化】如果是分割线，直接跳过 (这样断点就不会停在 null 上了)
+                    if (item is ToolStripSeparator)
+                        continue;
+                    // 跳过分割线，只处理菜单项
+                    if (item is ToolStripMenuItem providerItem)
+                    {
+                        // 判断这是否是当前选中的厂商 (例如 "DeepSeek")
+                        bool isTargetProvider = (providerItem.Text == provider.Name);
+
+                        // 勾选/取消勾选 厂商菜单
+                        providerItem.Checked = isTargetProvider;
+
+                        // 如果这个厂商有子菜单 (即模式列表)，继续深入遍历
+                        if (providerItem.HasDropDownItems)
+                        {
+                            foreach (ToolStripItem subItem in providerItem.DropDownItems)
+                            {
+                                if (subItem is ToolStripMenuItem modeItem)
+                                {
+                                    if (isTargetProvider)
+                                    {
+                                        // ★ 关键逻辑：只有在厂商匹配的情况下，才去比对模式名称
+                                        // 这样可以避免不同厂商有同名模式(如"默认模式")导致的误勾选
+                                        bool isTargetMode = (modeItem.Text == mode.mode);
+                                        modeItem.Checked = isTargetMode;
+                                    }
+                                    else
+                                    {
+                                        // 如果厂商都不是这个，那它下面的模式肯定不能勾选
+                                        modeItem.Checked = false;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //// 3. 更新状态栏提示
+                //if (ai_menu != null)
+                //    ai_menu.Text = $"AI: {provider.Name} - {mode.mode}";
+
+            }
+            catch (Exception ex)
+            {
+                // ★★★ 如果报错，这里会弹窗告诉你原因 ★★★
+                MessageBox.Show($"切换接口时发生错误：\n{ex.Message}\n\n堆栈信息：\n{ex.StackTrace}", "错误提示");
+            }
+            }
+
+        /// <summary>
+        /// OCR 执行入口 (需要在 Main_OCR_Thread 中调用)
+        /// </summary>
+        //public void OCR_OpenAICompatible()
+        //{
+        //    try
+        //    {
+        //        // 防御性检查
+        //        if (this._currentCustomProvider == null)
+        //        {
+        //            typeset_txt = "错误：未选择 AI 接口。请在菜单中选择一个接口。";
+        //            split_txt = typeset_txt;
+        //            return;
+        //        }
+
+        //        // 准备 Prompt (优先用 Config 里的，没有就用默认值)
+        //        // 注意：您的实体类里有 assistant_prompt，这里也一并提取
+        //        string sysPrompt = _currentCustomMode?.system_prompt ?? "";
+        //        string userPrompt = _currentCustomMode?.prompt ?? "请识别图片文字";
+        //        string assistPrompt = _currentCustomMode?.assistant_prompt ?? "";
+
+        //        // 处理可空类型 (如果 json 没写，传 null 给 helper，让 helper 决定是否发字段)
+        //        double? temp = _currentCustomMode?.temperature;
+        //        bool? thinking = _currentCustomMode?.enable_thinking;
+
+        //        Debug.WriteLine("--------------------------------------------------");
+        //        Debug.WriteLine($"[FmMain] 开始自定义 OCR: {_currentCustomProvider.Name}");
+        //        Debug.WriteLine($"[FmMain] 模型: {_currentCustomProvider.ModelName}");
+        //        Debug.WriteLine($"[FmMain] Temp: {temp}, Thinking: {thinking}");
+
+        //        // ★★★ 调用 Helper ★★★
+        //        // 您需要更新 OpenAICompatibleHelper.OCR_V3 方法，让它接收这些新参数
+        //        string result = OpenAICompatibleHelper.OCR_V3(
+        //            image_screen,
+        //            _currentCustomProvider.ApiUrl,
+        //            _currentCustomProvider.ApiKey,
+        //            _currentCustomProvider.ModelName,
+        //            sysPrompt,
+        //            userPrompt,
+        //            assistPrompt, // 新增参数
+        //            temp,         // 新增参数
+        //            thinking      // 新增参数
+        //        );
+
+        //        if (string.IsNullOrEmpty(result))
+        //            typeset_txt = "接口返回为空。";
+        //        else
+        //            typeset_txt = result;
+
+        //        split_txt = typeset_txt;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        typeset_txt = $"接口调用出错: {ex.Message}";
+        //        split_txt = typeset_txt;
+        //    }
+        //}
+        /// <summary>
+        /// 自定义 AI 接口的执行入口
+        /// </summary>
+        public void OCR_OpenAICompatible()
+        {
+            // 1. 防御性检查
+            if (_currentCustomProvider == null)
+            {
+                typeset_txt = "错误：未选择有效的接口配置。请在菜单中重新选择。";
+                split_txt = typeset_txt;
+                return;
+            }
+
+            try
+            {
+                // 2. 准备 Prompt 参数 (如果模式为空，就给默认值)
+                string sysPrompt = _currentCustomMode?.system_prompt ?? "";
+                string userPrompt = _currentCustomMode?.prompt ?? "请识别图片中的文字";
+                string assistPrompt = _currentCustomMode?.assistant_prompt;
+                double? temp = _currentCustomMode?.temperature;
+                bool? thinking = _currentCustomMode?.enable_thinking;
+                string baseUrl = _currentCustomProvider.ApiUrl;
+                string apiurl = baseUrl.TrimEnd('/');
+                if (!apiurl.EndsWith("/chat/completions")) apiurl += "/chat/completions";
+
+                // 3. ★★★ 直接调用 V3 接口 ★★★
+                // 这里不需要 switch 判断，直接把参数传给 OpenAICompatibleHelper
+                string result = OpenAICompatibleHelper.OCR_V3(
+                    image_screen,
+                    apiurl,   // URL
+                    _currentCustomProvider.ApiKey,   // Key
+                    _currentCustomProvider.ModelName,// Model
+                    sysPrompt,
+                    userPrompt,
+                    assistPrompt,
+                    temp,
+                    thinking
+                );
+
+                // 4. 处理结果
                 if (string.IsNullOrEmpty(result))
                 {
-                    typeset_txt = "未识别到文本或接口返回为空。";
+                    typeset_txt = "接口返回为空，请检查网络或 Key 是否正确。";
                 }
                 else
                 {
                     typeset_txt = result;
                 }
-                //必须同时设置 split_txt
                 split_txt = typeset_txt;
-                
-                // 识别完成后，建议将模式重置为空，或者保留上次选择（取决于你的需求）
-                // 如果希望每次截图都重置为默认，取消下面的注释：
-                // this.currentSelectedAIMode = null; 
             }
             catch (Exception ex)
             {
-                typeset_txt = "OpenAICompatible 接口调用出错: " + ex.Message;
+                typeset_txt = $"接口调用出错: {ex.Message}";
+                split_txt = typeset_txt;
+            }
+        }
+        //下面是一种未来可选的优化方式，使用总路由方法，根据不同的 Type 调用不同的 接口实现，需要配合：
+        /*类要实现Type字段
+         * if (interface_flag == "CustomOpenAI")
+        {
+            OCR_Custom_Router();
+            fmloading.FmlClose = "窗体已关闭";
+            Invoke(new OcrThread(Main_OCR_Thread_last));
+            return;
+        }
+        */
+        /// <summary>
+        /// 自定义接口的统一执行入口 (支持 OpenAI/Anthropic 等多种协议)
+        /// </summary>
+        public void OCR_Custom_Router()
+        {
+            // 防御性检查
+            if (_currentCustomProvider == null)
+            {
+                typeset_txt = "错误：未选择有效的接口配置。";
+                split_txt = typeset_txt;
+                return;
+            }
+
+            try
+            {
+                string result = "";
+
+                // ★★★ 核心路由：根据配置的 Type 字段决定调用哪个 Helper ★★★
+                // 假设您的 CustomAIProvider 类里已经加了 Type 字段
+                //string type = _currentCustomProvider.Type ?? "OpenAI"; // 默认为 OpenAI
+                string type =  "OpenAI"; // 默认为 OpenAI
+
+                switch (type)
+                {
+                    //case "Anthropic":
+                        // === Anthropic兼容模式 ===
+                        // 约定：ApiUrl 存 AK, ApiKey 存 SK
+                        //result = ClaudeHelper.GeneralBasic(
+                        //    image_screen, // 截图
+                        //    _currentCustomProvider.ApiUrl, // API Key
+                        //    _currentCustomProvider.ApiKey  // Secret Key
+                        //
+                        //);
+                        //break;
+
+                    case "OpenAI":
+                    default:
+                        // === OpenAI 兼容模式 (DeepSeek, Kimi, etc.) ===
+                        string sysPrompt = _currentCustomMode?.system_prompt ?? "";
+                        string userPrompt = _currentCustomMode?.prompt ?? "请识别图片中的文字";
+
+                        // 处理高级参数 (Temperature 等)
+                        double? temp = _currentCustomMode?.temperature;
+                        bool? thinking = _currentCustomMode?.enable_thinking;
+
+                        result = OpenAICompatibleHelper.OCR_V3(
+                            image_screen,
+                            _currentCustomProvider.ApiUrl,
+                            _currentCustomProvider.ApiKey,
+                            _currentCustomProvider.ModelName,
+                            sysPrompt,
+                            userPrompt,
+                            _currentCustomMode?.assistant_prompt,
+                            temp,
+                            thinking
+                        );
+                        break;
+                }
+
+                // 统一处理结果
+                if (string.IsNullOrEmpty(result))
+                {
+                    typeset_txt = "接口返回为空。";
+                }
+                else
+                {
+                    typeset_txt = result;
+                }
+                split_txt = typeset_txt;
+            }
+            catch (Exception ex)
+            {
+                typeset_txt = $"接口调用出错: {ex.Message}";
                 split_txt = typeset_txt;
             }
         }
     }
+
+    
 }

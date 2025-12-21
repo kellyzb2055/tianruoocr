@@ -1,22 +1,225 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics; // 用于获取 StartupPath
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System.Windows.Forms;
-using System.Drawing.Imaging;
-using System.Diagnostics; // 用于获取 StartupPath
 
 namespace TrOCR.Helper
 {
     internal class OpenAICompatibleHelper
     {
-       
+        private static string last_hash = "";
+        private static string last_result = "";
+
+        public static void ResetCache()
+        {
+            last_hash = "";
+            last_result = "";
+        }
+
+        /// <summary>
+        /// 新版 OCR 接口 (V3)，支持多接口切换和高级参数
+        /// </summary>
+        /// <param name="image">截图</param>
+        /// <param name="apiUrl">API 地址</param>
+        /// <param name="apiKey">API 密钥</param>
+        /// <param name="modelName">模型名称</param>
+        /// <param name="systemPrompt">系统提示词</param>
+        /// <param name="userPrompt">用户提示词</param>
+        /// <param name="assistantPrompt">助手提示词(可选)</param>
+        /// <param name="temperature">温度(可选)</param>
+        /// <param name="enableThinking">开启思考(可选)</param>
+        /// <returns>识别结果文本</returns>
+        public static string OCR_V3(
+            Image image,
+            string apiUrl,
+            string apiKey,
+            string modelName,
+            string systemPrompt,
+            string userPrompt,
+            string assistantPrompt,
+            double? temperature,
+            bool? enableThinking)
+        {
+            // 1. 基础校验
+            if (image == null) return "错误：图片为空";
+            if (string.IsNullOrEmpty(apiUrl)) return "错误：API 地址未配置";
+            if (string.IsNullOrEmpty(apiKey)) return "错误：API Key 未配置";
+
+            // 2. 图片哈希缓存检查 (防止重复请求)
+            string img_hash = GetImageHash((Bitmap)image);
+            if (img_hash == last_hash && !string.IsNullOrEmpty(last_result))
+            {
+                return last_result;
+            }
+
+            try
+            {
+                // 3. 图片转 Base64
+                string base64Image = ImageToBase64(image);
+
+                // 4. 构造 Messages 数组
+                var messages = new List<object>();
+
+                // (1) System Prompt
+                if (!string.IsNullOrEmpty(systemPrompt))
+                {
+                    messages.Add(new { role = "system", content = systemPrompt });
+                }
+
+                // (2) User Prompt (混合图文)
+                // 标准 OpenAI Vision 格式
+                var userContent = new List<object>
+                {
+                    new { type = "text", text = userPrompt }
+                };
+
+                // 添加图片
+                userContent.Add(new
+                {
+                    type = "image_url",
+                    image_url = new { url = $"data:image/jpeg;base64,{base64Image}" }
+                });
+
+                messages.Add(new { role = "user", content = userContent });
+
+                // (3) Assistant Prompt (可选，用于引导输出开头)
+                if (!string.IsNullOrEmpty(assistantPrompt))
+                {
+                    messages.Add(new { role = "assistant", content = assistantPrompt });
+                }
+
+                // 5. 构造请求体 (Request Body)
+                var requestBody = new Dictionary<string, object>
+                {
+                    { "model", modelName },
+                    { "messages", messages },
+                    { "stream", true } // 强制流式，体验更好
+                };
+
+                // (可选参数) 温度
+                if (temperature.HasValue)
+                {
+                    requestBody["temperature"] = temperature.Value;
+                }
+
+                // (可选参数) 思考模式 / 某些特定 API 的参数
+                // 注意：这里假设厂商 API 支持 enable_thinking 字段
+                if (enableThinking.HasValue)
+                {
+                    requestBody["enable_thinking"] = enableThinking.Value;
+                }
+
+                // 序列化 JSON
+                string jsonPostData = JsonConvert.SerializeObject(requestBody);
+                byte[] byteArray = Encoding.UTF8.GetBytes(jsonPostData);
+
+                // 6. 发起 HTTP 请求
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(apiUrl);
+                request.Method = "POST";
+                request.ContentType = "application/json";
+                request.Headers.Add("Authorization", "Bearer " + apiKey);
+                request.ContentLength = byteArray.Length;
+                request.Timeout = 30000; // 30秒超时
+
+                using (Stream dataStream = request.GetRequestStream())
+                {
+                    dataStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+                // 7. 读取流式响应 (SSE)
+                StringBuilder sb = new StringBuilder();
+                // 如果有 assistant prompt，通常意味着要在结果前拼上它（除非 API 返回包含了它）
+                // 大多数情况 API 不会在 completion 里重复 input 的 assistant 内容，所以我们手动拼上
+                if (!string.IsNullOrEmpty(assistantPrompt))
+                {
+                    sb.Append(assistantPrompt);
+                }
+
+                using (WebResponse response = request.GetResponse())
+                using (Stream stream = response.GetResponseStream())
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        line = line.Trim();
+                        if (string.IsNullOrEmpty(line)) continue;
+                        if (line == "data: [DONE]") break; // 结束标志
+
+                        if (line.StartsWith("data: "))
+                        {
+                            string json = line.Substring(6); // 去掉 "data: "
+                            try
+                            {
+                                JObject obj = JObject.Parse(json);
+                                // 解析 content
+                                var choices = obj["choices"];
+                                if (choices != null && choices.HasValues)
+                                {
+                                    var delta = choices[0]["delta"];
+                                    if (delta != null)
+                                    {
+                                        string content = delta["content"]?.ToString();
+                                        if (!string.IsNullOrEmpty(content))
+                                        {
+                                            sb.Append(content);
+                                        }
+                                        // 兼容 DeepSeek 等返回 reason/thinking 的情况 (可选)
+                                        // string reason = delta["reasoning_content"]?.ToString();
+                                    }
+                                }
+                            }
+                            catch { /* 忽略单行解析错误 */ }
+                        }
+                    }
+                }
+
+                // 8. 缓存并返回结果
+                string finalResult = sb.ToString().Trim();
+                last_hash = img_hash;
+                last_result = finalResult;
+
+                return finalResult;
+            }
+            catch (Exception ex)
+            {
+                return $"API 请求失败: {ex.Message}";
+            }
+        }
+
+        // --- 辅助方法：计算图片哈希 ---
+        private static string GetImageHash(Bitmap bmp)
+        {
+            try
+            {
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    byte[] bytes = ms.ToArray();
+                    using (MD5 md5 = MD5.Create())
+                    {
+                        byte[] hash = md5.ComputeHash(bytes);
+                        return BitConverter.ToString(hash).Replace("-", "").ToLower();
+                    }
+                }
+            }
+            catch
+            {
+                return DateTime.Now.Ticks.ToString(); // 降级处理
+            }
+        }
         private static readonly HttpClient httpClient = new HttpClient();
 
         // ===  缓存相关的静态变量 ===
@@ -370,18 +573,18 @@ namespace TrOCR.Helper
             }
         }
 
-        public static void ResetCache()
-        {
-            lock (_configLock)
-            {
-                _cachedConfig = null;           // 清除强类型对象缓存
-                _cachedJsonRoot = null;         // 清除 JSON 树缓存
-                _lastConfigWriteTime = DateTime.MinValue; // 重置时间戳
-                hasnotified = false;            // 允许重新发送通知
-                Debug.WriteLine("AI 配置缓存已手动重置");
-                Debug.WriteLine("[缓存重置] 已强制清除配置缓存，下次调用将重新读取文件。");
-            }
-        }
+        //public static void ResetCache()
+        //{
+        //    lock (_configLock)
+        //    {
+        //        _cachedConfig = null;           // 清除强类型对象缓存
+        //        _cachedJsonRoot = null;         // 清除 JSON 树缓存
+        //        _lastConfigWriteTime = DateTime.MinValue; // 重置时间戳
+        //        hasnotified = false;            // 允许重新发送通知
+        //        Debug.WriteLine("AI 配置缓存已手动重置");
+        //        Debug.WriteLine("[缓存重置] 已强制清除配置缓存，下次调用将重新读取文件。");
+        //    }
+        //}
     }
 
     // 实体类定义

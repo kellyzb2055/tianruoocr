@@ -2126,7 +2126,8 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 			// 初始化API菜单
 			InitializeApiMenus();
 			// 【新增】加载 AI 动态菜单
-    		LoadAIConfigMenus();
+    		//LoadAIConfigMenus();
+			LoadCustomOpenAIMenus();
 			LoadAITranConfigMenus();
 			
 			// 初始化OCR接口配置
@@ -2308,7 +2309,8 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
                 IniHelper.RemoveKey("OpenAICompatibleTrans", "SelectedMode", iniFile);
             }
 			 //刷新 AI 菜单，这行代码写在fmsetting里也行，写在这里也行
-            LoadAIConfigMenus();
+            //LoadAIConfigMenus();
+			LoadCustomOpenAIMenus();
             LoadAITranConfigMenus();
 			if (fmSetting.DialogResult == DialogResult.OK)
 			{
@@ -4521,10 +4523,22 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 				fmloading.FmlClose = "窗体已关闭";
 				Invoke(new OcrThread(Main_OCR_Thread_last));
 			}
-			if (interface_flag == "OpenAICompatible")
+			// if (interface_flag == "OpenAICompatible")
+			// {
+			// 	// OpenAICompatible OCR 占位符
+			// 	OCR_OpenAICompatible();
+			// 	fmloading.FmlClose = "窗体已关闭";
+			// 	Invoke(new OcrThread(Main_OCR_Thread_last));
+			// 	return;
+			// }
+			// ★★★ 新增：自定义接口的分发入口 ★★★
+			if (interface_flag == "CustomOpenAI")
 			{
-				// OpenAICompatible OCR 占位符
+				// 调用 FmMain.AI.cs 里的执行方法
+				// OCR_Custom_Router(); 
 				OCR_OpenAICompatible();
+				
+				// 善后工作 (关闭加载窗，显示主窗)
 				fmloading.FmlClose = "窗体已关闭";
 				Invoke(new OcrThread(Main_OCR_Thread_last));
 				return;
@@ -5526,11 +5540,46 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 				}
 			}
             // === 【修复】 如果切换到了其他接口，清除 OpenAI 菜单的勾选状态 ===
-            if (!string.IsNullOrEmpty(name) && name != "OpenAICompatible")
+            //if (!string.IsNullOrEmpty(name) && name != "OpenAICompatible")
+            //{
+            //    // 清除openai兼容菜单的子菜单的勾选项
+            //    //ClearAIConfigSelection();
+
+            //}
+            // === 【核心修复 1】: 如果选的不是 AI 接口，强制清除 AI 菜单的状态 ===
+            if (!string.IsNullOrEmpty(name) && name != "CustomOpenAI") // 只要不是点 AI
             {
-                // 清除openai兼容菜单的子菜单的勾选项
-                ClearAIConfigSelection();
+                // 1. 清除 AI 主菜单的勾选和文字
+                if (ai_menu != null)
+                {
+                    //ai_menu.Checked = false;
+                    ai_menu.Text = "AI"; // 恢复默认文字，去掉 "√" 或 "DeepSeek..."
+
+                    // 2. 清除 AI 子菜单的勾选 (可选，保持子菜单选中状态也不错，看你习惯
+					// 遍历所有AI接口(厂商) (第二级)
+                    foreach (ToolStripItem item in ai_menu.DropDownItems)
+                    {
+                        if (item is ToolStripMenuItem providerItem)
+                        {
+                            // 清除厂商勾选
+                            providerItem.Checked = false;
+
+                            // 3. ★★★ 关键：深入遍历模式 (第三级) 并清除勾选 ★★★
+                            if (providerItem.HasDropDownItems)
+                            {
+                                foreach (ToolStripItem subItem in providerItem.DropDownItems)
+                                {
+                                    if (subItem is ToolStripMenuItem modeItem)
+                                    {
+                                        modeItem.Checked = false; // 清除模式勾选
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
+
             switch (name)
 			{
 				case "韩语":
@@ -5630,13 +5679,21 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 					Refresh();
 					rapidocr.Text = "RapidOCR√";
 					break;
-				case "OpenAICompatible":
-					interface_flag = "OpenAICompatible";
-					Refresh();
-					ai_menu.Text = "AI√";
-					ai_openai_compatible.Text = "OpenAICompatible√";
-					break;
-				case "从左向右" when !File.Exists("cvextern.dll"):
+                //case "OpenAICompatible":
+                //	interface_flag = "OpenAICompatible";
+                //	Refresh();
+                //	ai_menu.Text = "AI√";
+                //	//ai_openai_compatible.Text = "OpenAICompatible√";
+                //	break;
+                // ★★★ 【新增】CustomOpenAI 分支 ★★★
+                case "CustomOpenAI":
+                    interface_flag = "CustomOpenAI";
+                    Refresh(); // 先重置所有菜单文字
+                               // 这里先设置一个基础状态，具体的 "AI: DeepSeek..." 文字
+                               // 会由 SwitchToCustomAI 方法在后面覆盖更新
+                    ai_menu.Text = "AI√";
+                    break;
+                case "从左向右" when !File.Exists("cvextern.dll"):
 					MessageBox.Show("请从蓝奏网盘中下载cvextern.dll大小约25m，点击确定自动弹出网页。\r\n将下载后的文件与 天若OCR文字识别.exe 这个文件放在一起。");
 					Process.Start("https://www.lanzous.com/i1ab3vg");
 					break;
@@ -7863,7 +7920,7 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 			write.Text = "手写";
 			baidu_handwriting.Text = "百度手写";
 			ai_menu.Text = "AI";
-			ai_openai_compatible.Text = "OpenAICompatible";
+			//ai_openai_compatible.Text = "OpenAICompatible";
 		}
 
 		/// <summary>

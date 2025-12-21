@@ -178,6 +178,38 @@ namespace TrOCR.Helper
         //文本改变自动翻译延时
         // public static int TextChangeAutotranslateDelay { get; set; }
         public static string TextChangeAutotranslateDelayRaw { get; set; }
+        //OCR_Current_API这个变量暂时无用，程序目前使用的是interface_flag标识当前ocr接口。
+        //如果想使用OCR_Current_API,两种办法：
+        // 一是把所有调用interface_flag的地方都替换为OCR_Current_API，
+        // 二是把interface_flag改造成属性，保持interface_flag和OCR_Current_API的值始终同步。如：
+        /**
+        // FmMain.cs 类内部，变量定义区域
+
+        // 1. 定义一个私有的“影子”变量，用来存实际的值
+        private string _interface_flag = "搜狗"; //推荐赋个初始值
+
+        // 2. 将 interface_flag 改造成属性
+        public string interface_flag
+        {
+            get 
+            { 
+                return _interface_flag; 
+            }
+            set 
+            {
+                // 更新私有变量
+                _interface_flag = value;
+                
+                // ★★★ 核心逻辑：自动同步到静态变量 ★★★
+                // 无论你在哪里写 interface_flag = "xxx"，这行代码都会自动执行！
+                StaticValue.OCR_Current_API = value;
+                
+                // (可选) 可以在这里打印日志调试
+                // Debug.WriteLine($"接口状态已同步: {value}");
+            }
+        }
+        */
+        public static string OCR_Current_API { get; internal set; }
 
         //工具栏图标放大倍数
         public static float ToolbarIconScaleFactor = 1.0f;

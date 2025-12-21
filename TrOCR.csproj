@@ -289,6 +289,7 @@
     <Compile Include="AliTable.designer.cs">
       <DependentUpon>AliTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="CustomAIProvider.cs" />
     <Compile Include="FmFlags.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -1,20 +1,21 @@
+using Microsoft.Win32;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Forms;
-using System.Linq;
-using System.Collections.Generic;
-using Microsoft.Win32;
 using TrOCR.Helper;
 using TrOCR.Properties;
-using System.Threading.Tasks;
 
 
 namespace TrOCR
@@ -22,7 +23,18 @@ namespace TrOCR
     // 设置窗口类，用于管理OCR和翻译接口的各种配置选项
 	public sealed partial class FmSetting
 	{
-		private Dictionary<Control, Point> _originalControlLocations;
+        // === 自定义 AI 接口相关变量 ===
+
+        // 使用 BindingList 可以在数据修改时自动通知 UI 刷新
+        private BindingList<CustomAIProvider> _customProviders;
+
+        // 当前正在编辑的对象引用
+        private CustomAIProvider _currentEditingProvider = null;
+
+        // 防抖标志：防止代码赋值 Text 属性时触发 TextChanged 事件导致死循环
+        private bool _isUserAction = true;
+
+        private Dictionary<Control, Point> _originalControlLocations;
 
 		private readonly Dictionary<string, string> shortcutMappings = new Dictionary<string, string>
 		{
@@ -56,9 +68,179 @@ namespace TrOCR
 		        checkbox_NoWindowScreenshotTranslation.Checked = false;
 		    }
 		}
+        private void LoadCustomAIProviders()
+        {
+            string jsonPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "CustomOpenAIProviders.json");
+            List<CustomAIProvider> list = null;
 
-		// 从配置文件读取设置信息并初始化设置界面控件
-		public void readIniFile()
+            // 1. 读取 JSON
+            if (File.Exists(jsonPath))
+            {
+                try
+                {
+                    string json = File.ReadAllText(jsonPath);
+                    list = JsonConvert.DeserializeObject<List<CustomAIProvider>>(json);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("读取自定义接口配置失败: " + ex.Message);
+                }
+            }
+
+            // 如果为空，创建一个空列表
+            if (list == null) list = new List<CustomAIProvider>();
+
+            // 2. 转换为 BindingList 并绑定到 ListBox
+            _customProviders = new BindingList<CustomAIProvider>(list);
+
+            lb_CustomProviders.DataSource = _customProviders;
+            lb_CustomProviders.DisplayMember = "Name"; // ListBox 显示 "Name" 属性
+            lb_CustomProviders.ValueMember = "Id";
+
+            // 3. 绑定选中事件
+            lb_CustomProviders.SelectedIndexChanged += Lb_CustomProviders_SelectedIndexChanged;
+
+            // 4. 触发一次选中逻辑以初始化界面状态
+            Lb_CustomProviders_SelectedIndexChanged(null, null);
+        }
+        private void Lb_CustomProviders_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // 获取当前选中的项
+            if (lb_CustomProviders.SelectedItem is CustomAIProvider item)
+            {
+                _currentEditingProvider = item;
+                _isUserAction = false; // ★ 暂停事件触发，防止 TextChanged 误伤
+
+                // 填充右侧 TextBoxes
+                txt_Name.Text = item.Name;
+                txt_ApiUrl.Text = item.ApiUrl;
+                txt_ApiKey.Text = item.ApiKey;
+                txt_ModelName.Text = item.ModelName;
+                txt_ConfigPath.Text = item.ModelConfigPath;
+
+                // 启用右侧控件
+                ToggleDetailPanel(true);
+
+                _isUserAction = true; // ★ 恢复事件
+            }
+            else
+            {
+                _currentEditingProvider = null;
+                _isUserAction = false;
+
+                // 清空右侧
+                txt_Name.Clear();
+                txt_ApiUrl.Clear();
+                txt_ApiKey.Clear();
+                txt_ModelName.Clear();
+                txt_ConfigPath.Clear();
+
+                // 禁用右侧控件
+                ToggleDetailPanel(false);
+
+                _isUserAction = true;
+            }
+        }
+
+        // 辅助方法：控制右侧是否可编辑
+        private void ToggleDetailPanel(bool enable)
+        {
+            txt_Name.Enabled = enable;
+            txt_ApiUrl.Enabled = enable;
+            txt_ApiKey.Enabled = enable;
+            txt_ModelName.Enabled = enable;
+            txt_ConfigPath.Enabled = enable;
+            btn_BrowseConfig.Enabled = enable;
+        }
+        // 1. 名称修改 (特殊处理：需要刷新 ListBox 显示)
+        private void txt_Name_TextChanged(object sender, EventArgs e)
+        {
+            if (!_isUserAction || _currentEditingProvider == null) return;
+
+            _currentEditingProvider.Name = txt_Name.Text;
+
+            // 强制 ListBox 刷新显示的文字
+            _customProviders.ResetBindings();
+        }
+
+        // 2. 其他字段修改
+        private void txt_ApiUrl_TextChanged(object sender, EventArgs e)
+        {
+			if (!_isUserAction || _currentEditingProvider == null) return;
+    		_currentEditingProvider.ApiUrl = txt_ApiUrl.Text;
+        }
+
+        private void txt_ApiKey_TextChanged(object sender, EventArgs e)
+        {
+            if (!_isUserAction || _currentEditingProvider == null) return;
+            _currentEditingProvider.ApiKey = txt_ApiKey.Text;
+        }
+
+        private void txt_ModelName_TextChanged(object sender, EventArgs e)
+        {
+            if (!_isUserAction || _currentEditingProvider == null) return;
+            _currentEditingProvider.ModelName = txt_ModelName.Text;
+        }
+
+        private void txt_ConfigPath_TextChanged(object sender, EventArgs e)
+        {
+            if (!_isUserAction || _currentEditingProvider == null) return;
+            _currentEditingProvider.ModelConfigPath = txt_ConfigPath.Text;
+        }
+        // 添加按钮
+        private void btn_Add_Provider_Click(object sender, EventArgs e)
+        {
+            var newItem = new CustomAIProvider
+            {
+                Name = "OpenAI兼容 " + (_customProviders.Count + 1),
+                ApiUrl = "https://api.openai.com/v1",
+                ModelName = "gpt-4o"
+            };
+
+            _customProviders.Add(newItem);
+
+            // 自动选中新加的这一项
+            lb_CustomProviders.SelectedItem = newItem;
+        }
+
+        // 删除按钮
+        private void btn_Del_Provider_Click(object sender, EventArgs e)
+        {
+            if (lb_CustomProviders.SelectedItem is CustomAIProvider item)
+            {
+                if (MessageBox.Show($"确定删除接口“{item.Name}”吗？", "确认删除", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                {
+                    _customProviders.Remove(item);
+                }
+            }
+        }
+
+        // 浏览配置文件按钮
+        private void btn_BrowseConfig_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Title = "选择模型配置文件 (JSON)";
+            dlg.Filter = "JSON Files|*.json|All Files|*.*";
+            dlg.InitialDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                string fullPath = dlg.FileName;
+                string appPath = AppDomain.CurrentDomain.BaseDirectory;
+
+                // 如果文件在程序目录下，转为相对路径（更美观，便携）
+                if (fullPath.StartsWith(appPath, StringComparison.OrdinalIgnoreCase))
+                {
+                    txt_ConfigPath.Text = fullPath.Substring(appPath.Length).TrimStart('\\', '/');
+                }
+                else
+                {
+                    txt_ConfigPath.Text = fullPath;
+                }
+            }
+        }
+        // 从配置文件读取设置信息并初始化设置界面控件
+        public void readIniFile()
 		{
 			// 读取基本配置项
 			var value = IniHelper.GetValue("配置", "开机自启");
@@ -826,10 +1008,10 @@ namespace TrOCR
 			ReadOcrModelConfigs();
 
 			// 读取OpenAICompatible OCR配置
-			txtOpenAICompatibleBaseUrl.Text = TrOCRUtils.LoadSetting("OpenAICompatible", "BaseUrl","") ;
-			txtOpenAICompatibleModel.Text = TrOCRUtils.LoadSetting("OpenAICompatible", "Model", "") ;
-			txtOpenAICompatibleKey.Text = TrOCRUtils.LoadSetting("OpenAICompatible", "APIKey", "") ;
-			txtOpenAICompatibleConfig.Text = TrOCRUtils.LoadSetting("OpenAICompatible", "Config", "") ;
+			//txtOpenAICompatibleBaseUrl.Text = TrOCRUtils.LoadSetting("OpenAICompatible", "BaseUrl","") ;
+			//txtOpenAICompatibleModel.Text = TrOCRUtils.LoadSetting("OpenAICompatible", "Model", "") ;
+			//txtOpenAICompatibleKey.Text = TrOCRUtils.LoadSetting("OpenAICompatible", "APIKey", "") ;
+			//txtOpenAICompatibleConfig.Text = TrOCRUtils.LoadSetting("OpenAICompatible", "Config", "") ;
 			// 读取OpenAICompatible 翻译配置
 			txtOpenAICompatibleTransBaseUrl.Text = TrOCRUtils.LoadSetting("OpenAICompatibleTrans", "BaseUrl","") ;
 			txtOpenAICompatibleTransModel.Text = TrOCRUtils.LoadSetting("OpenAICompatibleTrans", "Model", "") ;
@@ -1014,7 +1196,9 @@ namespace TrOCR
 			textBox_RapidOCR_Rec.TextChanged += TextBox_RapidOCR_TextChanged;
 			textBox_RapidOCR_Keys.TextChanged += TextBox_RapidOCR_TextChanged;
 			textBox7.TextChanged += TextBox_RapidOCR_TextChanged;
-		}
+
+            LoadCustomAIProviders();
+        }
 
 		/// <summary>
 		/// ocr接口申请按钮点击事件处理函数，根据当前选中的标签页打开相应的OCR服务申请页面
@@ -2094,13 +2278,24 @@ namespace TrOCR
 			IniHelper.SetValue("模型配置_RapidOCR", "Keys", textBox_RapidOCR_Keys.Text);
 			IniHelper.SetValue("模型配置_RapidOCR", "AdvancedConfig", textBox7.Text);
 
-			// 保存OpenAICompatible OCR配置
-			IniHelper.SetValue("OpenAICompatible", "BaseUrl", txtOpenAICompatibleBaseUrl.Text);
-			IniHelper.SetValue("OpenAICompatible", "Model", txtOpenAICompatibleModel.Text);
-			IniHelper.SetValue("OpenAICompatible", "APIKey", txtOpenAICompatibleKey.Text);
-			IniHelper.SetValue("OpenAICompatible", "Config", txtOpenAICompatibleConfig.Text);
-			// 保存OpenAICompatible 翻译配置
-			IniHelper.SetValue("OpenAICompatibleTrans", "BaseUrl", txtOpenAICompatibleTransBaseUrl.Text);
+            // 保存OpenAICompatible OCR配置
+            //IniHelper.SetValue("OpenAICompatible", "BaseUrl", txtOpenAICompatibleBaseUrl.Text);
+            //IniHelper.SetValue("OpenAICompatible", "Model", txtOpenAICompatibleModel.Text);
+            //IniHelper.SetValue("OpenAICompatible", "APIKey", txtOpenAICompatibleKey.Text);
+            //IniHelper.SetValue("OpenAICompatible", "Config", txtOpenAICompatibleConfig.Text);
+            // === 新增：保存自定义 AI 接口列表 ===
+            try
+            {
+                string jsonPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "CustomOpenAIProviders.json");
+                string json = JsonConvert.SerializeObject(_customProviders, Formatting.Indented);
+                File.WriteAllText(jsonPath, json);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("保存自定义接口失败: " + ex.Message);
+            }
+            // 保存OpenAICompatible 翻译配置
+            IniHelper.SetValue("OpenAICompatibleTrans", "BaseUrl", txtOpenAICompatibleTransBaseUrl.Text);
 			IniHelper.SetValue("OpenAICompatibleTrans", "Model", txtOpenAICompatibleTransModel.Text);
 			IniHelper.SetValue("OpenAICompatibleTrans", "APIKey", txtOpenAICompatibleTransKey.Text);
 			IniHelper.SetValue("OpenAICompatibleTrans", "Config", txtOpenAICompatibleTransConfig.Text);
@@ -2732,7 +2927,7 @@ namespace TrOCR
    this.rapidOcrConfigChanged = true;
   }
 
-  private void Btn_OpenAICompatible_Config_Browse_Click(object sender, EventArgs e) => BrowseAdvancedConfigModelFile(txtOpenAICompatibleConfig, "OpenAICompatible配置文件");
+  //private void Btn_OpenAICompatible_Config_Browse_Click(object sender, EventArgs e) => BrowseAdvancedConfigModelFile(txtOpenAICompatibleConfig, "OpenAICompatible配置文件");
         
         /// <summary>
         /// 配置变更时重置OCR引擎
@@ -2834,5 +3029,7 @@ namespace TrOCR
         {
             BrowseAdvancedConfigModelFile(txtOpenAICompatibleTransConfig, "OpenAICompatible翻译配置文件");
         }
+
+       
     }
 }

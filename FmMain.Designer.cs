@@ -150,7 +150,7 @@ namespace TrOCR
 			this.ocr_table = new global::System.Windows.Forms.ToolStripMenuItem();
 			// AI_OCR菜单项
 			this.ai_menu = new global::System.Windows.Forms.ToolStripMenuItem();
-			this.ai_openai_compatible = new global::System.Windows.Forms.ToolStripMenuItem();
+			// this.ai_openai_compatible = new global::System.Windows.Forms.ToolStripMenuItem();
 			// AI_Trans菜单项
 			this.ai_menu_trans = new global::System.Windows.Forms.ToolStripMenuItem();
 			this.ai_openai_compatible_trans = new global::System.Windows.Forms.ToolStripMenuItem();
@@ -372,13 +372,13 @@ namespace TrOCR
 			});
 			this.ai_menu.Name = "ai_menu";
 			this.ai_menu.Text = "AI";
-			this.ai_openai_compatible.Name = "ai_openai_compatible";
-			this.ai_openai_compatible.Text = "OpenAICompatible";
-			this.ai_openai_compatible.Click += new global::System.EventHandler(this.OCR_ai_openai_compatible_Click);
-			this.ai_menu.DropDownItems.AddRange(new global::System.Windows.Forms.ToolStripItem[]
-			{
-				this.ai_openai_compatible
-			});
+			// this.ai_openai_compatible.Name = "ai_openai_compatible";
+			// this.ai_openai_compatible.Text = "OpenAICompatible";
+			// //this.ai_openai_compatible.Click += new global::System.EventHandler(this.OCR_ai_openai_compatible_Click);
+			// this.ai_menu.DropDownItems.AddRange(new global::System.Windows.Forms.ToolStripItem[]
+			// {
+			// 	this.ai_openai_compatible
+			// });
 			this.ai_menu_trans.Name = "ai_menu_trans";
 			this.ai_menu_trans.Text = "AI";
 			this.ai_openai_compatible_trans.Name = "ai_openai_compatible_trans";
@@ -818,7 +818,7 @@ namespace TrOCR
 		//"AI_OCR"菜单
 		public global::System.Windows.Forms.ToolStripMenuItem ai_menu;
 		//"AI_OCR"子菜单
-		public global::System.Windows.Forms.ToolStripMenuItem ai_openai_compatible;
+		// public global::System.Windows.Forms.ToolStripMenuItem ai_openai_compatible;
         //"AI_Trans"菜单
         public global::System.Windows.Forms.ToolStripMenuItem ai_menu_trans;
         //"AI_Trans"子菜单
