@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Bibliography;
 using Newtonsoft.Json;
+using OpenCvSharp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -310,6 +311,7 @@ namespace TrOCR
                     temperature = _currentCustomTransMode.temperature,
                     enable_thinking= _currentCustomTransMode.enable_thinking,
                     stream=_currentCustomTransMode.stream,
+                    PromptOrder = new List<string>(_currentCustomTransMode.PromptOrder)
 
                 };
                 // 2. ★★★ 关键修改：使用 Task.Run 在后台执行耗时操作 ★★★

@@ -53,32 +53,52 @@ namespace TrOCR.Helper
                 string systemPrompt = mode.system_prompt;
                 string userPrompt = mode.prompt;
                 string assistantPrompt = mode.assistant_prompt;
-                // 3. 构造 Messages 
+                // 3. 构造 Messages (基于 PromptOrder 顺序动态组装)
                 var messages = new List<object>();
+                bool hasUserMessage = false;
 
-                // (1) System Prompt
-                if (!string.IsNullOrEmpty(systemPrompt))
+                foreach (var key in mode.PromptOrder)
                 {
-                    messages.Add(new { role = "system", content = systemPrompt });
+                    switch (key)
+                    {
+                        case "system_prompt":
+                            if (!string.IsNullOrEmpty(systemPrompt))
+                            {
+                                messages.Add(new { role = "system", content = systemPrompt });
+                            }
+                            break;
+
+                        case "assistant_prompt":
+                            if (!string.IsNullOrEmpty(assistantPrompt))
+                            {
+                                messages.Add(new { role = "assistant", content = assistantPrompt });
+                            }
+                            break;
+
+                        case "prompt": // 对应 User 角色
+                            hasUserMessage = true;
+
+                            // 拼接逻辑：如果有 prompt 模板，则拼接；否则直接发原文
+                            string finalUserContent;
+                            if (!string.IsNullOrEmpty(userPrompt))
+                            {
+                                finalUserContent = userPrompt + "\n\n" + inputContent;
+                            }
+                            else
+                            {
+                                finalUserContent = inputContent;
+                            }
+
+                            messages.Add(new { role = "user", content = finalUserContent });
+                            break;
+                    }
                 }
 
-                // (2) User Prompt 
-                string userContent ;
-                if (!string.IsNullOrEmpty(userPrompt))
+                // 4. ★★★ 最终兜底检查 ★★★
+                // 如果用户 JSON 里没写 "prompt"，我们必须把 inputContent 发出去
+                if (!hasUserMessage)
                 {
-                    userContent=userPrompt + "\n\n" + inputContent;
-                }
-                else
-                {
-                    userContent=userPrompt;
-                }
-
-                messages.Add(new { role = "user", content = userContent });
-
-                // (3) Assistant Prompt (可选，用于引导输出开头)
-                if (!string.IsNullOrEmpty(assistantPrompt))
-                {
-                    messages.Add(new { role = "assistant", content = assistantPrompt });
+                    messages.Add(new { role = "user", content = inputContent });
                 }
 
                 // 5. 构造请求体 (Request Body)
