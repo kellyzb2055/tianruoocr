@@ -88,7 +88,9 @@ namespace TrOCR.Helper
                     model = modelName,
                     messages = messages,
                     temperature = mode.temperature,
-                    enable_thinking = mode.enable_thinking,
+                    thinking = (mode.enable_thinking == true)
+                    ? (object)new { type = "enabled" }//如果加上budget_tokens = 4096这个参数，设置思考最大token花费值，可限制思考花费的 Token 数（防止它想太久太贵）
+                    : (object)new { type = "disabled" }, // <--- 显式发送 disabled
                     stream = mode.stream
                 };
                 // 序列化 JSON
