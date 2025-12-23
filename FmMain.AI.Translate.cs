@@ -102,9 +102,12 @@ namespace TrOCR
                     {
                         availableModes.Add(new AIMode
                         {
-                            mode = "默认模式",
-                            prompt = "请翻译文本：",
-                            temperature = 0.5
+                            mode = "默认模式_内置",
+                            prompt = "请翻译下面的文本到${tolang}，只说最终结果，不说其他的：",
+                            temperature = 1.0,
+                            PromptOrder = new List<string> { "system_prompt", "assistant_prompt", "prompt" }
+                            //PromptOrder = new List<string> {  "prompt" }//默认模式只有prompt，只保留prompt也行，我全部保留更健壮吧
+
                         });
                     }
 
@@ -302,6 +305,7 @@ namespace TrOCR
                     assistant_prompt = ReplaceLangPlaceholder(_currentCustomTransMode.assistant_prompt, fromLang, toLang);
 
                 }
+                //为什么要new一个副本出来，而不是直接赋值为_currentCustomTransMode，一是因为字段的值需要处理，不完全一致，二是因为_currentCustomTransMode是引用类型，直接赋值是浅拷贝，如果修改赋值后的变量会影响原_currentCustomTransMode
                 AIMode aIMode = new AIMode
                 {
                     mode = _currentCustomTransMode.mode,

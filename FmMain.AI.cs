@@ -99,9 +99,11 @@ namespace TrOCR
                     {
                         availableModes.Add(new AIMode
                         {
-                            mode = "默认模式",
-                            prompt = "请识别图片中的文字：",
-                            temperature = 0.5
+                            mode = "默认模式_内置",
+                            prompt = "请识别图片中的文字，只说最终结果，不说其他的：",
+                            temperature = 0.5,
+                            PromptOrder = new List<string> { "system_prompt", "assistant_prompt", "prompt" }
+                            //PromptOrder = new List<string> {  "prompt" }//默认模式只有prompt，只保留prompt也行，我全部保留更健壮一些
                         });
                     }
                 
