@@ -12,25 +12,20 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TrOCR.Helper.Models;
 
 namespace TrOCR.Helper
 {
     internal class OpenAICompatibleTranslate
     {
 
-        private static readonly HttpClient httpClient = new HttpClient();
-
-        // === 缓存相关的静态变量 ===
-        // 线程锁，防止并发读写文件冲突
-        private static readonly object _configLock = new object();
-
-
-
         /// <summary>
         /// 执行 AI 翻译 (无状态，直接使用传入的配置)
         /// </summary>
         /// <param name="inputContent">待翻译的文本</param>
-        /// <param name="config">接口配置对象 (含URL, Key, Source, Target)</param>
+        /// <param name="apiUrl">API 地址</param>
+        /// <param name="apiKey">API 密钥</param>
+        /// <param name="modelName">模型名称</param>
         /// <param name="mode">模式配置对象 (含Prompt, Temperature)</param>
         /// <returns>翻译结果</returns>
         public static string Translate(

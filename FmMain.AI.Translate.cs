@@ -5,10 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text; // 确保引用
+using System.Text; 
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TrOCR.Helper;
+using TrOCR.Helper.Models;
 
 namespace TrOCR
 {
@@ -42,7 +43,7 @@ namespace TrOCR
                     }
                 }
 
-                // 读取厂商列表(CustomOpenAIProviders.json)
+                // 读取厂商列表(CustomOpenAITransProviders.json)
                 string jsonPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "CustomOpenAITransProviders.json");
                 if (!File.Exists(jsonPath)) return;
 

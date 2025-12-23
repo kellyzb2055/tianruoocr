@@ -289,8 +289,8 @@
     <Compile Include="AliTable.designer.cs">
       <DependentUpon>AliTable.cs</DependentUpon>
     </Compile>
-    <Compile Include="CustomAITransProvider.cs" />
-    <Compile Include="CustomAIProvider.cs" />
+    <Compile Include="Helper\Models\CustomAITransProvider.cs" />
+    <Compile Include="Helper\Models\CustomAIProvider.cs" />
     <Compile Include="FmFlags.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -359,6 +359,7 @@
     <Compile Include="Helper\HelpWin32.cs" />
     <Compile Include="Helper\HttpHelper.cs" />
     <Compile Include="Helper\IniHelper.cs" />
+    <Compile Include="Helper\Models\AIModels.cs" />
     <Compile Include="Helper\NetworkInitializer.cs" />
     <Compile Include="Helper\OcrHelper.cs" />
     <Compile Include="Helper\OpenAICompatibleTranslate.cs" />

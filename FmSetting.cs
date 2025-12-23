@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Forms;
 using TrOCR.Helper;
+using TrOCR.Helper.Models;
 using TrOCR.Properties;
 
 
@@ -1203,18 +1204,7 @@ namespace TrOCR
 			// 读取OCR模型配置
 			ReadOcrModelConfigs();
 
-			// 读取OpenAICompatible OCR配置
-			//txtOpenAICompatibleBaseUrl.Text = TrOCRUtils.LoadSetting("OpenAICompatible", "BaseUrl","") ;
-			//txtOpenAICompatibleModel.Text = TrOCRUtils.LoadSetting("OpenAICompatible", "Model", "") ;
-			//txtOpenAICompatibleKey.Text = TrOCRUtils.LoadSetting("OpenAICompatible", "APIKey", "") ;
-			//txtOpenAICompatibleConfig.Text = TrOCRUtils.LoadSetting("OpenAICompatible", "Config", "") ;
-			// 读取OpenAICompatible 翻译配置
-			//txtOpenAICompatibleTransBaseUrl.Text = TrOCRUtils.LoadSetting("OpenAICompatibleTrans", "BaseUrl","") ;
-			//txtOpenAICompatibleTransModel.Text = TrOCRUtils.LoadSetting("OpenAICompatibleTrans", "Model", "") ;
-			//txtOpenAICompatibleTransKey.Text = TrOCRUtils.LoadSetting("OpenAICompatibleTrans", "APIKey", "") ;
-			//txtOpenAICompatibleTransConfig.Text = TrOCRUtils.LoadSetting("OpenAICompatibleTrans", "Config", "") ;
-			//textBox_OpenAICompatible_Source.Text = TrOCRUtils.LoadSetting("OpenAICompatibleTrans", "Source", "Auto Detect") ;
-			//textBox_OpenAICompatible_Target.Text = TrOCRUtils.LoadSetting("OpenAICompatibleTrans", "Target", "自动判断") ;
+			
 			//文本改变后自动翻译的延时
 			textBox38.Text=TrOCRUtils.LoadSetting("配置", "文本改变自动翻译延时", "5000");
 			//工具栏图标放大倍数
@@ -2476,10 +2466,6 @@ namespace TrOCR
 			IniHelper.SetValue("模型配置_RapidOCR", "AdvancedConfig", textBox7.Text);
 
             // 保存OpenAICompatible OCR配置
-            //IniHelper.SetValue("OpenAICompatible", "BaseUrl", txtOpenAICompatibleBaseUrl.Text);
-            //IniHelper.SetValue("OpenAICompatible", "Model", txtOpenAICompatibleModel.Text);
-            //IniHelper.SetValue("OpenAICompatible", "APIKey", txtOpenAICompatibleKey.Text);
-            //IniHelper.SetValue("OpenAICompatible", "Config", txtOpenAICompatibleConfig.Text);
             // === 新增：保存自定义 AI 接口列表 ===
             try
             {
@@ -2492,12 +2478,6 @@ namespace TrOCR
                 MessageBox.Show("保存自定义接口失败: " + ex.Message);
             }
             // 保存OpenAICompatible 翻译配置
-            // IniHelper.SetValue("OpenAICompatibleTrans", "BaseUrl", txtOpenAICompatibleTransBaseUrl.Text);
-            //IniHelper.SetValue("OpenAICompatibleTrans", "Model", txtOpenAICompatibleTransModel.Text);
-            //IniHelper.SetValue("OpenAICompatibleTrans", "APIKey", txtOpenAICompatibleTransKey.Text);
-            //IniHelper.SetValue("OpenAICompatibleTrans", "Config", txtOpenAICompatibleTransConfig.Text);
-            //IniHelper.SetValue("OpenAICompatibleTrans", "Source", textBox_OpenAICompatible_Source.Text);
-            //IniHelper.SetValue("OpenAICompatibleTrans", "Target", textBox_OpenAICompatible_Target.Text);
             // === 新增：保存自定义 AI 接口列表 ===
             try
             {
@@ -3135,7 +3115,6 @@ namespace TrOCR
    this.rapidOcrConfigChanged = true;
   }
 
-  //private void Btn_OpenAICompatible_Config_Browse_Click(object sender, EventArgs e) => BrowseAdvancedConfigModelFile(txtOpenAICompatibleConfig, "OpenAICompatible配置文件");
         
         /// <summary>
         /// 配置变更时重置OCR引擎
@@ -3233,10 +3212,7 @@ namespace TrOCR
             label_OcrApiHelpText.Text = helpText;
         }
 
-        //private void btn_OpenAICompatible_Trans_Config_Browse_Click(object sender, EventArgs e)
-        //{
-        //    BrowseAdvancedConfigModelFile(txtOpenAICompatibleTransConfig, "OpenAICompatible翻译配置文件");
-        //}
+        
 
        
     }

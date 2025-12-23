@@ -5,7 +5,8 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using Newtonsoft.Json;
-using TrOCR.Helper; // 确保引用了 CustomAIProvider 类所在的命名空间
+using TrOCR.Helper;
+using TrOCR.Helper.Models; 
 
 namespace TrOCR
 {
@@ -348,7 +349,7 @@ namespace TrOCR
 
                 // 3. ★★★ 直接调用 V3 接口 ★★★
                 // 这里不需要 switch 判断，直接把参数传给 OpenAICompatibleHelper
-                string result = OpenAICompatibleHelper.OCR_V3(
+                string result = OpenAICompatibleHelper.OCR(
                     image_screen,
                     apiurl,
                     _currentCustomProvider.ApiKey,
@@ -386,80 +387,78 @@ namespace TrOCR
         /// <summary>
         /// 自定义接口的统一执行入口 (支持 OpenAI/Anthropic 等多种协议)
         /// </summary>
-        public void OCR_Custom_Router()
-        {
-            // 防御性检查
-            if (_currentCustomProvider == null)
-            {
-                typeset_txt = "错误：未选择有效的接口配置。";
-                split_txt = typeset_txt;
-                return;
-            }
+        //public void OCR_Custom_Router()
+        //{
+        //    // 防御性检查
+        //    if (_currentCustomProvider == null)
+        //    {
+        //        typeset_txt = "错误：未选择有效的接口配置。";
+        //        split_txt = typeset_txt;
+        //        return;
+        //    }
 
-            try
-            {
-                string result = "";
+        //    try
+        //    {
+        //        string result = "";
 
-                // ★★★ 核心路由：根据配置的 Type 字段决定调用哪个 Helper ★★★
-                // 假设您的 CustomAIProvider 类里已经加了 Type 字段
-                //string type = _currentCustomProvider.Type ?? "OpenAI"; // 默认为 OpenAI
-                string type =  "OpenAI"; // 默认为 OpenAI
+        //        // ★★★ 核心路由：根据配置的 Type 字段决定调用哪个 Helper ★★★
+        //        // 假设您的 CustomAIProvider 类里已经加了 Type 字段
+        //        //string type = _currentCustomProvider.Type ?? "OpenAI"; // 默认为 OpenAI
+        //        string type =  "OpenAI"; // 默认为 OpenAI
 
-                switch (type)
-                {
-                    //case "Anthropic":
-                        // === Anthropic兼容模式 ===
-                        // 约定：ApiUrl 存 AK, ApiKey 存 SK
-                        //result = ClaudeHelper.GeneralBasic(
-                        //    image_screen, // 截图
-                        //    _currentCustomProvider.ApiUrl, // API Key
-                        //    _currentCustomProvider.ApiKey  // Secret Key
-                        //
-                        //);
-                        //break;
+        //        switch (type)
+        //        {
+        //            //case "Anthropic":
+        //                // === Anthropic兼容模式 ===
+        //                // 约定：ApiUrl 存 AK, ApiKey 存 SK
+        //                //result = ClaudeHelper.GeneralBasic(
+        //                //    image_screen, // 截图
+        //                //    _currentCustomProvider.ApiUrl, // API Key
+        //                //    _currentCustomProvider.ApiKey  // Secret Key
+        //                //
+        //                //);
+        //                //break;
 
-                    case "OpenAI":
-                    default:
-                        // === OpenAI 兼容模式 (DeepSeek, Kimi, etc.) ===
-                        string sysPrompt = _currentCustomMode?.system_prompt ?? "";
-                        string userPrompt = _currentCustomMode?.prompt ?? "请识别图片中的文字";
+        //            case "OpenAI":
+        //            default:
+        //                // === OpenAI 兼容模式 (DeepSeek, Kimi, etc.) ===
+        //                string sysPrompt = _currentCustomMode?.system_prompt ?? "";
+        //                string userPrompt = _currentCustomMode?.prompt ?? "请识别图片中的文字";
 
-                        // 处理高级参数 (Temperature 等)
-                        double? temp = _currentCustomMode?.temperature;
-                        bool? thinking = _currentCustomMode?.enable_thinking;
+        //                // 处理高级参数 (Temperature 等)
+        //                double? temp = _currentCustomMode?.temperature;
+        //                bool? thinking = _currentCustomMode?.enable_thinking;
 
-                        //result = OpenAICompatibleHelper.OCR_V3(
-                        //    image_screen,
-                        //    _currentCustomProvider.ApiUrl,
-                        //    _currentCustomProvider.ApiKey,
-                        //    _currentCustomProvider.ModelName,
-                        //    sysPrompt,
-                        //    userPrompt,
-                        //    _currentCustomMode?.assistant_prompt,
-                        //    temp,
-                        //    thinking
-                        //);
-                        break;
-                }
+        //                //result = OpenAICompatibleHelper.OCR_V3(
+        //                //    image_screen,
+        //                //    _currentCustomProvider.ApiUrl,
+        //                //    _currentCustomProvider.ApiKey,
+        //                //    _currentCustomProvider.ModelName,
+        //                //    sysPrompt,
+        //                //    userPrompt,
+        //                //    _currentCustomMode?.assistant_prompt,
+        //                //    temp,
+        //                //    thinking
+        //                //);
+        //                break;
+        //        }
 
-                // 统一处理结果
-                if (string.IsNullOrEmpty(result))
-                {
-                    typeset_txt = "接口返回为空。";
-                }
-                else
-                {
-                    typeset_txt = result;
-                }
-                split_txt = typeset_txt;
-            }
-            catch (Exception ex)
-            {
-                typeset_txt = $"接口调用出错: {ex.Message}";
-                split_txt = typeset_txt;
-            }
-        }
+        //        // 统一处理结果
+        //        if (string.IsNullOrEmpty(result))
+        //        {
+        //            typeset_txt = "接口返回为空。";
+        //        }
+        //        else
+        //        {
+        //            typeset_txt = result;
+        //        }
+        //        split_txt = typeset_txt;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        typeset_txt = $"接口调用出错: {ex.Message}";
+        //        split_txt = typeset_txt;
+        //    }
+        //}
     }
-
-    
 }

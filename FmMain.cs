@@ -2107,9 +2107,7 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 			// 初始化API菜单
 			InitializeApiMenus();
 			// 【新增】加载 AI 动态菜单
-    		//LoadAIConfigMenus();
 			LoadCustomOpenAIMenus();
-			//LoadAITranConfigMenus();
 			LoadCustomOpenAITransMenus();
 			
 			// 初始化OCR接口配置
@@ -2273,9 +2271,7 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 
 			
 			 //刷新 AI 菜单，这行代码写在fmsetting里也行，写在这里也行
-            //LoadAIConfigMenus();
 			LoadCustomOpenAIMenus();
-            //LoadAITranConfigMenus();
 			LoadCustomOpenAITransMenus();
 			if (fmSetting.DialogResult == DialogResult.OK)
 			{
@@ -4488,15 +4484,6 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 				fmloading.FmlClose = "窗体已关闭";
 				Invoke(new OcrThread(Main_OCR_Thread_last));
 			}
-			// if (interface_flag == "OpenAICompatible")
-			// {
-			// 	// OpenAICompatible OCR 占位符
-			// 	OCR_OpenAICompatible();
-			// 	fmloading.FmlClose = "窗体已关闭";
-			// 	Invoke(new OcrThread(Main_OCR_Thread_last));
-			// 	return;
-			// }
-			// ★★★ 新增：自定义接口的分发入口 ★★★
 			if (interface_flag == "CustomOpenAI")
 			{
 				// 调用 FmMain.AI.cs 里的执行方法
@@ -5504,14 +5491,8 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 					CommonHelper.AddLog($"释放 RapidOCR 引擎时出错: {ex.Message}");
 				}
 			}
-            // === 【修复】 如果切换到了其他接口，清除 OpenAI 菜单的勾选状态 ===
-            //if (!string.IsNullOrEmpty(name) && name != "OpenAICompatible")
-            //{
-            //    // 清除openai兼容菜单的子菜单的勾选项
-            //    //ClearAIConfigSelection();
-
-            //}
-            // === 【核心修复 1】: 如果选的不是 AI 接口，强制清除 AI 菜单的状态 ===
+          
+            // === 【核心修复】: 如果选的不是 AI 接口，强制清除 AI 菜单的状态 ===
             if (!string.IsNullOrEmpty(name) && name != "CustomOpenAI") // 只要不是点 AI
             {
                 // 1. 清除 AI 主菜单的勾选和文字
@@ -5644,13 +5625,6 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 					Refresh();
 					rapidocr.Text = "RapidOCR√";
 					break;
-                //case "OpenAICompatible":
-                //	interface_flag = "OpenAICompatible";
-                //	Refresh();
-                //	ai_menu.Text = "AI√";
-                //	//ai_openai_compatible.Text = "OpenAICompatible√";
-                //	break;
-                // ★★★ 【新增】CustomOpenAI 分支 ★★★
                 case "CustomOpenAI":
                     interface_flag = "CustomOpenAI";
                     Refresh(); // 先重置所有菜单文字
@@ -7217,14 +7191,7 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 			trans_caiyun2.Text = "彩云2";
 			trans_baidu2.Text = "百度2";
 			ai_menu_trans.Text = "AI";
-            //ai_openai_compatible_trans.Text="OpenAICompatible";
-
-
-            //if (!string.IsNullOrEmpty(name) && name != "OpenAICompatible")
-            //         {
-            //             // 清除openai兼容菜单的子菜单的勾选项
-            //             //ClearAITransConfigSelection();
-            //         }
+          
             if (!string.IsNullOrEmpty(name) && name != "CustomOpenAI") // 只要不是点 AI
             {
                 // 1. 清除 AI 主菜单的勾选和文字
@@ -7306,12 +7273,7 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 			if (name == "百度2")
 			{
 				trans_baidu2.Text = "百度2√";
-			}
-			//if (name == "OpenAICompatible")
-			//{
-			//	ai_menu_trans.Text = "AI√";
-			//	ai_openai_compatible_trans.Text = "OpenAICompatible√";
-			//}
+			}			
 			if (name == "CustomOpenAI")
 			{
 				ai_menu_trans.Text = "AI√";
@@ -7922,7 +7884,7 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
 			write.Text = "手写";
 			baidu_handwriting.Text = "百度手写";
 			ai_menu.Text = "AI";
-			//ai_openai_compatible.Text = "OpenAICompatible";
+
 		}
 
 		/// <summary>

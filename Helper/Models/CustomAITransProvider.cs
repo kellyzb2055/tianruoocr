@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 
-namespace TrOCR.Helper // 根据你的项目命名空间调整
+namespace TrOCR.Helper.Models 
 {
     public class CustomAITransProvider : CustomAIProvider
     {
