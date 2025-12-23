@@ -546,6 +546,11 @@
     )
 )
 IF EXIST "$(TargetDir)dll" ( RD /S /Q "$(TargetDir)dll" )
-IF EXIST "$(TargetDir)PaddleOCR_data" ( RD /S /Q "$(TargetDir)PaddleOCR_data" )</PostBuildEvent>
+IF EXIST "$(TargetDir)PaddleOCR_data" ( RD /S /Q "$(TargetDir)PaddleOCR_data" )
+
+
+if not exist "$(TargetDir)Data\modes" mkdir "$(TargetDir)Data\modes"
+copy /Y "$(ProjectDir)docs\modeconfigs\OCRModes.json" "$(TargetDir)Data\modes\"
+copy /Y "$(ProjectDir)docs\modeconfigs\TranslateModes.json" "$(TargetDir)Data\modes\"</PostBuildEvent>
   </PropertyGroup>
 </Project>

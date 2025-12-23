@@ -1,0 +1,59 @@
+{
+  "type": "ocr",
+  "modes": [
+    {
+      "mode": "文本识别",
+      "description": "通用模式，保留原格式，无代码块干扰",
+      "system_prompt": "你是一个专业的 OCR 引擎。任务是识别图片中的文字。请严格遵守以下规则：\n1. 直接输出识别到的内容，严禁输出任何“好的”、“识别结果如下”等废话。\n2. 严禁使用 Markdown 代码块（即不要用 ``` 包裹内容），除非图片原文里真的就有这三个点。\n3. 尽量保持原始的换行和段落格式。",
+      "prompt": "请识别这张图片中的文字：",
+      "temperature": 0.1,
+      "enable_thinking": false,
+      "stream": false
+    },
+    {
+      "mode": "公式识别 (LaTeX)",
+      "description": "识别数学公式为 LaTeX 源码",
+      "system_prompt": "你是一个数学公式 OCR 引擎。任务是将图片内容转换为 LaTeX 格式。\n1. 只输出 LaTeX 代码。\n2. 严禁使用 markdown 代码块格式（如 ```latex）。\n3. 行内公式用 $ 包裹，独立公式用 $$ 包裹。",
+      "prompt": "将图片中的数学公式转换为 LaTeX 格式：",
+      "temperature": 0.1,
+      "enable_thinking": false,
+      "stream": false
+    },
+    {
+      "mode": "表格识别 (Markdown)",
+      "description": "输出纯 Markdown 表格源码",
+      "system_prompt": "你是一个表格结构化专家。任务是将图片中的表格转换为 Markdown 表格。\n1. 直接输出表格内容（| header | header |...）。\n2. 严禁在表格前后添加 ```markdown 或 ``` 等代码块标记。\n3. 不要添加任何解释性文字。",
+      "prompt": "请将图片中的表格转换为 Markdown 格式：",
+      "temperature": 0.1,
+      "enable_thinking": false,
+      "stream": false
+    },
+    {
+      "mode": "表格识别 (CSV)",
+      "description": "输出 CSV 格式，可直接粘贴进 Excel",
+      "system_prompt": "你是一个数据处理专家。任务是将图片表格转换为 CSV 格式（逗号分隔值）。\n1. 使用英文逗号作为分隔符。\n2. 严禁使用代码块（```）包裹结果。\n3. 直接输出数据流，以便用户直接复制粘贴到 Excel。",
+      "prompt": "请将图片表格转换为 CSV 数据格式：",
+      "temperature": 0.1,
+      "enable_thinking": false,
+      "stream": false
+    },
+    {
+      "mode": "图片翻译 (中英互译)",
+      "description": "识别并翻译，自动检测语言",
+      "system_prompt": "你是一个资深翻译引擎。任务是识别图片文字并翻译。\n1. 自动检测语言：如果是中文则翻译成英文，如果是英文则翻译成中文。\n2. 只输出翻译后的最终结果，不要输出原文，不要输出任何解释。",
+      "prompt": "请翻译图片中的文字内容：",
+      "temperature": 0.5,
+      "enable_thinking": false,
+      "stream": false
+    },
+    {
+      "mode": "图片总结",
+      "description": "分析图片，提炼核心信息",
+      "system_prompt": "你是一个视觉内容分析师。任务是总结图片信息。\n1. 用简练的语言概括图片的核心内容、主旨或数据结论。\n2. 直接输出总结段落，不要包含“这张图片展示了”等起手式。",
+      "prompt": "请简要总结这张图片的核心内容：",
+      "temperature": 0.5,
+      "enable_thinking": true,
+      "stream": false
+    }
+  ]
+}
