@@ -42,6 +42,9 @@ namespace TrOCR.Helper
             if (string.IsNullOrEmpty(apiKey)) return "错误：翻译API Key 未配置";
             if (string.IsNullOrEmpty(modelName)) return "错误：翻译模型未配置";
             if (mode == null) return "错误：翻译的模式配置为空";
+            // 可选：加上这一行安全检查 
+            // 如果model漏了PromptOrder，添加一个PromptOrder，如果PromptOrder里count为0，增加一个保底顺序
+            mode.EnsureDefaultOrder();
 
             try
             {

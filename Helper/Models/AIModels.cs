@@ -35,6 +35,27 @@ namespace TrOCR.Helper.Models
         // 使用 Ignore 避免再次序列化它自己
         [JsonIgnore]
         public List<string> PromptOrder { get; set; } = new List<string>();
+
+        /// <summary>
+        /// 确保 PromptOrder 不为空。如果为空，则根据当前属性值自动填充默认顺序。
+        /// </summary>
+        public void EnsureDefaultOrder()
+        {
+            if (PromptOrder == null) PromptOrder = new List<string>();
+
+            if (PromptOrder.Count == 0)
+            {
+                // 按照标准顺序填充：System -> Assistant -> User
+                if (!string.IsNullOrEmpty(system_prompt)) PromptOrder.Add("system_prompt");
+                if (!string.IsNullOrEmpty(assistant_prompt)) PromptOrder.Add("assistant_prompt");
+
+                // User Prompt 总是要有的，哪怕属性为空，通常也代表 User 消息的位置
+                //PromptOrder.Add("prompt");
+                //或者改为：只有当配置文件里真的写了 prompt 模板时，才加进列表
+                // 如果没写，稍后 OCR/Translate 方法里的“最终兜底”会负责补发图片/原文
+                if (!string.IsNullOrEmpty(prompt)) PromptOrder.Add("prompt");
+            }
+        }
     }
     // 3. ★★★ 核心：自定义转换器 ★★★
     public class AIModeConverter : JsonConverter
