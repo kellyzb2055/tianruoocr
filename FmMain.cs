@@ -299,22 +299,22 @@ namespace TrOCR
         }
 
 		// 【新增】临时翻译事件的处理器
-private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTranslateEventArgs e)
-{
-            // 【新增调试代码】弹窗显示接收到的语言代码
-            // MessageBox.Show($"接收到临时翻译请求：\n源语言: {e.SourceLanguage}\n目标语言: {e.TargetLanguage}");
-            // 确保翻译的文本是最新的
-            typeset_txt = RichBoxBody.Text;
+		private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTranslateEventArgs e)
+		{
+					// 【新增调试代码】弹窗显示接收到的语言代码
+					// MessageBox.Show($"接收到临时翻译请求：\n源语言: {e.SourceLanguage}\n目标语言: {e.TargetLanguage}");
+					// 确保翻译的文本是最新的
+					typeset_txt = RichBoxBody.Text;
 
-    if (string.IsNullOrWhiteSpace(typeset_txt))
-    {
-        MessageBox.Show("请输入需要翻译的文本！");
-        return;
-    }
+			if (string.IsNullOrWhiteSpace(typeset_txt))
+			{
+				MessageBox.Show("请输入需要翻译的文本！");
+				return;
+			}
 
-    // 调用我们改造后的翻译方法，并传入临时的语言代码
-    trans_Calculate(e.SourceLanguage, e.TargetLanguage);
-}
+			// 调用我们改造后的翻译方法，并传入临时的语言代码
+			trans_Calculate(e.SourceLanguage, e.TargetLanguage);
+		}
         /// <summary>
         /// 重写Windows窗体的消息处理方法，用于处理发送到窗口的各种消息
         /// </summary>
@@ -3084,7 +3084,11 @@ private void RichBoxBody_T_OnTemporaryTranslateRequested(object sender, TempTran
             // 6. 处理接口名称对比
             // 去掉开头的 "-" 号，并使用不区分大小写的比较
             var targetList = filters.Select(f => f.TrimStart('-')).ToHashSet(StringComparer.OrdinalIgnoreCase);
-
+			//如果是ai翻译接口，判断当前的厂商名
+			if(currentApi== "CustomOpenAI")
+			{
+				currentApi = _currentCustomTransProvider.Name;
+			}
             if (isWhitelist)
             {
                 // 白名单模式：当前接口 必须在 列表中才开启
