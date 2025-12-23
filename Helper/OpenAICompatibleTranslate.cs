@@ -80,7 +80,19 @@ namespace TrOCR.Helper
                             string finalUserContent;
                             if (!string.IsNullOrEmpty(userPrompt))
                             {
-                                finalUserContent = userPrompt + "\n\n" + inputContent;
+                                // === 新增逻辑：检查是否包含 ${text} 占位符 ===
+                                if (userPrompt.Contains("${text}"))
+                                {
+                                    // 场景 A: 提示词中明确指定了 ${text} 的位置
+                                    // Replace 会将占位符替换为原文，并保留占位符前后的所有文本（包括换行符）
+                                    finalUserContent = userPrompt.Replace("${text}", inputContent);
+                                }
+                                else
+                                {
+                                    // 场景 B: 提示词中没有占位符（旧逻辑）
+                                    // 默认将原文拼接在提示词的最后，并加上两个换行
+                                    finalUserContent = userPrompt + "\n\n" + inputContent;
+                                }
                             }
                             else
                             {
