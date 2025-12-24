@@ -8057,7 +8057,7 @@ namespace TrOCR
 			var dataObject = new DataObject();
 			dataObject.SetData(DataFormats.Html, new MemoryStream(utf.GetBytes(s2)));
 			var data = new HtmlToText().Convert(html);
-			dataObject.SetData(DataFormats.Text, data);
+			dataObject.SetData(DataFormats.UnicodeText, data);
 			SetClipboardWithLock(dataObject);
 			Debug.WriteLine("识别表格结果写入剪贴板");
 		}

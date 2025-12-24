@@ -930,7 +930,7 @@ namespace TrOCR
             if (e.Control && e.KeyCode == Keys.V)
             {
                 e.SuppressKeyPress = true;
-                this.richTextBox1.Paste(DataFormats.GetFormat(DataFormats.Text));
+                this.richTextBox1.Paste(DataFormats.GetFormat(DataFormats.UnicodeText));
             }
             if (e.Control && e.KeyCode == Keys.Z)
             {
