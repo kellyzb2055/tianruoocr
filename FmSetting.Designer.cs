@@ -461,6 +461,16 @@ namespace TrOCR
             this.checkBox_更新间隔 = new System.Windows.Forms.CheckBox();
             this.check_检查更新 = new System.Windows.Forms.CheckBox();
             this.checkBox_PreRelease = new System.Windows.Forms.CheckBox();
+            this.Page_webdav = new System.Windows.Forms.TabPage();
+            this.label74 = new System.Windows.Forms.Label();
+            this.label73 = new System.Windows.Forms.Label();
+            this.label72 = new System.Windows.Forms.Label();
+            this.btnDownloadConfig = new System.Windows.Forms.Button();
+            this.btnUploadConfig = new System.Windows.Forms.Button();
+            this.txtWebDavPass = new System.Windows.Forms.TextBox();
+            this.txtWebDavUrl = new System.Windows.Forms.TextBox();
+            this.label71 = new System.Windows.Forms.Label();
+            this.txtWebDavUser = new System.Windows.Forms.TextBox();
             this.Page_反馈 = new System.Windows.Forms.TabPage();
             this.label21 = new System.Windows.Forms.Label();
             this.反馈Button = new System.Windows.Forms.Button();
@@ -586,6 +596,7 @@ namespace TrOCR
             this.button5 = new System.Windows.Forms.Button();
             this.groupBox14 = new System.Windows.Forms.GroupBox();
             this.label32 = new System.Windows.Forms.Label();
+            this.label75 = new System.Windows.Forms.Label();
             this.Page_翻译接口.SuspendLayout();
             this.tabControl_Trans.SuspendLayout();
             this.tabPage_Google.SuspendLayout();
@@ -715,6 +726,7 @@ namespace TrOCR
             this.Page_更新.SuspendLayout();
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numbox_间隔时间)).BeginInit();
+            this.Page_webdav.SuspendLayout();
             this.Page_反馈.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).BeginInit();
             this.SuspendLayout();
@@ -4852,6 +4864,7 @@ namespace TrOCR
             this.tab_标签.Controls.Add(this.Page_工具栏);
             this.tab_标签.Controls.Add(this.Page_代理);
             this.tab_标签.Controls.Add(this.Page_更新);
+            this.tab_标签.Controls.Add(this.Page_webdav);
             this.tab_标签.Controls.Add(this.Page_反馈);
             this.tab_标签.Controls.Add(this.Page_About);
             this.tab_标签.Location = new System.Drawing.Point(13, 2);
@@ -5622,6 +5635,111 @@ namespace TrOCR
             this.checkBox_PreRelease.TabIndex = 4;
             this.checkBox_PreRelease.Text = "是否检查预览版更新";
             this.checkBox_PreRelease.UseVisualStyleBackColor = true;
+            // 
+            // Page_webdav
+            // 
+            this.Page_webdav.BackColor = System.Drawing.Color.White;
+            this.Page_webdav.Controls.Add(this.label75);
+            this.Page_webdav.Controls.Add(this.label74);
+            this.Page_webdav.Controls.Add(this.label73);
+            this.Page_webdav.Controls.Add(this.label72);
+            this.Page_webdav.Controls.Add(this.btnDownloadConfig);
+            this.Page_webdav.Controls.Add(this.btnUploadConfig);
+            this.Page_webdav.Controls.Add(this.txtWebDavPass);
+            this.Page_webdav.Controls.Add(this.txtWebDavUrl);
+            this.Page_webdav.Controls.Add(this.label71);
+            this.Page_webdav.Controls.Add(this.txtWebDavUser);
+            this.Page_webdav.Location = new System.Drawing.Point(4, 25);
+            this.Page_webdav.Margin = new System.Windows.Forms.Padding(4);
+            this.Page_webdav.Name = "Page_webdav";
+            this.Page_webdav.Padding = new System.Windows.Forms.Padding(4);
+            this.Page_webdav.Size = new System.Drawing.Size(523, 515);
+            this.Page_webdav.TabIndex = 16;
+            this.Page_webdav.Text = "WebDav备份";
+            // 
+            // label74
+            // 
+            this.label74.AutoSize = true;
+            this.label74.Location = new System.Drawing.Point(68, 112);
+            this.label74.Name = "label74";
+            this.label74.Size = new System.Drawing.Size(52, 15);
+            this.label74.TabIndex = 20;
+            this.label74.Text = "密码：";
+            // 
+            // label73
+            // 
+            this.label73.AutoSize = true;
+            this.label73.Location = new System.Drawing.Point(68, 72);
+            this.label73.Name = "label73";
+            this.label73.Size = new System.Drawing.Size(52, 15);
+            this.label73.TabIndex = 19;
+            this.label73.Text = "账户：";
+            // 
+            // label72
+            // 
+            this.label72.AutoSize = true;
+            this.label72.Location = new System.Drawing.Point(68, 32);
+            this.label72.Name = "label72";
+            this.label72.Size = new System.Drawing.Size(100, 15);
+            this.label72.TabIndex = 18;
+            this.label72.Text = "Webdav地址：";
+            // 
+            // btnDownloadConfig
+            // 
+            this.btnDownloadConfig.Location = new System.Drawing.Point(344, 185);
+            this.btnDownloadConfig.Name = "btnDownloadConfig";
+            this.btnDownloadConfig.Size = new System.Drawing.Size(75, 23);
+            this.btnDownloadConfig.TabIndex = 17;
+            this.btnDownloadConfig.Text = "恢复";
+            this.btnDownloadConfig.UseVisualStyleBackColor = true;
+            this.btnDownloadConfig.Click += new System.EventHandler(this.btnDownloadConfig_Click);
+            // 
+            // btnUploadConfig
+            // 
+            this.btnUploadConfig.Location = new System.Drawing.Point(121, 185);
+            this.btnUploadConfig.Name = "btnUploadConfig";
+            this.btnUploadConfig.Size = new System.Drawing.Size(75, 23);
+            this.btnUploadConfig.TabIndex = 16;
+            this.btnUploadConfig.Text = "备份";
+            this.btnUploadConfig.UseVisualStyleBackColor = true;
+            this.btnUploadConfig.Click += new System.EventHandler(this.btnUploadConfig_Click);
+            // 
+            // txtWebDavPass
+            // 
+            this.txtWebDavPass.Location = new System.Drawing.Point(174, 109);
+            this.txtWebDavPass.Name = "txtWebDavPass";
+            this.txtWebDavPass.Size = new System.Drawing.Size(300, 25);
+            this.txtWebDavPass.TabIndex = 15;
+            this.txtWebDavPass.Leave += new System.EventHandler(this.txtWebDavPass_Leave);
+            // 
+            // txtWebDavUrl
+            // 
+            this.txtWebDavUrl.Location = new System.Drawing.Point(174, 29);
+            this.txtWebDavUrl.Name = "txtWebDavUrl";
+            this.txtWebDavUrl.Size = new System.Drawing.Size(300, 25);
+            this.txtWebDavUrl.TabIndex = 13;
+            this.txtWebDavUrl.Leave += new System.EventHandler(this.txtWebDavUrl_Leave);
+            // 
+            // label71
+            // 
+            this.label71.AutoSize = true;
+            this.label71.Location = new System.Drawing.Point(9, 189);
+            this.label71.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label71.Name = "label71";
+            this.label71.Size = new System.Drawing.Size(0, 15);
+            this.label71.TabIndex = 12;
+            // 
+            // txtWebDavUser
+            // 
+            this.txtWebDavUser.BackColor = System.Drawing.Color.White;
+            this.txtWebDavUser.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtWebDavUser.Location = new System.Drawing.Point(174, 69);
+            this.txtWebDavUser.Margin = new System.Windows.Forms.Padding(4);
+            this.txtWebDavUser.Multiline = true;
+            this.txtWebDavUser.Name = "txtWebDavUser";
+            this.txtWebDavUser.Size = new System.Drawing.Size(300, 25);
+            this.txtWebDavUser.TabIndex = 5;
+            this.txtWebDavUser.Leave += new System.EventHandler(this.txtWebDavUser_Leave);
             // 
             // Page_反馈
             // 
@@ -6807,6 +6925,16 @@ namespace TrOCR
             this.label32.Size = new System.Drawing.Size(67, 15);
             this.label32.TabIndex = 0;
             // 
+            // label75
+            // 
+            this.label75.AutoSize = true;
+            this.label75.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label75.Location = new System.Drawing.Point(8, 254);
+            this.label75.Name = "label75";
+            this.label75.Size = new System.Drawing.Size(396, 80);
+            this.label75.TabIndex = 21;
+            this.label75.Text = "注意：\r\nwebdav备份和恢复只包括Data文件夹，\r\n如果离线接口的模型及高级配置文件、ai接口的模式文件，\r\n不在Data文件夹下，需要自己手动备份\r\n";
+            // 
             // FmSetting
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -7026,6 +7154,8 @@ namespace TrOCR
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numbox_间隔时间)).EndInit();
+            this.Page_webdav.ResumeLayout(false);
+            this.Page_webdav.PerformLayout();
             this.Page_反馈.ResumeLayout(false);
             this.Page_反馈.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).EndInit();
@@ -7608,5 +7738,16 @@ namespace TrOCR
         private System.Windows.Forms.TextBox txt_Trans_Source;
         private System.Windows.Forms.Label label70;
         private System.Windows.Forms.Label label59;
+        private System.Windows.Forms.TabPage Page_webdav;
+        private System.Windows.Forms.Label label71;
+        private System.Windows.Forms.TextBox txtWebDavUser;
+        private System.Windows.Forms.TextBox txtWebDavUrl;
+        private System.Windows.Forms.Button btnDownloadConfig;
+        private System.Windows.Forms.Button btnUploadConfig;
+        private System.Windows.Forms.TextBox txtWebDavPass;
+        private System.Windows.Forms.Label label74;
+        private System.Windows.Forms.Label label73;
+        private System.Windows.Forms.Label label72;
+        private System.Windows.Forms.Label label75;
     }
 }

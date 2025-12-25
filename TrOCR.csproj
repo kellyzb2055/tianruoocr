@@ -213,6 +213,8 @@
     <Reference Include="System.Drawing.Common, Version=9.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\System.Drawing.Common.9.0.9\lib\net462\System.Drawing.Common.dll</HintPath>
     </Reference>
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.IO.Pipelines, Version=9.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\System.IO.Pipelines.9.0.2\lib\net462\System.IO.Pipelines.dll</HintPath>
     </Reference>
@@ -252,6 +254,7 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
     <!-- <Reference Include="System.Xml.Serialization" />
     <Reference Include="System.Xml.XmlSerializer" /> -->
     <Reference Include="TencentCloudCommon, Version=3.0.1276.0, Culture=neutral, processorArchitecture=MSIL">
@@ -378,6 +381,7 @@
     <Compile Include="Helper\PaddleOCR2Helper.cs" />
     <Compile Include="Helper\RapidOCRHelper.cs" />
     <Compile Include="Helper\TrOCRUtils.cs" />
+    <Compile Include="Helper\WebDavHelper.cs" />
     <Compile Include="Messageload.cs">
       <SubType>Form</SubType>
     </Compile>
