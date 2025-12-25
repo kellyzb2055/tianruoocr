@@ -17,6 +17,12 @@ namespace TrOCR.Helper
     /// </summary>
     public sealed class PaddleOCRHelper : IDisposable
     {
+        // === 新增：公开默认路径常量 (注意：这里使用相对路径，方便 UI 显示和处理) ===
+        public const string DefaultModelDir = @"PaddleOCR_data\win_x64\inference";
+        public const string DefaultDetModel = @"PaddleOCR_data\win_x64\inference\PP-OCRv5_mobile_det_infer";
+        public const string DefaultClsModel = @"PaddleOCR_data\win_x64\inference\ch_ppocr_mobile_v5.0_cls_infer";
+        public const string DefaultRecModel = @"PaddleOCR_data\win_x64\inference\PP-OCRv5_mobile_rec_infer";
+        public const string DefaultKeys = @"PaddleOCR_data\win_x64\inference\ppocr_keys.txt";
 
         // --- 修改点 : 使用 Lazy<T> 实现单例 ---
         // 替换掉原来的 _instance 和 _lock 字段
@@ -70,11 +76,11 @@ namespace TrOCR.Helper
             try
             {
                 // 从INI配置文件读取模型路径及配置
-                string detPath = GetConfigValue("模型配置_PaddleOCR", "Det");
-                string clsPath = GetConfigValue("模型配置_PaddleOCR", "Cls");
-                string recPath = GetConfigValue("模型配置_PaddleOCR", "Rec");
-                string keysPath = GetConfigValue("模型配置_PaddleOCR", "Keys");
-                 string advancedConfigPath = GetConfigValue("模型配置_PaddleOCR", "AdvancedConfig");
+                string detPath = TrOCRUtils.ConvertToAbsolutePath(GetConfigValue("模型配置_PaddleOCR", "Det"));
+                string clsPath = TrOCRUtils.ConvertToAbsolutePath(GetConfigValue("模型配置_PaddleOCR", "Cls"));
+                string recPath = TrOCRUtils.ConvertToAbsolutePath(GetConfigValue("模型配置_PaddleOCR", "Rec"));
+                string keysPath = TrOCRUtils.ConvertToAbsolutePath(GetConfigValue("模型配置_PaddleOCR", "Keys"));
+                string advancedConfigPath = TrOCRUtils.ConvertToAbsolutePath(GetConfigValue("模型配置_PaddleOCR", "AdvancedConfig"));
 
                 // 如果配置为空，使用默认路径
                 if (string.IsNullOrEmpty(detPath) || string.IsNullOrEmpty(clsPath) ||

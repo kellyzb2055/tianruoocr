@@ -15,6 +15,12 @@ namespace TrOCR.Helper
     /// </summary>
     public sealed class RapidOCRHelper : IDisposable
     {
+        public const string DefaultModelDir = @"RapidOCR_data\models";
+        public const string DefaultDetModel = @"RapidOCR_data\models\ch_PP-OCRv4_det_infer.onnx";
+        public const string DefaultClsModel = @"RapidOCR_data\models\ch_ppocr_mobile_v2.0_cls_infer.onnx";
+        public const string DefaultRecModel = @"RapidOCR_data\models\ch_PP-OCRv4_rec_infer.onnx";
+        public const string DefaultKeys = @"RapidOCR_data\models\ppocr_keys_v1.txt";
+
         #region --- 1. 使用 Lazy<T> 实现单例 ---
         private static Lazy<RapidOCRHelper> _lazyInstance =
             new Lazy<RapidOCRHelper>(() => new RapidOCRHelper(), LazyThreadSafetyMode.ExecutionAndPublication);
@@ -62,12 +68,12 @@ namespace TrOCR.Helper
                 }
             }
             // --- 修复结束 ---
-             // --- 步骤1：从INI读取所有路径配置 ---
-            string detPath = GetConfigValue("模型配置_RapidOCR", "Det");
-            string clsPath = GetConfigValue("模型配置_RapidOCR", "Cls");
-            string recPath = GetConfigValue("模型配置_RapidOCR", "Rec");
-            string keysPath = GetConfigValue("模型配置_RapidOCR", "Keys");
-            string advancedConfigPath = GetConfigValue("模型配置_RapidOCR", "AdvancedConfig");
+            // --- 步骤1：从INI读取所有路径配置 ---
+            string detPath = TrOCRUtils.ConvertToAbsolutePath(GetConfigValue("模型配置_RapidOCR", "Det"));
+            string clsPath = TrOCRUtils.ConvertToAbsolutePath(GetConfigValue("模型配置_RapidOCR", "Cls"));
+            string recPath = TrOCRUtils.ConvertToAbsolutePath(GetConfigValue("模型配置_RapidOCR", "Rec"));
+            string keysPath = TrOCRUtils.ConvertToAbsolutePath(GetConfigValue("模型配置_RapidOCR", "Keys"));
+            string advancedConfigPath = TrOCRUtils.ConvertToAbsolutePath(GetConfigValue("模型配置_RapidOCR", "AdvancedConfig"));
 
             // 如果模型路径配置为空，使用默认路径 (逻辑保持不变)
             if (string.IsNullOrEmpty(detPath) || string.IsNullOrEmpty(clsPath) || 

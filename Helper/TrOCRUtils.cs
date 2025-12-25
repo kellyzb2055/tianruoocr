@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
+using System.IO;
 
 
 namespace TrOCR.Helper
@@ -72,7 +73,17 @@ namespace TrOCR.Helper
                 return defaultValue;
             }
         }
+        public static string ConvertToAbsolutePath(string path)
+        {
+            // 如果为空，直接返回，交给后续的“默认值逻辑”处理
+            if (string.IsNullOrWhiteSpace(path)) return path;
 
+            // 如果已经是绝对路径，直接返回
+            if (Path.IsPathRooted(path)) return path;
+
+            // 如果是相对路径，与程序运行目录拼接
+            return Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path));
+        }
 
     }
 }

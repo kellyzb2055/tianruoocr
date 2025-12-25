@@ -3108,19 +3108,20 @@ namespace TrOCR
 		private void ReadOcrModelConfigs()
 		{
 			// 读取PaddleOCR配置
-			textBox_PaddleOCR_Det.Text = GetConfigValue("模型配置_PaddleOCR", "Det");
-			textBox_PaddleOCR_Cls.Text = GetConfigValue("模型配置_PaddleOCR", "Cls");
-			textBox_PaddleOCR_Rec.Text = GetConfigValue("模型配置_PaddleOCR", "Rec");
-			textBox_PaddleOCR_Keys.Text = GetConfigValue("模型配置_PaddleOCR", "Keys");
-			textBox5.Text = GetConfigValue("模型配置_PaddleOCR", "AdvancedConfig");
+			textBox_PaddleOCR_Det.Text = TrOCRUtils.LoadSetting("模型配置_PaddleOCR", "Det", PaddleOCRHelper.DefaultDetModel);
+			textBox_PaddleOCR_Cls.Text = TrOCRUtils.LoadSetting("模型配置_PaddleOCR", "Cls", PaddleOCRHelper.DefaultClsModel);
+			textBox_PaddleOCR_Rec.Text = TrOCRUtils.LoadSetting("模型配置_PaddleOCR", "Rec", PaddleOCRHelper.DefaultRecModel);
+			textBox_PaddleOCR_Keys.Text = TrOCRUtils.LoadSetting("模型配置_PaddleOCR", "Keys", PaddleOCRHelper.DefaultKeys);
+			textBox5.Text = TrOCRUtils.LoadSetting("模型配置_PaddleOCR", "AdvancedConfig", "");
 
 
 			// 读取PaddleOCR2配置
-			textBox_PaddleOCR2_Det.Text = GetConfigValue("模型配置_PaddleOCR2", "Det");
-			textBox_PaddleOCR2_Cls.Text = GetConfigValue("模型配置_PaddleOCR2", "Cls");
-			textBox_PaddleOCR2_Rec.Text = GetConfigValue("模型配置_PaddleOCR2", "Rec");
-			textBox_PaddleOCR2_Keys.Text = GetConfigValue("模型配置_PaddleOCR2", "Keys");
-			textBox6.Text = GetConfigValue("模型配置_PaddleOCR2", "AdvancedConfig");
+			textBox_PaddleOCR2_Det.Text = TrOCRUtils.LoadSetting("模型配置_PaddleOCR2", "Det", PaddleOCR2Helper.DefaultDetModel);
+			textBox_PaddleOCR2_Cls.Text = TrOCRUtils.LoadSetting("模型配置_PaddleOCR2", "Cls", PaddleOCR2Helper.DefaultClsModel);
+			textBox_PaddleOCR2_Rec.Text = TrOCRUtils.LoadSetting("模型配置_PaddleOCR2", "Rec", PaddleOCR2Helper.DefaultRecModel);
+			textBox_PaddleOCR2_Keys.Text = TrOCRUtils.LoadSetting("模型配置_PaddleOCR2", "Keys", PaddleOCR2Helper.DefaultKeys);
+			textBox6.Text = TrOCRUtils.LoadSetting("模型配置_PaddleOCR2", "AdvancedConfig", "");
+
 			var paddleOcr2DetVersion = GetConfigValue("模型配置_PaddleOCR2", "Det_Version");
 			var paddleOcr2ClsVersion = GetConfigValue("模型配置_PaddleOCR2", "Cls_Version");
 			var paddleOcr2RecVersion = GetConfigValue("模型配置_PaddleOCR2", "Rec_Version");
@@ -3130,11 +3131,11 @@ namespace TrOCR
 
 
 			// 读取RapidOCR配置
-			textBox_RapidOCR_Det.Text = GetConfigValue("模型配置_RapidOCR", "Det");
-			textBox_RapidOCR_Cls.Text = GetConfigValue("模型配置_RapidOCR", "Cls");
-			textBox_RapidOCR_Rec.Text = GetConfigValue("模型配置_RapidOCR", "Rec");
-			textBox_RapidOCR_Keys.Text = GetConfigValue("模型配置_RapidOCR", "Keys");
-			textBox7.Text = GetConfigValue("模型配置_RapidOCR", "AdvancedConfig");
+			textBox_RapidOCR_Det.Text = TrOCRUtils.LoadSetting("模型配置_RapidOCR", "Det",RapidOCRHelper.DefaultDetModel);
+			textBox_RapidOCR_Cls.Text = TrOCRUtils.LoadSetting("模型配置_RapidOCR", "Cls",RapidOCRHelper.DefaultClsModel);
+			textBox_RapidOCR_Rec.Text = TrOCRUtils.LoadSetting("模型配置_RapidOCR", "Rec",RapidOCRHelper.DefaultRecModel);
+			textBox_RapidOCR_Keys.Text = TrOCRUtils.LoadSetting("模型配置_RapidOCR", "Keys",RapidOCRHelper.DefaultKeys);
+			textBox7.Text = TrOCRUtils.LoadSetting("模型配置_RapidOCR", "AdvancedConfig","");
         }
 
         /// <summary>

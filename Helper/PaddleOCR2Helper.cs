@@ -22,6 +22,12 @@ namespace TrOCR.Helper
     /// </summary>
     public sealed class PaddleOCR2Helper : IDisposable
     {
+        public const string DefaultModelDir = @"PaddleOCR2_data\models";
+        public const string DefaultDetModel = @"PaddleOCR2_data\models\PP-OCRv5_mobile_det_infer";
+        public const string DefaultClsModel = @"PaddleOCR2_data\models\ch_ppocr_mobile_v5.0_cls_infer";
+        public const string DefaultRecModel = @"PaddleOCR2_data\models\PP-OCRv5_mobile_rec_infer";
+        public const string DefaultKeys = @"PaddleOCR2_data\models\ppocr_keys.txt";
+
         // --- 1. Lazy<T> ，实现简洁的线程安全单例 ---
         private static Lazy<PaddleOCR2Helper> _lazyInstance =
             new Lazy<PaddleOCR2Helper>(() => new PaddleOCR2Helper(), LazyThreadSafetyMode.ExecutionAndPublication);
@@ -42,11 +48,11 @@ namespace TrOCR.Helper
             try
             {
                 // --- 步骤1：从INI读取所有相关配置 ---
-                string detModelPath = GetConfigValue("模型配置_PaddleOCR2", "Det");
-                string clsModelPath = GetConfigValue("模型配置_PaddleOCR2", "Cls");
-                string recModelPath = GetConfigValue("模型配置_PaddleOCR2", "Rec");
-                string keysPath = GetConfigValue("模型配置_PaddleOCR2", "Keys");
-                string advancedConfigPath = GetConfigValue("模型配置_PaddleOCR2", "AdvancedConfig");
+                string detModelPath = TrOCRUtils.ConvertToAbsolutePath(GetConfigValue("模型配置_PaddleOCR2", "Det"));
+                string clsModelPath = TrOCRUtils.ConvertToAbsolutePath(GetConfigValue("模型配置_PaddleOCR2", "Cls"));
+                string recModelPath = TrOCRUtils.ConvertToAbsolutePath(GetConfigValue("模型配置_PaddleOCR2", "Rec"));
+                string keysPath = TrOCRUtils.ConvertToAbsolutePath(GetConfigValue("模型配置_PaddleOCR2", "Keys"));
+                string advancedConfigPath = TrOCRUtils.ConvertToAbsolutePath(GetConfigValue("模型配置_PaddleOCR2", "AdvancedConfig"));
 
                 // 读取独立的版本号
                 string detVersionStr = GetConfigValue("模型配置_PaddleOCR2", "Det_Version");
@@ -182,7 +188,7 @@ namespace TrOCR.Helper
             return PaddleDevice.Blas();
         }
 
-       
+
         // --- 3. 公共方法恢复同步，调用更简单 ---
         /// <summary>
         /// 识别图像中的文字
