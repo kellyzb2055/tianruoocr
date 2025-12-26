@@ -40,11 +40,7 @@ namespace TrOCR.Helper
         /// </summary>
         public static async Task<bool> BackupConfigAsync(string url, string user, string pass, string sourceDir, string[] filePatterns)
         {
-            if (!Directory.Exists(sourceDir))
-            {
-                MessageBox.Show($"源文件夹不存在：{sourceDir}\n无法执行备份。", "提示");
-                return false;
-            }
+           
             // 规范化 URL，确保以 / 结尾
             string baseUrl = url.EndsWith("/") ? url : url + "/";
 

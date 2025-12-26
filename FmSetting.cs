@@ -2719,7 +2719,7 @@ namespace TrOCR
 
             if (string.IsNullOrEmpty(url))
             {
-                MessageBox.Show("请先填写 WebDav 地址！");
+                MessageBox.Show(this,"请先填写 WebDav 地址！");
                 return;
             }
             btnUploadConfig.Enabled = false;
@@ -2727,31 +2727,36 @@ namespace TrOCR
 
             // 2. 确定要备份的本地文件路径
             string dataDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
-			if (!Directory.Exists(dataDir)) Directory.CreateDirectory(dataDir);
+			//if (!Directory.Exists(dataDir)) Directory.CreateDirectory(dataDir);
             // 定义你要备份的文件类型，比如 ini 和 json
             string[] patterns = new[] { "*.ini", "*.json" };
-
+            if (!Directory.Exists(dataDir))
+            {
+                MessageBox.Show($"源文件夹不存在：{dataDir}\n无法执行备份。", "提示");
+                return;
+            }
             btnUploadConfig.Enabled = false;
             btnUploadConfig.Text = "备份中...";
 
             try
             {
+                
                 // 上传带时间戳的备份 
                 bool success = await WebDavHelper.BackupConfigAsync(url, user, pass, dataDir, patterns);
                 if (success)
                 {
-                    MessageBox.Show($"备份成功！\n已上传带时间戳的归档文件。", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(this,$"备份成功！\n已上传带时间戳的归档文件。", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     // 设置 OK 会关闭窗口 -> 触发 FormClosed -> 再次执行 saveSettings()，增强健壮性-> 主程序收到 OK
                     this.DialogResult = DialogResult.OK;
                 }
-				//else
-				//{
-				//	MessageBox.Show("备份取消：在 Data 文件夹中未找到符合条件的文件。", "提示");
-				//}
+                //else
+                //{
+                //	MessageBox.Show(this,"备份取消：在 Data 文件夹中未找到符合条件的文件。", "提示");
+                //}
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"备份失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this, $"备份失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
@@ -2769,11 +2774,11 @@ namespace TrOCR
 
             if (string.IsNullOrEmpty(url))
             {
-                MessageBox.Show("请先填写 WebDav 地址！");
+                MessageBox.Show(this, "请先填写 WebDav 地址！");
                 return;
             }
 
-            if (MessageBox.Show("确定要从云端恢复配置吗？\n这将覆盖当前的本地设置！", "确认恢复", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+            if (MessageBox.Show(this, "确定要从云端恢复配置吗？\n这将覆盖当前的本地设置！", "确认恢复", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
             {
                 return;
             }
@@ -2789,7 +2794,7 @@ namespace TrOCR
                 bool success = await WebDavHelper.RestoreLatestConfigAsync(url, user, pass, dataDir);
                 if (success)
                 {
-                    MessageBox.Show("配置恢复成功！界面将重新加载。", "成功",MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(this, "配置恢复成功！界面将重新加载。", "成功",MessageBoxButtons.OK, MessageBoxIcon.Information);
                     // 刷新界面设置
                     readIniFile();
                     // 刷新自定义AI列表 (如果有)
@@ -2804,7 +2809,7 @@ namespace TrOCR
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"恢复失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this, $"恢复失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
