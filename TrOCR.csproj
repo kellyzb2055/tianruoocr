@@ -555,6 +555,15 @@ IF EXIST "$(TargetDir)PaddleOCR_data" ( RD /S /Q "$(TargetDir)PaddleOCR_data" )
 
 if not exist "$(TargetDir)Data\modes" mkdir "$(TargetDir)Data\modes"
 copy /Y "$(ProjectDir)docs\modeconfigs\OCRModes.json" "$(TargetDir)Data\modes\"
-copy /Y "$(ProjectDir)docs\modeconfigs\TranslateModes.json" "$(TargetDir)Data\modes\"</PostBuildEvent>
+copy /Y "$(ProjectDir)docs\modeconfigs\TranslateModes.json" "$(TargetDir)Data\modes\"
+
+if not exist "$(TargetDir)lib" mkdir "$(TargetDir)lib"
+move "$(TargetDir)*.dll" "$(TargetDir)lib\"
+move /Y "$(TargetDir)*.pdb" "$(TargetDir)lib\"
+move /Y "$(TargetDir)*.xml" "$(TargetDir)lib\"
+move /Y "$(TargetDir)lib\天若OCR文字识别.pdb" "$(TargetDir)"
+move /Y "$(TargetDir)lib\Sdcb.*.dll" "$(TargetDir)"
+move /Y "$(TargetDir)lib\Sdcb.*.xml" "$(TargetDir)"
+</PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -36,26 +36,60 @@ namespace TrOCR
         [STAThread]
         public static void Main(string[] args)
         {
-            // 在程序启动的最开始（例如 Program.cs 的 Main 方法顶部）
-            // 这会告诉 Debug 和 Trace 将所有输出写入到 "debug_log.txt" 文件中
-            //string logPath = Path.Combine(Application.StartupPath, "debug_log.txt");
-            string logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "debug_log.txt");
+            //另一种定义dll依赖查找路径的方法，尝试修复使用收纳法后， PaddleOCR2初始化找不到依赖的问题。
+            //经过测试，没有修复成功，把所有dll移动到lib文件夹后，PaddleOCR2初始化还是找不到依赖，只能把它相关的sdcb.paddle等dll依旧放在exe同级目录了
+            //try
+            //{
+            //    // 1. 获取 lib 文件夹的绝对路径
+            //    var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            //    var libPath = Path.Combine(baseDir, "lib");
 
-            var listener = new TextWriterTraceListener(logPath);
+            //    // 2. 同时也把 PaddleOCR_data 的路径加进去（如果你还没把里面的东西移到 lib）
+            //    // 如果你已经把 PaddleOCR_data 里的 dll 都移到 lib 了，下面这两行可以不要
+            //    //var paddle64 = Path.Combine(baseDir, "PaddleOCR_data", "win_x64");
+            //    //var rapid64 = Path.Combine(baseDir, "RapidOCR_data", "win_x64");
 
-            Debug.Listeners.Add(listener);
-            //Trace.Listeners.Add(listener)
+            //    // 3. 获取当前进程的环境变量 PATH
+            //    string pathEnv = Environment.GetEnvironmentVariable("PATH") ?? "";
 
-            // 设置 AutoFlush <b>非常重要</b>，否则可能文件里什么都看不到
-            Debug.AutoFlush = true;
+            //    // 4. 把我们的路径拼接到最前面 (优先搜索我们的目录)
+            //    // 注意：用分号 ; 分隔
+            //    string newPathEnv = $"{libPath};{paddle64};{rapid64};{pathEnv}";
 
-            Debug.WriteLine("===== 应用程序启动，日志开始 =====");
+            //    // 5. 设置回当前进程的环境变量 (只影响本软件，不影响系统其他软件)
+            //    //Environment.SetEnvironmentVariable("PATH", newPathEnv);//同下一行代码
+            //    // 明确告诉所有人：我只改当前进程的变量，不污染系统，
+            //    Environment.SetEnvironmentVariable("PATH", newPathEnv, EnvironmentVariableTarget.Process);
 
+            //    // 【调试用】打印一下看看有没有设置成功
+            //    System.Diagnostics.Debug.WriteLine($"PATH patched: {libPath}");
+            //}
+            //catch (Exception ex)
+            //{
+            //    // 就算出错也不要阻断程序启动，万一系统环境本来就是好的呢
+            //    System.Diagnostics.Debug.WriteLine($"设置环境变量失败: {ex.Message}");
+            //}
             try
             {
-                 //【新增】使用 NativeLibrary.Load 抢先加载 Sdcb.PaddleOCR 的核心DLL
+                // 在程序启动的最开始告诉 Debug 和 Trace 将所有输出写入到 "debug_log.txt" 文件中
+                // 1. 先确保 Data 文件夹存在
+                string dataDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+                if (!Directory.Exists(dataDir))
+                {
+                    Directory.CreateDirectory(dataDir);
+                }
+                // 2. 然后再初始化日志
+                string logPath = Path.Combine(dataDir, "debug_log.txt");
+                var listener = new TextWriterTraceListener(logPath);
+                Debug.Listeners.Add(listener);
+                //Trace.Listeners.Add(listener)
+                // 设置 AutoFlush <b>非常重要</b>，否则可能文件里什么都看不到
+                Debug.AutoFlush = true;
+                Debug.WriteLine("===== 应用程序启动，日志开始 =====");
+
+                //【新增】使用 NativeLibrary.Load 抢先加载 Sdcb.PaddleOCR 的核心DLL
                 //    这必须是 Main 方法中的第一件事。
-                 // ==========================================================
+                // ==========================================================
                 //  PreloadPaddleOcrNativeLibs();
                 // 1. 启用新的DLL搜索模式，这是使用 AddDllDirectory 的前提
                 // 我们告诉系统，除了我们手动添加的目录，也别忘了搜索默认的系统目录
@@ -79,6 +113,8 @@ namespace TrOCR
                     pathsToAdd.Add(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "RapidOCR_data", "win_x86"));
                 }
 
+                // 通用的非托管/原生DLL /C++ DLL (比如 opencv, onnxruntime 等) exe同级目录找不到就去 lib 文件夹里找
+                pathsToAdd.Add(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "lib"));
                 // 3. 遍历列表，将所有存在的目录添加到搜索路径中
                 foreach (var path in pathsToAdd)
                 {
