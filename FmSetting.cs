@@ -2588,29 +2588,205 @@ namespace TrOCR
             {
                 dataDir += Path.DirectorySeparatorChar;
             }
-
             // =========================================================
             // Part A: 检查 INI 文件中的常规路径配置
             // =========================================================
-            var iniKeysToCheck = new List<(string Section, string Key, string Description)>
+			//方案一
+            // =========================================================
+            // 统一配置表：(Section, Key, Description, DefaultPath)
+            // DefaultPath 为 null 表示：留空即安全，不需要检查默认文件
+            // DefaultPath 有值 表示：留空代表使用该默认路径，需要检查
+            // =========================================================
+            // var itemsToCheck = new List<(string Section, string Key, string Desc, string DefaultPath)>
+			// {
+			// 	// --- PaddleOCR (留空时使用了默认的高级配置文件路径，需检查模型字典等默认路径，(ps:突然发现只检查高级配置文件的默认路径有无文件存在就行了，不需要检查模型字典文件的默认路径)
+			// 	//如果检查发现默认路径有文件，证明用户使用了paddleocr接口，这时候允许弹窗提示，
+			// 	//如果默认路径没文件，证明用户没有使用paddleocr接口，无需弹窗提示) ---
+			// 	("模型配置_PaddleOCR", "AdvancedConfig", "PaddleOCR 高级配置文件", @"PaddleOCR_data\win_x64\inference\PaddleOCR.config.json"),
+			// 	//("模型配置_PaddleOCR", "DetPath",        "PaddleOCR 检测模型",   @"PaddleOCR_data\win_x64\inference\PP-OCRv5_mobile_det_infer"),
+			// 	//("模型配置_PaddleOCR", "ClsPath",        "PaddleOCR 分类模型",   @"PaddleOCR_data\win_x64\inference\ch_ppocr_mobile_v5.0_cls_infer"),
+			// 	//("模型配置_PaddleOCR", "RecPath",        "PaddleOCR 识别模型",   @"PaddleOCR_data\win_x64\inference\PP-OCRv5_mobile_rec_infer"),
+			// 	//("模型配置_PaddleOCR", "KeysPath",       "PaddleOCR 字典文件",   @"PaddleOCR_data\win_x64\inference\ppocr_keys.txt"),
+
+			// 	// --- 其他引擎 (留空时安全，DefaultPath 设为 null) ---
+			// 	("模型配置_PaddleOCR2", "AdvancedConfig", "PaddleOCR2 高级配置文件", null),
+			// 	("模型配置_RapidOCR",   "AdvancedConfig", "RapidOCR 高级配置文件",   null),
+			// };
+
+            // foreach (var item in itemsToCheck)
+            // {
+            //     string iniValue = IniHelper.GetValue(item.Section, item.Key);
+            //     string pathToCheck = "";
+            //     bool isUsingDefault = false;
+
+            //     // 1. 确定要检查的路径
+            //     if (string.IsNullOrWhiteSpace(iniValue))
+            //     {
+            //         // 如果 INI 为空，且该项没有默认文件（如 RapidOCR），直接跳过
+            //         if (item.DefaultPath == null) continue;
+
+            //         // 否则，检查默认路径
+            //         pathToCheck = Path.Combine(baseDir, item.DefaultPath);
+            //         isUsingDefault = true;
+            //     }
+            //     else
+            //     {
+            //         // 用户填了值，检查用户路径
+            //         pathToCheck = Path.IsPathRooted(iniValue) ? iniValue : Path.Combine(baseDir, iniValue);
+            //     }
+
+            //     // 2. 获取绝对路径并标准化
+            //     try
+            //     {
+            //         pathToCheck = Path.GetFullPath(pathToCheck); // 处理 .. 等符号
+            //     }
+            //     catch { continue; } // 路径非法直接忽略
+
+            //     // 3. 核心判断：只有文件/文件夹【真实存在】时，才进行下一步
+            //     // (防止小白用户没下载模型包，或者 RapidOCR 没配置时乱弹窗)
+            //     if (File.Exists(pathToCheck) || Directory.Exists(pathToCheck))
+            //     {
+            //         // 4. 检查位置：是否在 Data 目录外？
+            //         if (!pathToCheck.StartsWith(dataDir, StringComparison.CurrentCultureIgnoreCase))
+            //         {
+            //             if (isUsingDefault)
+            //             {
+            //                 externalFiles.Add($"[默认文件] {item.Desc}:\n    检测到安装目录下存在默认文件，且正在被使用。\n    (路径: {item.DefaultPath})");
+            //             }
+            //             else
+            //             {
+            //                 externalFiles.Add($"[自定义文件] {item.Desc}:\n    {pathToCheck}");
+            //             }
+            //         }
+            //     }
+            // }
+            //方案二
+            // =========================================================
+            // Part A: PaddleOCR 智能检查/专属检查 (严格模式)
+            // 逻辑：留空时高级配置文件会自动使用默认路径，因此必须检查默认路径的高级配置文件是否存在
+            // =========================================================
+
+            // 根据你的 PaddleOCRHelper 里的实际默认值，修改下面的 DefaultRelPath
+            // 如果是文件夹路径就写文件夹，是文件就写文件
+            var paddleItems = new List<(string Key, string Desc, string DefaultRelPath)>
 			{
-				("模型配置_PaddleOCR", "AdvancedConfig", "PaddleOCR 高级配置文件"),
+				//("DetPath",        "PaddleOCR 检测模型",   @"PaddleOCR_data\win_x64\inference\PP-OCRv5_mobile_det_infer"),
+				//("ClsPath",        "PaddleOCR 分类模型",   @"PaddleOCR_data\win_x64\inference\ch_ppocr_mobile_v5.0_cls_infer"),
+				//("RecPath",        "PaddleOCR 识别模型",   @"PaddleOCR_data\win_x64\inference\PP-OCRv5_mobile_rec_infer"),
+				//("KeysPath",       "PaddleOCR 字典文件",   @"PaddleOCR_data\win_x64\inference\ppocr_keys.txt"),
+				("AdvancedConfig", "PaddleOCR 高级配置",   @"PaddleOCR_data\win_x64\inference\PaddleOCR.config.json")
+			};
+
+            foreach (var item in paddleItems)
+            {
+                string iniValue = IniHelper.GetValue("模型配置_PaddleOCR", item.Key);
+                string pathToCheck = "";
+                bool isUsingDefault = false;
+
+                // 1. 确定要检查的目标路径
+                if (string.IsNullOrWhiteSpace(iniValue))
+                {
+                    // 情况A：用户留空 -> 检查“默认文件”
+                    pathToCheck = Path.Combine(baseDir, item.DefaultRelPath);
+                    isUsingDefault = true;
+                }
+                else
+                {
+                    // 情况B：用户填了值 -> 检查“自定义文件”
+                    if (Path.IsPathRooted(iniValue))
+                        pathToCheck = Path.GetFullPath(iniValue);
+                    else
+                        pathToCheck = Path.GetFullPath(Path.Combine(baseDir, iniValue));
+                }
+
+                // 2. 核心判断：只有文件/文件夹【真实存在】时，才进行下一步
+                // (避免用户根本没下载模型包，结果还弹窗警告的尴尬)
+                if (File.Exists(pathToCheck) || Directory.Exists(pathToCheck))
+                {
+                    // 3. 检查位置：是否在 Data 目录外？
+                    if (!pathToCheck.StartsWith(dataDir, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        if (isUsingDefault)
+                        {
+                            externalFiles.Add($"[Paddle默认文件] {item.Desc}:\n    检测到PaddleOCR正在使用默认高级配置文件。\n    (路径: {item.DefaultRelPath})");
+                        }
+                        else
+                        {
+                            externalFiles.Add($"[Paddle自定义文件] {item.Desc}:\n    {pathToCheck}");
+                        }
+                    }
+                }
+            }
+            //foreach (var item in paddleItems)
+            //{
+            //    string iniValue = IniHelper.GetValue("模型配置_PaddleOCR", item.Key);
+            //    string pathToCheck;
+            //    bool isUsingDefault = false;
+
+            //    // 1. 确定路径来源
+            //    if (string.IsNullOrWhiteSpace(iniValue))
+            //    {
+            //        // 没填 -> 检查默认路径
+            //        pathToCheck = Path.Combine(baseDir, item.DefaultRelPath);
+            //        isUsingDefault = true;
+            //    }
+            //    else
+            //    {
+            //        // 填了 -> 检查用户路径 (处理相对路径)
+            //        pathToCheck = Path.IsPathRooted(iniValue) ? iniValue : Path.Combine(baseDir, iniValue);
+            //    }
+
+            //    // 2. 只有文件/文件夹真实存在时，才进行警告判断
+            //    // (防止用户根本没下载模型包，或者填写的路径是错的，这种情况下不需要备份警告)
+            //    try
+            //    {
+            //        pathToCheck = Path.GetFullPath(pathToCheck); // 标准化路径
+            //        if (File.Exists(pathToCheck) || Directory.Exists(pathToCheck))
+            //        {
+            //            // 3. 检查是否在 Data 目录外
+            //            if (!pathToCheck.StartsWith(dataDir, StringComparison.CurrentCultureIgnoreCase))
+            //            {
+            //                if (isUsingDefault)
+            //                    externalFiles.Add($"[Paddle默认] {item.Desc} (正在使用安装目录下的默认文件)");
+            //                else
+            //                    externalFiles.Add($"[Paddle自定义] {item.Desc}: {pathToCheck}");
+            //            }
+            //        }
+            //    }
+            //    catch { /* 忽略非法路径 */ }
+            //}
+
+            // =========================================================
+            // Part B: 其他引擎 (RapidOCR, PaddleOCR2) 其他引擎常规检查 (宽松模式)
+            // 逻辑：RapidOCR 和 PaddleOCR2 留空时使用代码内置参数，不依赖文件，所以只检查不为空的情况
+            // =========================================================
+            // 这些引擎默认高级配置不依赖外部文件，所以只检查 Explicit 设置的情况
+            var otherIniKeys = new List<(string Section, string Key, string Description)>
+			{
 				("模型配置_PaddleOCR2", "AdvancedConfig", "PaddleOCR2 高级配置文件"),
 				("模型配置_RapidOCR", "AdvancedConfig", "RapidOCR 高级配置文件"),
 			};
 
-            foreach (var item in iniKeysToCheck)
+            foreach (var item in otherIniKeys)
             {
                 string pathStr = IniHelper.GetValue(item.Section, item.Key);
-                //PaddleOCR 使用默认高级配置文件即默认配置时，弹窗警告
-                if (item.Section == "模型配置_PaddleOCR" && string.IsNullOrWhiteSpace(pathStr))
-                {
-                    externalFiles.Add($"{item.Description} (默认):\n    目前使用的是离线数据包目录下的默认文件，无法备份。\n    建议：将配置文件另存到 Data 目录下并在设置中选中。");
-                    continue; // 直接进入下一次循环，不用走 CheckPath 了
-                }
+                
+                // 调用通用的 CheckPath，如果 pathStr 为空它内部会直接 return，不警告
                 CheckPath(pathStr, $"[INI设置] {item.Description}", baseDir, dataDir, externalFiles);
             }
+            //foreach (var item in otherIniKeys)
+            //{
+            //    string pathStr = IniHelper.GetValue(item.Section, item.Key);
 
+            //    // 如果为空，直接跳过 (因为它们没有外部默认文件依赖)
+            //    if (string.IsNullOrWhiteSpace(pathStr)) continue;
+
+            //    // 只有不为空时，才调用通用检查
+            //    CheckPath(pathStr, $"[INI设置] {item.Description}", baseDir, dataDir, externalFiles);
+            //}
+
+
+            
             // =========================================================
             // Part B: 检查 AI 接口 JSON 中的模式文件路径
             // =========================================================
