@@ -71,7 +71,10 @@ namespace TrOCR
 			InitializeComponent();
 
             EnableTabScroll(this.tab_标签);
-            EnableTabScroll(this.tabControl_Trans);
+            EnableTabScroll(this.tabControl_Trans);;
+            EnableTabScroll(this.tabControl2);
+            EnableTabScroll(this.tabControl_BaiduApiType);
+            EnableTabScroll(this.tabControl_TXApiType);
             // 1. 绑定滚轮事件
             //this.tab_标签.MouseWheel += tab_标签_MouseWheel;
 
@@ -148,6 +151,7 @@ namespace TrOCR
         // 设为 240 = 滚2格切一次（适中）
         // 设为 360 = 滚3格切一次（比较稳）
         private const int SCROLL_THRESHOLD = 240;
+		//阈值随意，不是120的倍数也行，任意整数皆可
 
         /// <summary>
         /// 【核心逻辑】通用的滚轮处理事件
