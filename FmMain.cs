@@ -1608,7 +1608,8 @@ namespace TrOCR
 					{
                         // 处理识别结果
                         //ProcessOcrResult(result);
-                        typeset_txt = result.Replace("\r\n\r\n\r\n", "\r\n").Replace("\r\n\r\n", "\r\n");
+                        // 匹配 1次 或 多次 连续的换行
+                        typeset_txt = Regex.Replace(result, @"(\r\n)+", "\r\n");
                         split_txt = typeset_txt;
                     }
 				}
@@ -1676,7 +1677,8 @@ namespace TrOCR
 					{
                         // 处理识别结果
                         //ProcessOcrResult(result);
-                        typeset_txt = result.Replace("\r\n\r\n\r\n", "\r\n").Replace("\r\n\r\n", "\r\n");
+                        // 匹配 1次 或 多次 连续的换行
+                        typeset_txt = Regex.Replace(result, @"(\r\n)+", "\r\n");
                         split_txt = typeset_txt;
                     }
 				}
@@ -1740,7 +1742,8 @@ namespace TrOCR
 					{
                         // 处理识别结果
                         //ProcessOcrResult(result);
-                        typeset_txt = result.Replace("\r\n\r\n\r\n", "\r\n").Replace("\r\n\r\n", "\r\n");
+                        // 匹配 1次 或 多次 连续的换行
+                        typeset_txt = Regex.Replace(result, @"(\r\n)+", "\r\n");
                         split_txt = typeset_txt;
                     }
 				}
