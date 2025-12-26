@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text; 
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TrOCR.Helper;
@@ -64,18 +64,14 @@ namespace TrOCR
                 // 有配置 -> 解绑报错，恢复正常
                 parentMenu.MouseDown -= ShowConfigWarning_MouseDown;
 
-                //if (providers.Count > 0)
-                //{
-                //    添加分割线
-                //    parentMenu.DropDownItems.Add(new ToolStripSeparator { Tag = "DynamicTransProvider" });
-                //}
                 // 添加分割线
                 parentMenu.DropDownItems.Add(new ToolStripSeparator { Tag = "DynamicTransProvider" });
+
                 // 读取 INI 记录 (上次选了谁)
                 string lastProviderName = IniHelper.GetValue("OpenAICompatibleTrans", "LastProvider");
                 string lastModeName = IniHelper.GetValue("OpenAICompatibleTrans", "LastMode");
 
-                // 标记：是否已经成功恢复了某个选项（防止多个厂商都去恢复）
+                // 标记：是否已经成功恢复了某个选项
                 bool isRestored = false;
 
                 // ================= Step 2: 循环构建菜单 =================
@@ -84,9 +80,8 @@ namespace TrOCR
                     // 2.1 创建厂商菜单项 (一级)
                     ToolStripMenuItem providerItem = new ToolStripMenuItem(provider.Name);
                     providerItem.Tag = "DynamicTransProvider";
-                    // 将构建好的菜单项加入主菜单
                     parentMenu.DropDownItems.Add(providerItem);
-                    // 准备一个列表来存放这个厂商下所有的模式 (无论是配置文件里的，还是默认生成的)
+
                     List<AIMode> availableModes = new List<AIMode>();
 
                     // 2.2 尝试加载子菜单配置 (二级)
@@ -121,7 +116,7 @@ namespace TrOCR
                         availableModes.Add(new AIMode
                         {
                             mode = "默认模式_内置",
-                            system_prompt= "You are a professional translator. Translate the user input directly, without any explanations",
+                            system_prompt = "You are a professional translator. Translate the user input directly, without any explanations",
                             prompt = "Please translate the following text into ${tolang}, only stating the final result, without any explanations:",
                             temperature = 1.0,
                             PromptOrder = new List<string> { "system_prompt", "assistant_prompt", "prompt" }
@@ -137,24 +132,23 @@ namespace TrOCR
                     {
                         ToolStripMenuItem modeItem = new ToolStripMenuItem(mode.mode);
                         modeItem.ToolTipText = mode.description;
+                        // 点击事件保持默认 (isStartupRestore = false)
                         modeItem.Click += (s, e) => SwitchToCustomTranAI(provider, mode);
 
                         providerItem.DropDownItems.Add(modeItem);
 
                         // --- 判断逻辑：尝试恢复 ---
-                        // 只有当“还没恢复过” 且 “厂商名对上了” 且 “模式名对上了”
                         if (!isRestored && provider.Name == lastProviderName && mode.mode == lastModeName)
                         {
-                            SwitchToCustomTranAI(provider, mode);
+                            //  修复点1：传入 true，静默恢复 
+                            SwitchToCustomTranAI(provider, mode, true);
                             modeItem.Checked = true;
                             isRestored = true;
                             foundMatchInThisProvider = true;
                         }
                     }
 
-                    // ================= Step 3: 单个厂商内的兜底逻辑 / 厂商兜底=================
-
-                    // 场景：ini记录我是选的这个厂商，但是...
+                    // ================= Step 3: 单个厂商内的兜底逻辑 =================
                     if (!isRestored && provider.Name == lastProviderName)
                     {
                         // 情况A: 我没找到具体的模式 (foundMatchInThisProvider == false)
@@ -163,7 +157,8 @@ namespace TrOCR
                         if (!foundMatchInThisProvider && availableModes.Count > 0)
                         {
                             var fallbackMode = availableModes[0];
-                            SwitchToCustomTranAI(provider, fallbackMode);
+                            //  修复点2：传入 true，静默恢复 
+                            SwitchToCustomTranAI(provider, fallbackMode, true);
 
                             // UI打钩
                             if (providerItem.DropDownItems.Count > 0 && providerItem.DropDownItems[0] is ToolStripMenuItem firstItem)
@@ -172,15 +167,10 @@ namespace TrOCR
                             isRestored = true;
                         }
                     }
-
-
                 }
 
-                // ================= Step 4: 全局终极兜底逻辑/全局兜底 =================
-
-                // 场景：循环跑完了，isRestored 还是 false。
-                // 原因可能是：上次选的厂商直接被删了，或者这是第一次运行软件。
-                // 解决：强制选中所有菜单里的【第一个厂商】的【第一个模式】。
+                // ================= Step 4: 全局终极兜底逻辑 =================
+                // 只有当当前确确实实是 CustomOpenAI 且之前没恢复成功时，才模拟点击
                 if (!isRestored && StaticValue.Translate_Current_API == "CustomOpenAI")
                 {
                     // 找到第一个厂商菜单项 (跳过分割线)
@@ -194,7 +184,7 @@ namespace TrOCR
                                 firstOption.PerformClick();
                                 isRestored = true;
                             }
-                            break; // 处理完就退出
+                            break;
                         }
                     }
                 }
@@ -205,40 +195,57 @@ namespace TrOCR
                 Debug.WriteLine("加载自定义 AI 菜单失败: " + ex.Message);
             }
         }
+
         /// <summary>
-        /// 切换当前使用的 AI 上下文 (点击菜单项时触发)
+        /// 切换当前使用的 AI 上下文
         /// </summary>
-        private void SwitchToCustomTranAI(CustomAITransProvider provider, AIMode mode)
+        /// <param name="provider">厂商</param>
+        /// <param name="mode">模式</param>
+        /// <param name="isStartupRestore">是否为启动恢复模式？</param>
+        private void SwitchToCustomTranAI(CustomAITransProvider provider, AIMode mode, bool isStartupRestore = false)
         {
             try
             {
-                // 1. 更新全局变量
+                // 1. 更新全局变量 (必须执行)
                 this._currentCustomTransProvider = provider;
                 this._currentCustomTransMode = mode;
 
-                
-                Trans_foreach("CustomOpenAI");
-                /// === ★★★ 新增：保存选择到配置文件 ★★★ ===
-                // 这样下次启动时，我们就能知道上次选的是谁
-                try
+                // 2.  逻辑分流 
+                if (!isStartupRestore)
                 {
-                    IniHelper.SetValue("OpenAICompatibleTrans", "LastProvider", provider.Name);
-                    IniHelper.SetValue("OpenAICompatibleTrans", "LastMode", mode.mode);
-                    // 同时也把主接口设为 翻译接口 (虽然 Trans_foreach 会做，但这里双重保险)
-                    IniHelper.SetValue("配置", "翻译接口", "CustomOpenAI");
+                    // --- A. 用户主动点击 ---
+                    // 切换全局接口状态，这会刷新 UI 布局
+                    Trans_foreach("CustomOpenAI");
+
+                    // 保存到 INI
+                    try
+                    {
+                        IniHelper.SetValue("OpenAICompatibleTrans", "LastProvider", provider.Name);
+                        IniHelper.SetValue("OpenAICompatibleTrans", "LastMode", mode.mode);
+                        // 虽然 Trans_foreach 会做，但这里双重保险
+                        IniHelper.SetValue("配置", "翻译接口", "CustomOpenAI");
+                    }
+                    catch { /* 忽略保存错误 */ }
+
+                    // 更新菜单文本
+                    this.ai_menu_trans.Text = $"AI√: {provider.Name} - {mode.mode}";
                 }
-                catch { /* 忽略保存错误 */ }
+                else
+                {
+                    // --- B. 启动静默恢复 ---
+                    // 不调用 Trans_foreach，不写 INI。
+                    // 仅当当前已经选中了 CustomOpenAI 时，才更新菜单上的文字显示
+                    string currentApi = IniHelper.GetValue("配置", "翻译接口");
+                    if (currentApi == "CustomOpenAI")
+                    {
+                        this.ai_menu_trans.Text = $"AI√: {provider.Name} - {mode.mode}";
+                    }
+                }
 
-                // ================== 2. UI 视觉更新 ==================
-
-                // --- A. 第一级：更新 "AI" 主菜单 ---
-                //this.ai_menu_trans.Checked = true; // 给 "AI" 大标题打勾
-                // 更新显示文本 (例如: "AI: DeepSeek - 精确识别")，直观提示用户
-                this.ai_menu_trans.Text = $"AI√: {provider.Name} - {mode.mode}";
-
-                // --- B & C. 第二级(厂商) 和 第三级(模式) 遍历更新 ---
+                // ================== 3. UI 视觉更新 (打钩) ==================
+                // 无论何种模式，都要确保菜单的勾选状态正确
                 foreach (ToolStripItem item in this.ai_menu_trans.DropDownItems)
-                {   // 1. 【调试明确化】如果是分割线，直接跳过 (这样断点就不会停在 null 上了)
+                {
                     if (item is ToolStripSeparator)
                         continue;
                     // 跳过分割线，只处理菜单项
@@ -246,11 +253,8 @@ namespace TrOCR
                     {
                         // 判断这是否是当前选中的厂商 (例如 "DeepSeek")
                         bool isTargetProvider = (providerItem.Text == provider.Name);
-
-                        // 勾选/取消勾选 厂商菜单
                         providerItem.Checked = isTargetProvider;
 
-                        // 如果这个厂商有子菜单 (即模式列表)，继续深入遍历
                         if (providerItem.HasDropDownItems)
                         {
                             foreach (ToolStripItem subItem in providerItem.DropDownItems)
@@ -259,14 +263,13 @@ namespace TrOCR
                                 {
                                     if (isTargetProvider)
                                     {
-                                        // ★ 关键逻辑：只有在厂商匹配的情况下，才去比对模式名称
+                                        // 关键逻辑：只有在厂商匹配的情况下，才去比对模式名称
                                         // 这样可以避免不同厂商有同名模式(如"默认模式")导致的误勾选
                                         bool isTargetMode = (modeItem.Text == mode.mode);
                                         modeItem.Checked = isTargetMode;
                                     }
                                     else
                                     {
-                                        // 如果厂商都不是这个，那它下面的模式肯定不能勾选
                                         modeItem.Checked = false;
                                     }
                                 }
@@ -274,28 +277,17 @@ namespace TrOCR
                         }
                     }
                 }
-
-                //// 3. 更新状态栏提示
-                //if (ai_menu_trans != null)
-                //    ai_menu_trans.Text = $"AI: {provider.Name} - {mode.mode}";
-
             }
             catch (Exception ex)
             {
-                // ★★★ 如果报错，这里会弹窗告诉你原因 ★★★
                 MessageBox.Show($"切换接口时发生错误：\n{ex.Message}\n\n堆栈信息：\n{ex.StackTrace}", "错误提示");
             }
         }
 
-
-
-
-
         /// <summary>
         /// OpenAICompatibleTrans Translate 执行入口 (被 Main_OCR_Thread 调用)
         /// </summary>
-        // 注意返回值从 void 变成了 async Task
-        public async Task<string> Trans_OpenAICompatible(string text,string fromLang,string toLang)
+        public async Task<string> Trans_OpenAICompatible(string text, string fromLang, string toLang)
         {
             try
             {
@@ -311,13 +303,13 @@ namespace TrOCR
                 {
                     system_prompt = ReplaceLangPlaceholder(_currentCustomTransMode.system_prompt, fromLang, toLang);
                 }
-                string user_prompt= _currentCustomTransMode.prompt;
+                string user_prompt = _currentCustomTransMode.prompt;
                 if (!string.IsNullOrEmpty(user_prompt))
                 {
                     user_prompt = ReplaceLangPlaceholder(_currentCustomTransMode.prompt, fromLang, toLang);
 
                 }
-                string assistant_prompt=_currentCustomTransMode.assistant_prompt;
+                string assistant_prompt = _currentCustomTransMode.assistant_prompt;
                 if (!string.IsNullOrEmpty(assistant_prompt))
                 {
                     assistant_prompt = ReplaceLangPlaceholder(_currentCustomTransMode.assistant_prompt, fromLang, toLang);
@@ -330,14 +322,14 @@ namespace TrOCR
                     description = _currentCustomTransMode.description,
                     system_prompt = system_prompt,
                     prompt = user_prompt,
-                    assistant_prompt=assistant_prompt,
+                    assistant_prompt = assistant_prompt,
                     temperature = _currentCustomTransMode.temperature,
-                    enable_thinking= _currentCustomTransMode.enable_thinking,
-                    stream=_currentCustomTransMode.stream,
+                    enable_thinking = _currentCustomTransMode.enable_thinking,
+                    stream = _currentCustomTransMode.stream,
                     PromptOrder = new List<string>(_currentCustomTransMode.PromptOrder)
 
                 };
-                // 2. ★★★ 关键修改：使用 Task.Run 在后台执行耗时操作 ★★★
+                // 2. 使用 Task.Run 在后台执行耗时操作
                 // 这样主线程不会卡死，而且你可以使用 await 等待它完成
                 string result = await Task.Run(() =>
                 {
@@ -358,6 +350,7 @@ namespace TrOCR
                 return "翻译接口调用出错: " + ex.Message;
             }
         }
+
         // 辅助方法：安全的字符串替换
         private string ReplaceLangPlaceholder(string template, string from, string to)
         {

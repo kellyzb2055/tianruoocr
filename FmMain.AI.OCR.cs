@@ -6,7 +6,7 @@ using System.Text;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 using TrOCR.Helper;
-using TrOCR.Helper.Models; 
+using TrOCR.Helper.Models;
 
 namespace TrOCR
 {
@@ -56,20 +56,13 @@ namespace TrOCR
                 // 情况 B: 文件存在但内容为空
                 if (providers == null || providers.Count == 0)
                 {
-                    // 依然需要报错
                     parentMenu.MouseDown -= ShowConfigWarning_MouseDown;
                     parentMenu.MouseDown += ShowConfigWarning_MouseDown;
                     return;
                 }
                 // 情况 C: 成功加载了数据
-                // 既然有数据了，就【解绑】报错事件，让菜单恢复“展开”功能
                 parentMenu.MouseDown -= ShowConfigWarning_MouseDown;
-                //if有点多余了
-                //if (providers.Count > 0)
-                //{
-                //    // 添加分割线
-                //    parentMenu.DropDownItems.Add(new ToolStripSeparator { Tag = "DynamicProvider" });
-                //}
+
                 // 添加分割线
                 parentMenu.DropDownItems.Add(new ToolStripSeparator { Tag = "DynamicProvider" });
 
@@ -86,9 +79,8 @@ namespace TrOCR
                     // 2.1 创建厂商菜单项 (一级)
                     ToolStripMenuItem providerItem = new ToolStripMenuItem(provider.Name);
                     providerItem.Tag = "DynamicProvider";
-                    // 将构建好的菜单项加入主菜单
                     parentMenu.DropDownItems.Add(providerItem);
-                    // 准备一个列表来存放这个厂商下所有的模式 (无论是配置文件里的，还是默认生成的)
+
                     List<AIMode> availableModes = new List<AIMode>();
 
                     // 2.2 尝试加载子菜单配置 (二级)
@@ -111,7 +103,6 @@ namespace TrOCR
                             }
                             catch (Exception ex)
                             {
-                                /* 忽略配置读取错误 */
                                 Debug.WriteLine("配置文件存在，但读取出错：" + ex.Message);
                             }
                         }
@@ -123,7 +114,7 @@ namespace TrOCR
                         availableModes.Add(new AIMode
                         {
                             mode = "默认模式_内置",
-                            system_prompt= "You are a professional OCR engine. Recognize the text in the image and output it directly. " +
+                            system_prompt = "You are a professional OCR engine. Recognize the text in the image and output it directly. " +
                             "Do not use markdown code blocks. Do not output any explanations. Maintain the original line breaks and indentation. " +
                             "If the image contains code, remember to preserve the formatting.",
                             prompt = "Please identify the text in the picture, only the final result and without any explanations.",
@@ -131,7 +122,7 @@ namespace TrOCR
                             PromptOrder = new List<string> { "system_prompt", "assistant_prompt", "prompt" }
                         });
                     }
-                
+
                     // 2.4 将模式列表渲染到 UI，并检查是否匹配上次记录
                     //成功匹配
                     bool foundMatchInThisProvider = false; // 标记：在这个厂商里是否找到了上次的模式
@@ -140,24 +131,23 @@ namespace TrOCR
                     {
                         ToolStripMenuItem modeItem = new ToolStripMenuItem(mode.mode);
                         modeItem.ToolTipText = mode.description;
+                        // 注意：点击事件里不传参数，默认 isStartupRestore=false，代表用户点击
                         modeItem.Click += (s, e) => SwitchToCustomAI(provider, mode);
 
                         providerItem.DropDownItems.Add(modeItem);
 
                         // --- 判断逻辑：尝试恢复 ---
-                        // 只有当“还没恢复过” 且 “厂商名对上了” 且 “模式名对上了”
                         if (!isRestored && provider.Name == lastProviderName && mode.mode == lastModeName)
                         {
-                            SwitchToCustomAI(provider, mode);
+                            //  修复点1：传入 true，表示这是启动时的静默恢复，不要强制修改全局 INI 
+                            SwitchToCustomAI(provider, mode, true);
                             modeItem.Checked = true;
                             isRestored = true;
                             foundMatchInThisProvider = true;
                         }
                     }
 
-                    // ================= Step 3: 单个厂商内的兜底逻辑 / 厂商兜底=================
-
-                    // 场景：ini记录我是选的这个厂商，但是...
+                    // ================= Step 3: 单个厂商内的兜底逻辑 =================
                     if (!isRestored && provider.Name == lastProviderName)
                     {
                         // 情况A: 我没找到具体的模式 (foundMatchInThisProvider == false)
@@ -166,7 +156,8 @@ namespace TrOCR
                         if (!foundMatchInThisProvider && availableModes.Count > 0)
                         {
                             var fallbackMode = availableModes[0];
-                            SwitchToCustomAI(provider, fallbackMode);
+                            //  修复点2：传入 true，静默恢复 
+                            SwitchToCustomAI(provider, fallbackMode, true);
 
                             // UI打钩
                             if (providerItem.DropDownItems.Count > 0 && providerItem.DropDownItems[0] is ToolStripMenuItem firstItem)
@@ -175,15 +166,10 @@ namespace TrOCR
                             isRestored = true;
                         }
                     }
-
-                    
                 }
 
-                // ================= Step 4: 全局终极兜底逻辑/全局兜底 =================
-
-                // 场景：循环跑完了，isRestored 还是 false。
-                // 原因可能是：上次选的厂商直接被删了，或者这是第一次运行软件。
-                // 解决：强制选中所有菜单里的【第一个厂商】的【第一个模式】。
+                // ================= Step 4: 全局终极兜底逻辑 =================
+                // 只有当当前程序确实被配置为 CustomOpenAI，但上面没找到对应配置时，才模拟点击
                 if (!isRestored && this.interface_flag == "CustomOpenAI")
                 {
                     // 找到第一个厂商菜单项 (跳过分割线)
@@ -194,71 +180,81 @@ namespace TrOCR
                             // 模拟点击第一个子项
                             if (firstProviderItem.DropDownItems[0] is ToolStripMenuItem firstOption)
                             {
-                                firstOption.PerformClick();
+                                firstOption.PerformClick(); // 这里触发点击事件，视为用户操作，会强制刷新
                                 isRestored = true;
                             }
-                            break; // 处理完就退出
+                            break;
                         }
                     }
                 }
-
             }
-            catch (Exception ex) 
-            { 
+            catch (Exception ex)
+            {
                 Debug.WriteLine("加载自定义 AI 菜单失败: " + ex.Message);
             }
         }
 
         /// <summary>
-        /// 切换当前使用的 AI 上下文 (点击菜单项时触发)
+        /// 切换当前使用的 AI 上下文
         /// </summary>
-        private void SwitchToCustomAI(CustomAIProvider provider, AIMode mode)
+        /// <param name="provider">厂商</param>
+        /// <param name="mode">模式</param>
+        /// <param name="isStartupRestore">是否为启动恢复模式？如果是 true，则不写入INI，也不触发全局切换</param>
+        private void SwitchToCustomAI(CustomAIProvider provider, AIMode mode, bool isStartupRestore = false)
         {
             try
             {
-                // 1. 更新全局变量
+                // 1. 更新内部变量 (必须执行，否则 OCR 无法工作)
                 this._currentCustomProvider = provider;
                 this._currentCustomMode = mode;
 
-                // 告诉程序当前选的是自定义类型
-                //StaticValue.OCR_Current_API = "CustomOpenAI";
-       
-                // 2. ★★★ 调用标准切换流程 ★★★
-                // 这会自动设置 interface_flag = "CustomOpenAI" 并调用 Refresh() 重置菜单
-                OCR_foreach("CustomOpenAI");
-                /// === ★★★ 新增：保存选择到配置文件 ★★★ ===
-                // 这样下次启动时，我们就能知道上次选的是谁
-                try
+                // 2.  逻辑分流 
+                if (!isStartupRestore)
                 {
-                    IniHelper.SetValue("OpenAICompatible", "LastProvider", provider.Name);
-                    IniHelper.SetValue("OpenAICompatible", "LastMode", mode.mode);
-                    // 同时也把主接口设为 CustomOpenAI (虽然 OCR_foreach 会做，但这里双重保险)
-                    IniHelper.SetValue("配置", "接口", "CustomOpenAI");
+                    // --- A. 用户主动点击 (User Action) ---
+                    // 调用标准切换流程，这会改变全局 engine，刷新界面，并触发重绘
+                    OCR_foreach("CustomOpenAI");
+
+                    // 保存到 INI，因为是用户自己点的
+                    try
+                    {
+                        IniHelper.SetValue("OpenAICompatible", "LastProvider", provider.Name);
+                        IniHelper.SetValue("OpenAICompatible", "LastMode", mode.mode);
+                       //虽然 OCR_foreach 会做，但这里双重保险
+                        IniHelper.SetValue("配置", "接口", "CustomOpenAI");
+                    }
+                    catch { /* 忽略保存错误 */ }
+
+                    // 更新菜单标题
+                    this.ai_menu.Text = $"AI√: {provider.Name} - {mode.mode}";
                 }
-                catch { /* 忽略保存错误 */ }
+                else
+                {
+                    // --- B. 启动静默恢复 (Startup Restore) ---
+                    // 我们只更新内部变量，不强制切换全局接口 (OCR_foreach)，也不写配置。
+                    // 这样如果用户 INI 里是 "百度"，就不会被覆盖成 "CustomOpenAI"。
 
-                // ================== 2. UI 视觉更新 ==================
+                    // 唯一需要做的是：如果当前全局接口 *恰好* 已经是 CustomOpenAI，
+                    // 我们需要顺手把菜单标题更新了，否则菜单会显示默认值
+                    string currentInterface = IniHelper.GetValue("配置", "接口");
+                    if (currentInterface == "CustomOpenAI")
+                    {
+                        this.ai_menu.Text = $"AI√: {provider.Name} - {mode.mode}";
+                    }
+                }
 
-                // --- A. 第一级：更新 "AI" 主菜单 ---
-                //this.ai_menu.Checked = true; // 给 "AI" 大标题打勾
-                 // 更新显示文本 (例如: "AI: DeepSeek - 精确识别")，直观提示用户
-                this.ai_menu.Text = $"AI√: {provider.Name} - {mode.mode}";
-
-                // --- B & C. 第二级(厂商) 和 第三级(模式) 遍历更新 ---
+                // ================== 3. 菜单勾选状态遍历 (视觉一致性) ==================
+                // 无论是否是启动恢复，都要把菜单里的勾勾打对
                 foreach (ToolStripItem item in this.ai_menu.DropDownItems)
-                {   // 1. 【调试明确化】如果是分割线，直接跳过 (这样断点就不会停在 null 上了)
+                {
                     if (item is ToolStripSeparator)
                         continue;
                     // 跳过分割线，只处理菜单项
                     if (item is ToolStripMenuItem providerItem)
                     {
-                        // 判断这是否是当前选中的厂商 (例如 "DeepSeek")
                         bool isTargetProvider = (providerItem.Text == provider.Name);
-
-                        // 勾选/取消勾选 厂商菜单
                         providerItem.Checked = isTargetProvider;
 
-                        // 如果这个厂商有子菜单 (即模式列表)，继续深入遍历
                         if (providerItem.HasDropDownItems)
                         {
                             foreach (ToolStripItem subItem in providerItem.DropDownItems)
@@ -267,14 +263,13 @@ namespace TrOCR
                                 {
                                     if (isTargetProvider)
                                     {
-                                        // ★ 关键逻辑：只有在厂商匹配的情况下，才去比对模式名称
+                                        // 关键逻辑：只有在厂商匹配的情况下，才去比对模式名称
                                         // 这样可以避免不同厂商有同名模式(如"默认模式")导致的误勾选
                                         bool isTargetMode = (modeItem.Text == mode.mode);
                                         modeItem.Checked = isTargetMode;
                                     }
                                     else
                                     {
-                                        // 如果厂商都不是这个，那它下面的模式肯定不能勾选
                                         modeItem.Checked = false;
                                     }
                                 }
@@ -282,76 +277,13 @@ namespace TrOCR
                         }
                     }
                 }
-
-                //// 3. 更新状态栏提示
-                //if (ai_menu != null)
-                //    ai_menu.Text = $"AI: {provider.Name} - {mode.mode}";
-
             }
             catch (Exception ex)
             {
-                // ★★★ 如果报错，这里会弹窗告诉你原因 ★★★
                 MessageBox.Show($"切换接口时发生错误：\n{ex.Message}\n\n堆栈信息：\n{ex.StackTrace}", "错误提示");
             }
         }
 
-        /// <summary>
-        /// OCR 执行入口 (需要在 Main_OCR_Thread 中调用)
-        /// </summary>
-        //public void OCR_OpenAICompatible()
-        //{
-        //    try
-        //    {
-        //        // 防御性检查
-        //        if (this._currentCustomProvider == null)
-        //        {
-        //            typeset_txt = "错误：未选择 AI 接口。请在菜单中选择一个接口。";
-        //            split_txt = typeset_txt;
-        //            return;
-        //        }
-
-        //        // 准备 Prompt (优先用 Config 里的，没有就用默认值)
-        //        // 注意：您的实体类里有 assistant_prompt，这里也一并提取
-        //        string sysPrompt = _currentCustomMode?.system_prompt ?? "";
-        //        string userPrompt = _currentCustomMode?.prompt ?? "请识别图片文字";
-        //        string assistPrompt = _currentCustomMode?.assistant_prompt ?? "";
-
-        //        // 处理可空类型 (如果 json 没写，传 null 给 helper，让 helper 决定是否发字段)
-        //        double? temp = _currentCustomMode?.temperature;
-        //        bool? thinking = _currentCustomMode?.enable_thinking;
-
-        //        Debug.WriteLine("--------------------------------------------------");
-        //        Debug.WriteLine($"[FmMain] 开始自定义 OCR: {_currentCustomProvider.Name}");
-        //        Debug.WriteLine($"[FmMain] 模型: {_currentCustomProvider.ModelName}");
-        //        Debug.WriteLine($"[FmMain] Temp: {temp}, Thinking: {thinking}");
-
-        //        // ★★★ 调用 Helper ★★★
-        //        // 您需要更新 OpenAICompatibleHelper.OCR_V3 方法，让它接收这些新参数
-        //        string result = OpenAICompatibleHelper.OCR_V3(
-        //            image_screen,
-        //            _currentCustomProvider.ApiUrl,
-        //            _currentCustomProvider.ApiKey,
-        //            _currentCustomProvider.ModelName,
-        //            sysPrompt,
-        //            userPrompt,
-        //            assistPrompt, // 新增参数
-        //            temp,         // 新增参数
-        //            thinking      // 新增参数
-        //        );
-
-        //        if (string.IsNullOrEmpty(result))
-        //            typeset_txt = "接口返回为空。";
-        //        else
-        //            typeset_txt = result;
-
-        //        split_txt = typeset_txt;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        typeset_txt = $"接口调用出错: {ex.Message}";
-        //        split_txt = typeset_txt;
-        //    }
-        //}
         /// <summary>
         /// 自定义 AI 接口的执行入口
         /// </summary>
@@ -367,15 +299,11 @@ namespace TrOCR
 
             try
             {
-                // 2. 准备 模式 参数 (如果模式为空，就给默认值)，这里就不处理了，想处理可以在OpenAICompatibleHelper的ocr方法里处理
-                //string userPrompt = _currentCustomMode?.prompt ?? "请识别图片中的文字，只说识别结果";
+                // 2. 准备参数
                 string apiurl = _currentCustomProvider.ApiUrl.TrimEnd('/');
                 if (!apiurl.EndsWith("/chat/completions")) apiurl += "/chat/completions";
 
-
-
-                // 3. ★★★ 直接调用 V3 接口 ★★★
-                // 这里不需要 switch 判断，直接把参数传给 OpenAICompatibleHelper
+                // 3.  直接调用接口 
                 string result = OpenAICompatibleHelper.OCR(
                     image_screen,
                     apiurl,
@@ -428,7 +356,7 @@ namespace TrOCR
         //    {
         //        string result = "";
 
-        //        // ★★★ 核心路由：根据配置的 Type 字段决定调用哪个 Helper ★★★
+        //        //  核心路由：根据配置的 Type 字段决定调用哪个 Helper 
         //        // 假设您的 CustomAIProvider 类里已经加了 Type 字段
         //        //string type = _currentCustomProvider.Type ?? "OpenAI"; // 默认为 OpenAI
         //        string type =  "OpenAI"; // 默认为 OpenAI
