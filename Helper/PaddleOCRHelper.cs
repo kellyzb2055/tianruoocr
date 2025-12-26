@@ -203,6 +203,7 @@ namespace TrOCR.Helper
                 }
 
                 string result = sb.ToString().Trim();
+                Debug.WriteLine($"paddleOCR识别结果：{result}");
                 return string.IsNullOrEmpty(result) ? "***该区域未发现文本***" : result;
             }
             catch (Exception ex)

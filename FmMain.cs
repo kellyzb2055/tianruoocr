@@ -1540,42 +1540,42 @@ namespace TrOCR
 		}
 
 
-		/// <summary>
+        /// <summary>
 		/// 处理OCR识别结果
 		/// 将OCR识别出的文本结果进行处理和格式化
-		/// </summary>
+        /// </summary>
 		/// <param name="result">OCR识别出的原始文本结果</param>
-		private void ProcessOcrResult(string result)
-		{
+        private void ProcessOcrResult(string result)
+        {
 			// 将纯文本结果转换为之前的格式进行处理
 			var lines = result.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-			var jArray = new JArray();
-			foreach (var line in lines)
-			{
+            var jArray = new JArray();
+            foreach (var line in lines)
+            {
 				if (!string.IsNullOrWhiteSpace(line))
-				{
-					var jObject = new JObject();
+                {
+                    var jObject = new JObject();
 					jObject["words"] = line;
-					jArray.Add(jObject);
-				}
-			}
-			
-			if (jArray.Count > 0)
-			{
-				checked_txt(jArray, 1, "words");
-			}
-			else
-			{
-				split_txt = "";
-				typeset_txt = "";
-			}
-		}
+                    jArray.Add(jObject);
+                }
+            }
 
-		/// <summary>
-		/// PaddleOCR离线识别方法
-		/// 使用PaddleOCR引擎进行本地离线文字识别
-		/// </summary>
-		public void OCR_PaddleOCR()
+            if (jArray.Count > 0)
+            {
+                checked_txt(jArray, 1, "words");
+            }
+            else
+            {
+                split_txt = "";
+                typeset_txt = "";
+            }
+        }
+
+        /// <summary>
+        /// PaddleOCR离线识别方法
+        /// 使用PaddleOCR引擎进行本地离线文字识别
+        /// </summary>
+        public void OCR_PaddleOCR()
 		{
 			split_txt = "";
 			try
@@ -1606,9 +1606,11 @@ namespace TrOCR
 					}
 					else
 					{
-						// 处理识别结果
-						ProcessOcrResult(result);
-					}
+                        // 处理识别结果
+                        //ProcessOcrResult(result);
+                        typeset_txt = result.Replace("\r\n\r\n\r\n", "\r\n").Replace("\r\n\r\n", "\r\n");
+                        split_txt = typeset_txt;
+                    }
 				}
 				else
 				{ //这里应该也要改，先标记一下，暂时不改
@@ -1672,9 +1674,11 @@ namespace TrOCR
 					}
 					else
 					{
-						// 处理识别结果
-						ProcessOcrResult(result);
-					}
+                        // 处理识别结果
+                        //ProcessOcrResult(result);
+                        typeset_txt = result.Replace("\r\n\r\n\r\n", "\r\n").Replace("\r\n\r\n", "\r\n");
+                        split_txt = typeset_txt;
+                    }
 				}
 				else
 				{
@@ -1734,9 +1738,11 @@ namespace TrOCR
 					}
 					else
 					{
-						// 处理识别结果
-						ProcessOcrResult(result);
-					}
+                        // 处理识别结果
+                        //ProcessOcrResult(result);
+                        typeset_txt = result.Replace("\r\n\r\n\r\n", "\r\n").Replace("\r\n\r\n", "\r\n");
+                        split_txt = typeset_txt;
+                    }
 				}
 				else
 				{
