@@ -1,5 +1,6 @@
 using Microsoft.Win32;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -1443,16 +1444,16 @@ namespace TrOCR
 			
 			txt_ConfigPath.Leave += PathTextBox_Leave;
 			txt_Trans_ConfigPath.Leave += PathTextBox_Leave;
-            
-           
+
+
         }
 
-		/// <summary>
-		/// ocr接口申请按钮点击事件处理函数，根据当前选中的标签页打开相应的OCR服务申请页面
-		/// </summary>
-		/// <param name="sender">事件发送者</param>
-		/// <param name="e">事件参数</param>
-		private void 百度申请_Click(object sender, EventArgs e)
+        /// <summary>
+        /// ocr接口申请按钮点击事件处理函数，根据当前选中的标签页打开相应的OCR服务申请页面
+        /// </summary>
+        /// <param name="sender">事件发送者</param>
+        /// <param name="e">事件参数</param>
+        private void 百度申请_Click(object sender, EventArgs e)
 		{
 			if (tabControl2.SelectedTab == tabPage_腾讯OCR)
     		{
@@ -2566,9 +2567,151 @@ namespace TrOCR
 
            
         }
+        /// <summary>
+        /// 检测关键配置文件是否位于 Data 目录之外
+        /// </summary>
+        /// <returns>返回外部文件的描述列表，如果为空则表示都在 Data 目录下</returns>
+        /// <summary>
+        /// 全面检测关键数据文件（包括INI配置和JSON中的AI模式文件）是否位于 Data 目录之外
+        /// </summary>
+        /// <returns>返回外部文件的描述列表，如果为空则表示数据都在 Data 目录下</returns>
+        private List<string> CheckForExternalFiles()
+        {
+            List<string> externalFiles = new List<string>();
+
+            // 1. 获取 Data 目录的绝对路径 (作为判断基准)
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            string dataDir = Path.GetFullPath(Path.Combine(baseDir, "Data"));
+
+            // 确保路径以分隔符结尾，防止 "DataBackup" 这种文件夹被误判为在 "Data" 内
+            if (!dataDir.EndsWith(Path.DirectorySeparatorChar.ToString()))
+            {
+                dataDir += Path.DirectorySeparatorChar;
+            }
+
+            // =========================================================
+            // Part A: 检查 INI 文件中的常规路径配置
+            // =========================================================
+            var iniKeysToCheck = new List<(string Section, string Key, string Description)>
+			{
+				("模型配置_PaddleOCR", "AdvancedConfig", "PaddleOCR 高级配置文件"),
+				("模型配置_PaddleOCR2", "AdvancedConfig", "PaddleOCR2 高级配置文件"),
+				("模型配置_RapidOCR", "AdvancedConfig", "RapidOCR 高级配置文件"),
+			};
+
+            foreach (var item in iniKeysToCheck)
+            {
+                string pathStr = IniHelper.GetValue(item.Section, item.Key);
+                //PaddleOCR 使用默认高级配置文件即默认配置时，弹窗警告
+                if (item.Section == "模型配置_PaddleOCR" && string.IsNullOrWhiteSpace(pathStr))
+                {
+                    externalFiles.Add($"{item.Description} (默认):\n    目前使用的是离线数据包目录下的默认文件，无法备份。\n    建议：将配置文件另存到 Data 目录下并在设置中选中。");
+                    continue; // 直接进入下一次循环，不用走 CheckPath 了
+                }
+                CheckPath(pathStr, $"[INI设置] {item.Description}", baseDir, dataDir, externalFiles);
+            }
+
+            // =========================================================
+            // Part B: 检查 AI 接口 JSON 中的模式文件路径
+            // =========================================================
+
+            // 需要检查的两个 JSON 文件
+            var jsonFiles = new List<(string FileName, string Description)>
+			{
+				("CustomOpenAIProviders.json", "AI OCR 接口配置"),
+				("CustomOpenAITransProviders.json", "AI 翻译接口配置")
+			};
+
+            foreach (var jsonInfo in jsonFiles)
+            {
+                string jsonFilePath = Path.Combine(dataDir, jsonInfo.FileName);
+                if (!File.Exists(jsonFilePath)) continue;
+
+                try
+                {
+                    string jsonContent = File.ReadAllText(jsonFilePath);
+                    // 使用 JArray 动态解析，不需要依赖具体的实体类定义
+                    var providers = JArray.Parse(jsonContent);
+
+                    foreach (var provider in providers)
+                    {
+                        // 获取接口名称，方便提示
+                        string providerName = provider["Name"]?.ToString() ?? "未命名接口";
+                        // 获取模式文件路径
+                        string modelConfigPath = provider["ModelConfigPath"]?.ToString();
+
+                        if (!string.IsNullOrWhiteSpace(modelConfigPath))
+                        {
+                            CheckPath(modelConfigPath,
+                                $"[{jsonInfo.Description}] {providerName} 的模式文件",
+                                baseDir, dataDir, externalFiles);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"解析 {jsonInfo.FileName} 失败: {ex.Message}");
+                }
+            }
+
+            return externalFiles;
+        }
+
+        /// <summary>
+        /// 辅助方法：验证单个路径是否在 Data 目录外
+        /// </summary>
+        private void CheckPath(string pathStr, string description, string baseDir, string dataDir, List<string> results)
+        {
+            if (string.IsNullOrWhiteSpace(pathStr) || pathStr == "发生错误") return;
+
+            try
+            {
+                // 1. 处理路径：转换为绝对路径
+                string fullPath;
+                if (Path.IsPathRooted(pathStr))
+                {
+                    fullPath = Path.GetFullPath(pathStr);
+                }
+                else
+                {
+                    fullPath = Path.GetFullPath(Path.Combine(baseDir, pathStr));
+                }
+
+                // 2. 检查文件/文件夹是否存在（不存在的文件不用警告，反正也备份不了）
+                bool exists = File.Exists(fullPath) || Directory.Exists(fullPath);
+                if (!exists) return;
+
+                // 3. 核心判断：是否以 Data 目录路径开头
+                if (!fullPath.StartsWith(dataDir, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    results.Add($"{description}:\n    {pathStr}");
+                }
+            }
+            catch(Exception ex)
+            {
+                // 容错处理：防止非法路径字符串导致崩溃
+                Debug.WriteLine($"路径检查出错: {ex.Message}");
+            }
+        }
         // === 备份（上传）按钮事件 ===
         private async void btnUploadConfig_Click(object sender, EventArgs e)
-        {	//防止用户改动设置后没有关闭设置窗口保存就直接点击备份
+        {   // --- 新增：外部数据检测逻辑开始 ---
+            List<string> externalFiles = CheckForExternalFiles();
+
+            if (externalFiles.Count > 0)
+            {
+             MessageBox.Show(
+            "离线接口的模型、字典、高级配置文件 和 AI接口的模式文件 不在程序的Data目录，不会被备份!!! 请注意手动备份!",
+            "备份范围警告",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information
+			);
+            }
+            //这样有个问题，特例：如果paddleocr接口高级配置文件保持默认空，它也会使用json配置文件，这时externalFiles.Count为0，不会弹窗提醒，这样假如用户修改了默认的高级配置文件，可能会忘记备份.
+			//所以我在上面特殊判断，遇到paddleocr使用默认高级配置文件即默认配置的情况，也添加进来，数量>0.这样就会提醒，不过缺陷就是用户即使没使用过paddleocr，只要没有设置高级配置文件，会一直判断为提醒
+            // --- 新增：外部数据检测逻辑结束 ---
+
+            //防止用户改动设置后没有关闭设置窗口保存就直接点击备份
             saveSettings();
             // 1. 获取 WebDav 配置
             string url = txtWebDavUrl.Text.Trim();
@@ -3164,10 +3307,10 @@ namespace TrOCR
                 }
             }
         }
-		/// <summary>
-		/// 读取OCR模型配置
-		/// </summary>
-		private void ReadOcrModelConfigs()
+        /// <summary>
+        /// 读取OCR模型配置
+        /// </summary>
+        private void ReadOcrModelConfigs()
 		{
 			// 读取PaddleOCR配置
 			textBox_PaddleOCR_Det.Text = TrOCRUtils.LoadSetting("模型配置_PaddleOCR", "Det", PaddleOCRHelper.DefaultDetModel);
@@ -3223,7 +3366,7 @@ namespace TrOCR
 
         		// 3. 显示对话框并获取结果
         		if (vistaFolderDialog.ShowDialog() == DialogResult.OK)
-        		{
+                {  
                     textBox.Text = TrOCRUtils.ConvertToRelativePathIfPossible(vistaFolderDialog.SelectedPath); 
         		}
     		}
