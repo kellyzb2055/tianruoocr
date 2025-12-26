@@ -196,9 +196,13 @@ namespace TrOCR
                         else
                             tc.SelectedIndex = 0;         // 循环：结尾 -> 跳到开头
                     }
+                    // === 【新增】 ===
+                    // 切换完瞬间，再次强制聚焦 TabControl 自身
+                    // 这会让 WinForms 放弃去寻找子控件的焦点
+                    tc.Focus();
 
-					// 5. 【关键】触发切换后，清零计数器，准备下一次积累
-					_scrollAccumulators[tc] = 0;
+                    // 5. 【关键】触发切换后，清零计数器，准备下一次积累
+                    _scrollAccumulators[tc] = 0;
 				}
 
 				// 6. 阻止冒泡
