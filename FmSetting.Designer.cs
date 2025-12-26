@@ -462,6 +462,7 @@ namespace TrOCR
             this.check_检查更新 = new System.Windows.Forms.CheckBox();
             this.checkBox_PreRelease = new System.Windows.Forms.CheckBox();
             this.Page_webdav = new System.Windows.Forms.TabPage();
+            this.label75 = new System.Windows.Forms.Label();
             this.label74 = new System.Windows.Forms.Label();
             this.label73 = new System.Windows.Forms.Label();
             this.label72 = new System.Windows.Forms.Label();
@@ -596,7 +597,6 @@ namespace TrOCR
             this.button5 = new System.Windows.Forms.Button();
             this.groupBox14 = new System.Windows.Forms.GroupBox();
             this.label32 = new System.Windows.Forms.Label();
-            this.label75 = new System.Windows.Forms.Label();
             this.Page_翻译接口.SuspendLayout();
             this.tabControl_Trans.SuspendLayout();
             this.tabPage_Google.SuspendLayout();
@@ -2166,22 +2166,24 @@ namespace TrOCR
             // 
             // btn_Del_Provider
             // 
+            this.btn_Del_Provider.BackColor = System.Drawing.Color.White;
             this.btn_Del_Provider.Location = new System.Drawing.Point(89, 4);
             this.btn_Del_Provider.Name = "btn_Del_Provider";
             this.btn_Del_Provider.Size = new System.Drawing.Size(75, 23);
             this.btn_Del_Provider.TabIndex = 1;
             this.btn_Del_Provider.Text = "删除接口";
-            this.btn_Del_Provider.UseVisualStyleBackColor = true;
+            this.btn_Del_Provider.UseVisualStyleBackColor = false;
             this.btn_Del_Provider.Click += new System.EventHandler(this.btn_Del_Provider_Click);
             // 
             // btn_Add_Provider
             // 
+            this.btn_Add_Provider.BackColor = System.Drawing.Color.White;
             this.btn_Add_Provider.Location = new System.Drawing.Point(8, 4);
             this.btn_Add_Provider.Name = "btn_Add_Provider";
             this.btn_Add_Provider.Size = new System.Drawing.Size(75, 23);
             this.btn_Add_Provider.TabIndex = 0;
             this.btn_Add_Provider.Text = "添加接口";
-            this.btn_Add_Provider.UseVisualStyleBackColor = true;
+            this.btn_Add_Provider.UseVisualStyleBackColor = false;
             this.btn_Add_Provider.Click += new System.EventHandler(this.btn_Add_Provider_Click);
             // 
             // lb_CustomProviders
@@ -5655,7 +5657,18 @@ namespace TrOCR
             this.Page_webdav.Padding = new System.Windows.Forms.Padding(4);
             this.Page_webdav.Size = new System.Drawing.Size(523, 515);
             this.Page_webdav.TabIndex = 16;
-            this.Page_webdav.Text = "WebDav备份";
+            this.Page_webdav.Text = "WebDav备份(实验性)";
+            // 
+            // label75
+            // 
+            this.label75.AutoSize = true;
+            this.label75.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label75.Location = new System.Drawing.Point(8, 254);
+            this.label75.Name = "label75";
+            this.label75.Size = new System.Drawing.Size(396, 80);
+            this.label75.TabIndex = 21;
+            this.label75.Text = "注意：\r\nwebdav是实验性功能，备份和恢复只包括Data文件夹，\r\n如果离线接口的模型及高级配置文件、ai接口的模式文件，\r\n不在Data文件夹下，需要自己手" +
+    "动备份\r\n";
             // 
             // label74
             // 
@@ -5691,7 +5704,7 @@ namespace TrOCR
             this.btnDownloadConfig.Size = new System.Drawing.Size(75, 23);
             this.btnDownloadConfig.TabIndex = 17;
             this.btnDownloadConfig.Text = "恢复";
-            this.btnDownloadConfig.UseVisualStyleBackColor = true;
+            this.btnDownloadConfig.UseVisualStyleBackColor = false;
             this.btnDownloadConfig.Click += new System.EventHandler(this.btnDownloadConfig_Click);
             // 
             // btnUploadConfig
@@ -5701,7 +5714,7 @@ namespace TrOCR
             this.btnUploadConfig.Size = new System.Drawing.Size(75, 23);
             this.btnUploadConfig.TabIndex = 16;
             this.btnUploadConfig.Text = "备份";
-            this.btnUploadConfig.UseVisualStyleBackColor = true;
+            this.btnUploadConfig.UseVisualStyleBackColor = false;
             this.btnUploadConfig.Click += new System.EventHandler(this.btnUploadConfig_Click);
             // 
             // txtWebDavPass
@@ -6924,16 +6937,6 @@ namespace TrOCR
             this.label32.Name = "label32";
             this.label32.Size = new System.Drawing.Size(67, 15);
             this.label32.TabIndex = 0;
-            // 
-            // label75
-            // 
-            this.label75.AutoSize = true;
-            this.label75.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label75.Location = new System.Drawing.Point(8, 254);
-            this.label75.Name = "label75";
-            this.label75.Size = new System.Drawing.Size(396, 80);
-            this.label75.TabIndex = 21;
-            this.label75.Text = "注意：\r\nwebdav备份和恢复只包括Data文件夹，\r\n如果离线接口的模型及高级配置文件、ai接口的模式文件，\r\n不在Data文件夹下，需要自己手动备份\r\n";
             // 
             // FmSetting
             // 
