@@ -562,8 +562,10 @@ move "$(TargetDir)*.dll" "$(TargetDir)lib\"
 move /Y "$(TargetDir)*.pdb" "$(TargetDir)lib\"
 move /Y "$(TargetDir)*.xml" "$(TargetDir)lib\"
 move /Y "$(TargetDir)lib\天若OCR文字识别.pdb" "$(TargetDir)"
+if /I "$(PlatformName)" == "x64" (
 move /Y "$(TargetDir)lib\Sdcb.*.dll" "$(TargetDir)"
 move /Y "$(TargetDir)lib\Sdcb.*.xml" "$(TargetDir)"
+)
 </PostBuildEvent>
   </PropertyGroup>
 </Project>
