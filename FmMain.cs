@@ -72,6 +72,8 @@ namespace TrOCR
 	    // 【新增】用于手动计算托盘点击次数的计数器
     	private int trayClickCount = 0;
 
+		private static Size settingWindowSize = new Size(0, 0); // 初始为0，记录设置窗口的大小
+
 
 
 		// ====================================================================================================================
@@ -2323,10 +2325,14 @@ namespace TrOCR
 
 			WindowState = FormWindowState.Minimized;
 			var fmSetting = new FmSetting();
+			if (settingWindowSize.Width > 574) 
+			{
+                fmSetting.Size = settingWindowSize;
+			}
 			fmSetting.TopMost = true;
 			fmSetting.ShowDialog();
             //设置窗口关闭后
-           
+            settingWindowSize = fmSetting.Size; // 窗口关闭后，记录它最后的大小
 
 			
 			 //刷新 AI 菜单，这行代码写在fmsetting里也行，写在这里也行

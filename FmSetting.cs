@@ -69,7 +69,12 @@ namespace TrOCR
 		{
 			Font = new Font(Font.Name, 9f / StaticValue.DpiFactor, Font.Style, Font.Unit, Font.GdiCharSet, Font.GdiVerticalFont);
 			InitializeComponent();
+			// 1. 确保边框是可以拉伸的
+			this.FormBorderStyle = FormBorderStyle.Sizable;
 
+			// 2. 锁定宽度
+			// 让最小宽度等于当前设计的高度
+			this.MinimumSize = new Size(this.Width,0); // 限制最小宽度
             EnableTabScroll(this.tab_标签);
             EnableTabScroll(this.tabControl_Trans);;
             EnableTabScroll(this.tabControl2);
