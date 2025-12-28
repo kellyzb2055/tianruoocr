@@ -3142,6 +3142,7 @@ namespace TrOCR
         /// </summary>
         private void RichBoxBody_TextChanged(object sender, EventArgs e)
 		{
+            Debug.WriteLine("启动了RichBoxBody_TextChanged");
             // 【新增】如果正在流式输出，直接忽略，不启动定时器
             if (isStreaming) return;
 
@@ -5041,6 +5042,11 @@ namespace TrOCR
 
 				// 1. 无论如何，重置流式标记
 				isStreaming = false;
+				// 【关键】先减后加，或者直接加（前提是你确定之前减过了）
+				// 为了防止重复绑定，最稳妥的写法是先减一次再加一次，或者只加一次
+				// 这里先减后加，绝不会丢失事件。ps：其实直接加也行。
+				this.RichBoxBody.richTextBox1.TextChanged -= RichBoxBody_TextChanged;
+				this.RichBoxBody.richTextBox1.TextChanged += RichBoxBody_TextChanged;
 
 				// 2. 无论如何，确保文本框解锁 (防止万一报错导致文本框锁死)
 				// 即使是静默模式，解锁一下也无害

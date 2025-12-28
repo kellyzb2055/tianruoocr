@@ -346,6 +346,8 @@ namespace TrOCR
 
                                     // 标记流式开始，防止 TextChanged 触发定时器
                                     this.isStreaming = true;
+                                    // 【新增】暂时移除 TextChanged 事件，防止流式输出时频繁触发
+                                    this.RichBoxBody.richTextBox1.TextChanged -= RichBoxBody_TextChanged;
                                     isFirstToken = false;
                                     
                                 }
