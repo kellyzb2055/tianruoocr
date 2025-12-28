@@ -88,6 +88,12 @@ namespace TrOCR
             //this.tab_标签.MouseEnter += (s, e) => { this.tab_标签.Focus(); };
 
             // 3. 离开时（可选）：把焦点还给别的控件，或者不做处理
+            // === 【新增】启用悬停自动切换 ===
+            EnableTabHoverSwitch(this.tab_标签);
+            EnableTabHoverSwitch(this.tabControl_Trans);
+            EnableTabHoverSwitch(this.tabControl2);
+            EnableTabHoverSwitch(this.tabControl_BaiduApiType);
+            EnableTabHoverSwitch(this.tabControl_TXApiType);
 
         }
         // 滚轮事件处理逻辑
@@ -213,6 +219,118 @@ namespace TrOCR
 				// 6. 阻止冒泡
 				if (e is HandledMouseEventArgs he) he.Handled = true;
 			}
+        }
+        // === 鼠标悬停自动切换标签页相关变量 ===
+        private System.Windows.Forms.Timer _tabHoverTimer;// 当前正在计时的 TabControl
+        private TabControl _currentHoverTabControl;// 当前正在计时的 Tab 索引
+        private int _currentHoverTabIndex = -1;
+        private const int HOVER_SWITCH_DELAY = 600; // 悬停触发延迟（毫秒），可根据需要调整
+        /// <summary>
+        /// 【通用方法】给指定的 TabControl 启用鼠标悬停自动切换功能
+        /// </summary>
+        /// <param name="tc">目标 TabControl</param>
+        private void EnableTabHoverSwitch(TabControl tc)
+        {
+            if (tc == null) return;
+
+            // 初始化全局悬停计时器（单例模式，整个窗体共用一个）
+            if (_tabHoverTimer == null)
+            {
+                _tabHoverTimer = new System.Windows.Forms.Timer();
+                _tabHoverTimer.Interval = HOVER_SWITCH_DELAY;
+                _tabHoverTimer.Tick += TabHoverTimer_Tick;
+            }
+
+            // 绑定鼠标移动事件（检测是否悬停在标题上）
+            tc.MouseMove += TabControl_Hover_MouseMove;
+
+            // 绑定鼠标离开事件（取消计时）
+            tc.MouseLeave += TabControl_Hover_MouseLeave;
+        }
+        /// <summary>
+        /// 鼠标在 TabControl 上移动时触发，检测是否在某个未选中的 Tab 标题上
+        /// </summary>
+        private void TabControl_Hover_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (sender is TabControl tc)
+            {
+                int hoveredIndex = -1;
+
+                // 遍历所有标签页，判断鼠标是否在其标题区域内
+                for (int i = 0; i < tc.TabCount; i++)
+                {
+                    if (tc.GetTabRect(i).Contains(e.Location))
+                    {
+                        hoveredIndex = i;
+                        break;
+                    }
+                }
+
+                // 如果鼠标在某个标签标题上，且该标签不是当前选中的标签
+                if (hoveredIndex != -1 && hoveredIndex != tc.SelectedIndex)
+                {
+                    // 如果是一个新的悬停目标（即鼠标从别的标签移过来，或者刚移入）
+                    if (tc != _currentHoverTabControl || hoveredIndex != _currentHoverTabIndex)
+                    {
+                        _currentHoverTabControl = tc;
+                        _currentHoverTabIndex = hoveredIndex;
+
+                        // 重置并启动计时器
+                        _tabHoverTimer.Stop();
+                        _tabHoverTimer.Start();
+                    }
+                    // 如果目标没变，则让计时器继续走，不做操作
+                }
+                else
+                {
+                    // 鼠标不在任何标题上，或者在当前选中的标题上 -> 取消计时
+                    if (_tabHoverTimer != null) _tabHoverTimer.Stop();
+                    _currentHoverTabControl = null;
+                    _currentHoverTabIndex = -1;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 鼠标离开 TabControl 时，停止计时
+        /// </summary>
+        private void TabControl_Hover_MouseLeave(object sender, EventArgs e)
+        {
+            if (_tabHoverTimer != null)
+            {
+                _tabHoverTimer.Stop();
+            }
+            _currentHoverTabControl = null;
+            _currentHoverTabIndex = -1;
+        }
+
+        /// <summary>
+        /// 计时器时间到，执行切换
+        /// </summary>
+        private void TabHoverTimer_Tick(object sender, EventArgs e)
+        {
+            _tabHoverTimer.Stop(); // 停止计时，防止重复触发
+
+            if (_currentHoverTabControl != null &&
+                !_currentHoverTabControl.IsDisposed &&
+                _currentHoverTabIndex >= 0 &&
+                _currentHoverTabIndex < _currentHoverTabControl.TabCount)
+            {
+                // 如果目标索引已经是当前选中的索引，则无需切换
+                if (_currentHoverTabControl.SelectedIndex != _currentHoverTabIndex)
+                {
+                    // 执行切换
+                    _currentHoverTabControl.SelectedIndex = _currentHoverTabIndex;
+
+                    // 可选：切换后让控件获取焦点
+                    _currentHoverTabControl.Focus();
+                }
+                
+            }
+            //无论是否切换成功，都清理状态，防止逻辑死锁
+            // 重置状态
+            _currentHoverTabControl = null;
+            _currentHoverTabIndex = -1;
         }
         private void checkbox_AutoCopyScreenshotTranslation_CheckedChanged(object sender, EventArgs e)
 		{
