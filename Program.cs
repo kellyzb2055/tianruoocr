@@ -28,6 +28,9 @@ namespace TrOCR
         /// DPI缩放因子
         /// </summary>
         public static float Factor = 1.0f;
+        // 辅助方法：手动调用系统 API 声明 DPI 感知
+        [DllImport("user32.dll")]
+        private static extern bool SetProcessDPIAware();
 
         /// <summary>
         /// 应用程序入口点
@@ -71,6 +74,15 @@ namespace TrOCR
             //}
             try
             {
+                // 设置应用程序视觉样式
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                // 2. 如果是 Win10 或更高版本，手动触发高 DPI 模式（Win7 下会自动跳过，不影响兼容性）
+                if (Environment.OSVersion.Version.Major >= 6)
+                {
+                    // 尝试调用系统 API 开启感知，防止被后面的 SystemFonts 锁定为 Unaware
+                    SetProcessDPIAware();
+                }
                 // ====================【核心修复开始】====================
                 // 在调用 SetDefaultDllDirectories 锁定 DLL 搜索路径之前，
                 // 强制访问一次 System.Drawing，触发 GDI+ 的加载。
@@ -196,9 +208,7 @@ namespace TrOCR
                 DealErrorConfig();
                 StaticValue.LoadConfig();
 
-                // 设置应用程序视觉样式
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
+                
                 var version = Environment.OSVersion.Version;
                 var value = new Version("6.1");
                 Factor = CommonHelper.GetDpiFactor();
