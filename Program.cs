@@ -36,42 +36,43 @@ namespace TrOCR
         [STAThread]
         public static void Main(string[] args)
         {
-            //另一种定义dll依赖查找路径的方法，尝试修复使用收纳法后， PaddleOCR2初始化找不到依赖的问题。
-            //经过测试，没有修复成功，把所有dll移动到lib文件夹后，PaddleOCR2初始化还是找不到依赖，只能把它相关的sdcb.paddle等dll依旧放在exe同级目录了
-            //try
-            //{
-            //    // 1. 获取 lib 文件夹的绝对路径
-            //    var baseDir = AppDomain.CurrentDomain.BaseDirectory;
-            //    var libPath = Path.Combine(baseDir, "lib");
-
-            //    // 2. 同时也把 PaddleOCR_data 的路径加进去（如果你还没把里面的东西移到 lib）
-            //    // 如果你已经把 PaddleOCR_data 里的 dll 都移到 lib 了，下面这两行可以不要
-            //    //var paddle64 = Path.Combine(baseDir, "PaddleOCR_data", "win_x64");
-            //    //var rapid64 = Path.Combine(baseDir, "RapidOCR_data", "win_x64");
-
-            //    // 3. 获取当前进程的环境变量 PATH
-            //    string pathEnv = Environment.GetEnvironmentVariable("PATH") ?? "";
-
-            //    // 4. 把我们的路径拼接到最前面 (优先搜索我们的目录)
-            //    // 注意：用分号 ; 分隔
-            //    string newPathEnv = $"{libPath};{paddle64};{rapid64};{pathEnv}";
-
-            //    // 5. 设置回当前进程的环境变量 (只影响本软件，不影响系统其他软件)
-            //    //Environment.SetEnvironmentVariable("PATH", newPathEnv);//同下一行代码
-            //    // 明确告诉所有人：我只改当前进程的变量，不污染系统，
-            //    Environment.SetEnvironmentVariable("PATH", newPathEnv, EnvironmentVariableTarget.Process);
-
-            //    // 【调试用】打印一下看看有没有设置成功
-            //    System.Diagnostics.Debug.WriteLine($"PATH patched: {libPath}");
-            //}
-            //catch (Exception ex)
-            //{
-            //    // 就算出错也不要阻断程序启动，万一系统环境本来就是好的呢
-            //    System.Diagnostics.Debug.WriteLine($"设置环境变量失败: {ex.Message}");
-            //}
+           /* 
+            *另一种定义dll依赖查找路径的方法，尝试修复使用收纳法后， PaddleOCR2初始化找不到依赖的问题。
+            *经过测试，没有修复成功，把所有dll移动到lib文件夹后，PaddleOCR2初始化还是找不到依赖，只能把它相关的sdcb.paddle等dll依旧放在exe同级目录了
             try
             {
-                // 设置应用程序视觉样式
+                // 1. 获取 lib 文件夹的绝对路径
+                var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                var libPath = Path.Combine(baseDir, "lib");
+
+                // 2. 同时也把 PaddleOCR_data 的路径加进去（如果你还没把里面的东西移到 lib）
+                // 如果你已经把 PaddleOCR_data 里的 dll 都移到 lib 了，下面这两行可以不要
+                //var paddle64 = Path.Combine(baseDir, "PaddleOCR_data", "win_x64");
+                //var rapid64 = Path.Combine(baseDir, "RapidOCR_data", "win_x64");
+
+                // 3. 获取当前进程的环境变量 PATH
+                string pathEnv = Environment.GetEnvironmentVariable("PATH") ?? "";
+
+                // 4. 把我们的路径拼接到最前面 (优先搜索我们的目录)
+                // 注意：用分号 ; 分隔
+                string newPathEnv = $"{libPath};{paddle64};{rapid64};{pathEnv}";
+
+                // 5. 设置回当前进程的环境变量 (只影响本软件，不影响系统其他软件)
+                //Environment.SetEnvironmentVariable("PATH", newPathEnv);//同下一行代码
+                // 明确告诉所有人：我只改当前进程的变量，不污染系统，
+                Environment.SetEnvironmentVariable("PATH", newPathEnv, EnvironmentVariableTarget.Process);
+
+                // 【调试用】打印一下看看有没有设置成功
+                System.Diagnostics.Debug.WriteLine($"PATH patched: {libPath}");
+            }
+            catch (Exception ex)
+            {
+                // 就算出错也不要阻断程序启动，万一系统环境本来就是好的呢
+                System.Diagnostics.Debug.WriteLine($"设置环境变量失败: {ex.Message}");
+            }*/
+            try
+            {
+                // 设置应用程序视觉样式，放在main函数一开始，try之前也行，会更符合惯例，懒得改了。
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
                

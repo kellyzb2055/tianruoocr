@@ -323,7 +323,12 @@ namespace TrOCR
                     _currentHoverTabControl.SelectedIndex = _currentHoverTabIndex;
 
                     // 可选：切换后让控件获取焦点
-                    _currentHoverTabControl.Focus();
+                    // 修改为：仅当当前窗体是激活状态（用户正在操作本软件）时，才获取焦点。
+                    // 这样如果用户在记事本打字，鼠标划过这里，只会切换画面，不会打断打字。
+                    if (Form.ActiveForm == this)
+                    {
+                        _currentHoverTabControl.Focus();
+                    }
                 }
                 
             }
@@ -2565,7 +2570,14 @@ namespace TrOCR
 		// 窗口关闭事件处理函数，保存所有设置到配置文件
 		private void Form1_FormClosed(object sender, FormClosedEventArgs e)
 		{
-			saveSettings();
+            // 【新增】停止并释放计时器，手动显式停止更好些，虽然不手动窗口关闭时也会自动停止定时器
+            if (_tabHoverTimer != null)
+            {
+                _tabHoverTimer.Stop();
+                _tabHoverTimer.Dispose();
+                _tabHoverTimer = null;
+            }
+            saveSettings();
             DialogResult = DialogResult.OK;
         }
 		public void saveSettings()
