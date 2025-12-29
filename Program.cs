@@ -220,7 +220,11 @@ namespace TrOCR
                 }
 
                 // 启动更新检查任务并运行主窗体
-                Task.Factory.StartNew(CheckUpdate);
+                // 只有当配置为 True 时，才启动自动更新检查
+                if (IniHelper.GetValue("更新", "检测更新") == "True")
+                {
+                    Task.Factory.StartNew(CheckUpdate);
+                }
                 Application.Run(new FmMain());
             }
             catch (Exception ex)
