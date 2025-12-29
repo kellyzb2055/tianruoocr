@@ -604,15 +604,14 @@ namespace TrOCR
 				{
 					if (!Visible)
 					{
-						// ====================【新增：恢复事件监听】====================
-						RichBoxBody.richTextBox1.TextChanged -= RichBoxBody_TextChanged;
-						RichBoxBody.richTextBox1.TextChanged += RichBoxBody_TextChanged;
-						// ====================【新增结束】====================
 						TopMost = true;
 						Show();
 						WindowState = FormWindowState.Normal;
 						Visible = true;
 						Thread.Sleep(100);
+						 // 2. 【核心修正】在延时之后，窗口绝对稳定了，再绑定
+						RichBoxBody.richTextBox1.TextChanged -= RichBoxBody_TextChanged;
+						RichBoxBody.richTextBox1.TextChanged += RichBoxBody_TextChanged;
 						if (IniHelper.GetValue("工具栏", "顶置") == "False")
 						{
 							TopMost = false;
@@ -1231,16 +1230,16 @@ namespace TrOCR
 		private void trayShowClick(object sender, EventArgs e)
 		{
 			Debug.WriteLine("托盘菜单点击了显示主窗口");
-			// ====================【新增：恢复事件监听】====================
-			// 窗口恢复显示了，必须重新开始监听用户输入
-			RichBoxBody.richTextBox1.TextChanged -= RichBoxBody_TextChanged; // 先解绑防止重复
-			RichBoxBody.richTextBox1.TextChanged += RichBoxBody_TextChanged; // 重新绑定
-			// ====================【新增结束】====================
-            Show();
+			Show();
 			Activate();
 			Visible = true;
 			WindowState = FormWindowState.Normal;
 			TopMost = IniHelper.GetValue("工具栏", "顶置") == "True";
+		
+			// 1. 【核心修正】等窗口完全显示、状态稳定了，再绑定事件
+			// 这样可以避开 Show() 过程中可能产生的任何“误触”
+			RichBoxBody.richTextBox1.TextChanged -= RichBoxBody_TextChanged; 
+			RichBoxBody.richTextBox1.TextChanged += RichBoxBody_TextChanged; 
 		}
 
 		/// <summary>
@@ -7200,7 +7199,7 @@ namespace TrOCR
         {
             // 如果只有 1 次点击，判定为“单击”，执行“切换显示/隐藏”
 				if (this.Visible)
-				{
+				{ 	
 					// 隐藏：先解绑
             		RichBoxBody.richTextBox1.TextChanged -= RichBoxBody_TextChanged;
 					// 如果窗口当前可见，则隐藏它
