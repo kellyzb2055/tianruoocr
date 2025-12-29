@@ -622,6 +622,8 @@ namespace TrOCR
 					{
 						// 如果是隐藏窗口的操作，这里也可以顺手解绑（和点X关闭保持一致）
         				RichBoxBody.richTextBox1.TextChanged -= RichBoxBody_TextChanged;
+						 // 【新增】防止后台读秒
+            			if (translationTimer != null) translationTimer.Stop(); 
 						Hide();
 						Visible = false;
 					}
@@ -2994,6 +2996,8 @@ namespace TrOCR
 			LogState("Trans_close_Click Start"); // <--- 添加这一行
             //解绑文本改变事件
             RichBoxBody.richTextBox1.TextChanged -= RichBoxBody_TextChanged;
+			 // 【新增】防止后台读秒
+            if (translationTimer != null) translationTimer.Stop(); 
             // 只有当这是用户主动点击关闭时 (isUserAction 为 true)，才执行检查
             // ====================【新增代码】开始 ====================
             //这里的代码加不加都行，加上虽然更健壮，但是其实TranslationTimer_Tick里的双重检查就足够了
@@ -5075,6 +5079,8 @@ namespace TrOCR
                 else
                 {
                     this.RichBoxBody.richTextBox1.TextChanged -= RichBoxBody_TextChanged;
+					 // 【新增】防止后台读秒
+            		if (translationTimer != null) translationTimer.Stop(); 
                 }
 
                 // 2. 无论如何，确保文本框解锁 (防止万一报错导致文本框锁死)
@@ -7202,6 +7208,8 @@ namespace TrOCR
 				{ 	
 					// 隐藏：先解绑
             		RichBoxBody.richTextBox1.TextChanged -= RichBoxBody_TextChanged;
+					 // 【新增】防止后台读秒
+            		if (translationTimer != null) translationTimer.Stop(); 
 					// 如果窗口当前可见，则隐藏它
 					this.Hide();
 					this.Visible = false;
