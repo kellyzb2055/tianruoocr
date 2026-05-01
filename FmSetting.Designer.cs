@@ -411,6 +411,7 @@ namespace TrOCR
             this.textBox37 = new System.Windows.Forms.TextBox();
             this.label61 = new System.Windows.Forms.Label();
             this.cbBox_禁用隐藏原文按钮 = new System.Windows.Forms.CheckBox();
+            this.checkBox_EnableTabHoverSwitch = new System.Windows.Forms.CheckBox();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.cbBox_ListenHideOriginal = new System.Windows.Forms.CheckBox();
@@ -5030,9 +5031,10 @@ namespace TrOCR
             this.groupBox11.Controls.Add(this.textBox37);
             this.groupBox11.Controls.Add(this.label61);
             this.groupBox11.Controls.Add(this.cbBox_禁用隐藏原文按钮);
+            this.groupBox11.Controls.Add(this.checkBox_EnableTabHoverSwitch);
             this.groupBox11.Location = new System.Drawing.Point(9, 383);
             this.groupBox11.Name = "groupBox11";
-            this.groupBox11.Size = new System.Drawing.Size(511, 100);
+            this.groupBox11.Size = new System.Drawing.Size(511, 122);
             this.groupBox11.TabIndex = 1;
             this.groupBox11.TabStop = false;
             this.groupBox11.Text = "其他";
@@ -5072,7 +5074,17 @@ namespace TrOCR
             this.cbBox_禁用隐藏原文按钮.TabIndex = 1;
             this.cbBox_禁用隐藏原文按钮.Text = "全局禁用显示/隐藏原文按钮";
             this.cbBox_禁用隐藏原文按钮.UseVisualStyleBackColor = true;
-            // 
+            //
+            // checkBox_EnableTabHoverSwitch
+            //
+            this.checkBox_EnableTabHoverSwitch.AutoSize = true;
+            this.checkBox_EnableTabHoverSwitch.Location = new System.Drawing.Point(3, 74);
+            this.checkBox_EnableTabHoverSwitch.Name = "checkBox_EnableTabHoverSwitch";
+            this.checkBox_EnableTabHoverSwitch.Size = new System.Drawing.Size(204, 19);
+            this.checkBox_EnableTabHoverSwitch.TabIndex = 6;
+            this.checkBox_EnableTabHoverSwitch.Text = "设置标签页悬停自动切换（Tab Hover）";
+            this.checkBox_EnableTabHoverSwitch.UseVisualStyleBackColor = true;
+            //
             // groupBox9
             // 
             this.groupBox9.Controls.Add(this.tableLayoutPanel1);
@@ -7579,6 +7591,7 @@ namespace TrOCR
         private System.Windows.Forms.Label label33;
         private System.Windows.Forms.GroupBox groupBox11;
         private System.Windows.Forms.CheckBox cbBox_禁用隐藏原文按钮;
+        private System.Windows.Forms.CheckBox checkBox_EnableTabHoverSwitch;
         private System.Windows.Forms.CheckBox checkbox_AutoCopyScreenshotTranslation;
         private System.Windows.Forms.CheckBox checkbox_NoWindowScreenshotTranslation;
         private System.Windows.Forms.PictureBox pictureBox_截图翻译;

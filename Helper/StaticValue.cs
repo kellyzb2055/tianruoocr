@@ -158,8 +158,10 @@ namespace TrOCR.Helper
         public static bool AutoCopyScreenshotTranslation { get; set; }
         // 【新增】用于控制是否使用无窗口截图
          public static bool NoWindowScreenshotTranslation { get; set; }
+        // 【新增】是否启用标签页悬停自动切换
+        public static bool EnableTabHoverSwitch { get; set; } = true;
 
-       
+
         //文本改变自动翻译延时
         // public static int TextChangeAutotranslateDelay { get; set; }
         public static string TextChangeAutotranslateDelayRaw { get; set; }
@@ -224,6 +226,7 @@ namespace TrOCR.Helper
             DisableToggleOriginalButton = Convert.ToBoolean(GetValue("配置", "DisableToggleOriginalButton", "False"));
             AutoCopyScreenshotTranslation = Convert.ToBoolean(GetValue("配置", "AutoCopyScreenshotTranslation", "False"));
             NoWindowScreenshotTranslation = Convert.ToBoolean(GetValue("配置", "NoWindowScreenshotTranslation", "False"));
+            EnableTabHoverSwitch = Convert.ToBoolean(GetValue("配置", "EnableTabHoverSwitch", "True"));
 
             // --- 新增: 加载工具栏设置 ---
             IsMergeRemoveSpace = Convert.ToBoolean(GetValue("工具栏", "IsMergeRemoveSpace", "False"));
