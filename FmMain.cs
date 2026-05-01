@@ -4229,24 +4229,32 @@ namespace TrOCR
 			{
 				// 隐藏主窗口并准备截图
 				change_QQ_screenshot = false;
+
+				// === 纵深防御: 挂起 lastNormalSize 自动更新 ===
+				isProgrammaticResize = true;
+
+				// === 先关闭翻译模式，再操作 FormBorderStyle ===
+				transtalate_fla = "关闭";
+
+				// 如果工具栏翻译功能关闭，则执行关闭翻译操作
+				if (IniHelper.GetValue("工具栏", "翻译") == "False")
+				{
+					Trans_close_Click(null, EventArgs.Empty, false);
+				}
+
+				// === 现在安全地改变 FormBorderStyle ===
 				FormBorderStyle = FormBorderStyle.None;
 				Visible = false;
 				Thread.Sleep(100);
-				
-				// 根据翻译窗口状态设置窗体宽度
-				if (transtalate_fla == "开启")
-				{
-					form_width = Width / 2;
-				}
-				else
-				{
-					form_width = Width;
-				}
+
+				form_width = Width;
 				
 				// 初始化相关变量
 				shupai_Right_txt = "";
 				shupai_Left_txt = "";
 				form_height = Height;
+				// === 恢复 lastNormalSize 自动更新 ===
+				isProgrammaticResize = false;
 				minico.Visible = false;
 				minico.Visible = true;
 				menu.Close();
@@ -4275,17 +4283,6 @@ namespace TrOCR
 				}
 				
 				
-				RichBoxBody_T.Text = "";
-				typeset_txt = "";
-				transtalate_fla = "关闭";
-				
-				// 如果工具栏翻译功能关闭，则执行关闭翻译操作
-				if (IniHelper.GetValue("工具栏", "翻译") == "False")
-				{
-					// Trans_close.PerformClick();
-					// 【修改3】直接调用新方法
-    				Trans_close_Click(null, EventArgs.Empty, false); 
-				}
 				
 				// 重置窗口大小和边框样式
 				// Size = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);
