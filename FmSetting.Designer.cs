@@ -5082,7 +5082,7 @@ namespace TrOCR
             this.checkBox_EnableTabHoverSwitch.Name = "checkBox_EnableTabHoverSwitch";
             this.checkBox_EnableTabHoverSwitch.Size = new System.Drawing.Size(204, 19);
             this.checkBox_EnableTabHoverSwitch.TabIndex = 6;
-            this.checkBox_EnableTabHoverSwitch.Text = "设置标签页悬停自动切换（Tab Hover）";
+            this.checkBox_EnableTabHoverSwitch.Text = "设置标签页悬停自动切换";
             this.checkBox_EnableTabHoverSwitch.UseVisualStyleBackColor = true;
             //
             // groupBox9

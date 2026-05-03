@@ -255,6 +255,12 @@ namespace TrOCR
         /// </summary>
         private void TabControl_Hover_MouseMove(object sender, MouseEventArgs e)
         {
+            // === 实时读取复选框的 UI 状态，而不是全局变量 ===
+            // 只要用户在界面上取消了勾选，哪怕还没关闭窗口保存，也能立刻生效阻断
+            if (!this.checkBox_EnableTabHoverSwitch.Checked)
+            {
+                return;
+            }
             if (sender is TabControl tc)
             {
                 int hoveredIndex = -1;
