@@ -1520,6 +1520,8 @@ namespace TrOCR
 			textBox38.Text=TrOCRUtils.LoadSetting("配置", "文本改变自动翻译延时", "5000");
 			//工具栏图标放大倍数
 			textBox37.Text=TrOCRUtils.LoadSetting("工具栏", "图标放大倍数", "1.0");
+			//文字缩放倍数
+			textBox39.Text=TrOCRUtils.LoadSetting("配置", "文字缩放倍数", "1.0");
 
             LoadCustomAIProviders();
             LoadCustomAITransProviders();
@@ -2847,6 +2849,8 @@ namespace TrOCR
             IniHelper.SetValue("配置", "文本改变自动翻译延时", textBox38.Text);
             //工具栏图标放大倍数
             IniHelper.SetValue("工具栏", "图标放大倍数", textBox37.Text);
+			//文字缩放倍数
+			 IniHelper.SetValue("配置", "文字缩放倍数", textBox39.Text);
 
 
             ResetOcrEngineOnConfigChange();
