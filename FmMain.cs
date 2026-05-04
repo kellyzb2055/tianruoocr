@@ -708,6 +708,7 @@ namespace TrOCR
 					new MenuItem("设置", tray_Set_Click),
 					new MenuItem("更新", tray_update_Click),
 					new MenuItem("帮助", tray_help_Click),
+					new MenuItem("重启", trayRestartClick), // 【新增】重启菜单项
 					new MenuItem("退出", trayExitClick)
 				};
 				minico.ContextMenu = new ContextMenu(menuItems);
@@ -1258,6 +1259,35 @@ namespace TrOCR
 			OcrHelper.Dispose();
 			PaddleOCRHelper.Reset();
 			PaddleOCR2Helper.Reset();
+            RapidOCRHelper.Reset();
+            Process.GetCurrentProcess().Kill();
+		}
+		/// <summary>
+		/// 托盘菜单"重启"选项点击事件处理函数
+		/// 保存配置、释放资源并重启应用程序
+		/// </summary>
+		/// <param name="sender">事件发送者</param>
+		/// <param name="e">事件参数</param>
+		private void trayRestartClick(object sender, EventArgs e)
+		{
+            // 1. 隐藏并释放托盘图标，防止出现“幽灵图标”
+            minico.Visible = false;
+			minico.Dispose();
+            
+            // 2. 保存当前状态
+			saveIniFile();
+			SaveWindowState();
+            
+            // 3. 释放引擎资源
+			OcrHelper.Dispose();
+			PaddleOCRHelper.Reset();
+			PaddleOCR2Helper.Reset();
+            RapidOCRHelper.Reset();
+
+            // 4. 重启应用程序
+            Application.Restart();
+            
+            // 5. 确保当前进程被完全结束
 			Process.GetCurrentProcess().Kill();
 		}
 		#endregion
