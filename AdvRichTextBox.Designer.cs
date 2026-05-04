@@ -484,6 +484,10 @@ namespace TrOCR
             set
             {
                 this.richTextBox1.Text = value;
+                if (StaticValue.TextScaleFactor >= 0.1f && StaticValue.TextScaleFactor <= 64.0f)
+                {
+                    this.richTextBox1.ZoomFactor = StaticValue.TextScaleFactor+ 0.000001f;
+                }
 
             }
         }
