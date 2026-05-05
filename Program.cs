@@ -423,7 +423,7 @@ namespace TrOCR
                         // 获取版本号（去掉前面的 'v'）
                         var tagName = releaseData["tag_name"].Value<string>();
                         var newVersion = tagName.TrimStart('v', 'V');
-                        var curVersion = Application.ProductVersion;
+                        var curVersion = System.Windows.Forms.Application.ProductVersion.Split('+')[0];
 
                         // 5. 调用新的、健壮的版本比较方法
                         if (!CheckVersion(newVersion, curVersion))

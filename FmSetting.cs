@@ -1621,7 +1621,7 @@ namespace TrOCR
 
 			readIniFile();
 			// 使用程序集的实际版本号，而不是写死的值
-			label_VersionInfo.Text = "版本号：" + System.Windows.Forms.Application.ProductVersion;
+			label_VersionInfo.Text = "版本号：" + System.Windows.Forms.Application.ProductVersion.Split('+')[0];
 			label_AuthorInfo.Text = "作者：topkill";
 			chbox_代理服务器.CheckedChanged += chbox_代理服务器_CheckedChanged;
 			更新Button_check.Click += 更新Button_check_Click;
