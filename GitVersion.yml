@@ -14,7 +14,7 @@ branches:
     
     # 防止默认给 feature 分支加上 "alpha" 或 "use-branch-name" 等后缀（产品版本）
     # 如果你在 Tag 里已经写了 beta (如 6.0.0-beta)，GitVersion 会自动识别 Tag 中的 beta
-    tag: ''
+    tag: beta
     
     # 视为主线分支，保证版本号的连续性和权威性
     is-mainline: true
