@@ -708,6 +708,7 @@ namespace TrOCR
 					new MenuItem("设置", tray_Set_Click),
 					new MenuItem("更新", tray_update_Click),
 					new MenuItem("帮助", tray_help_Click),
+					new MenuItem("重启", trayRestartClick), // 【新增】重启菜单项
 					new MenuItem("退出", trayExitClick)
 				};
 				minico.ContextMenu = new ContextMenu(menuItems);
@@ -1258,6 +1259,35 @@ namespace TrOCR
 			OcrHelper.Dispose();
 			PaddleOCRHelper.Reset();
 			PaddleOCR2Helper.Reset();
+            RapidOCRHelper.Reset();
+            Process.GetCurrentProcess().Kill();
+		}
+		/// <summary>
+		/// 托盘菜单"重启"选项点击事件处理函数
+		/// 保存配置、释放资源并重启应用程序
+		/// </summary>
+		/// <param name="sender">事件发送者</param>
+		/// <param name="e">事件参数</param>
+		private void trayRestartClick(object sender, EventArgs e)
+		{
+            // 1. 隐藏并释放托盘图标，防止出现“幽灵图标”
+            minico.Visible = false;
+			minico.Dispose();
+            
+            // 2. 保存当前状态
+			saveIniFile();
+			SaveWindowState();
+            
+            // 3. 释放引擎资源
+			OcrHelper.Dispose();
+			PaddleOCRHelper.Reset();
+			PaddleOCR2Helper.Reset();
+            RapidOCRHelper.Reset();
+
+            // 4. 重启应用程序
+            Application.Restart();
+            
+            // 5. 确保当前进程被完全结束
 			Process.GetCurrentProcess().Kill();
 		}
 		#endregion
@@ -3393,25 +3423,33 @@ namespace TrOCR
 		private void HandleClipboardChange()
 		{
 			Debug.WriteLine("HandleClipboardChange执行了");
-			// ====================【关键修复开始】====================
     		// 最优先检查：如果程序正处于自动复制后的静默期，则忽略所有剪贴板事件
     		if (isAutoCopying)
     		{
     		    Debug.WriteLine("忽略剪贴板事件：自动复制锁激活中");
     		    return;
     		}
-    		// ====================【关键修复结束】====================
+    		
 			
-			// 【核心修正】在程序刚启动时，忽略第一次自动触发的剪贴板消息
+			// 在程序刚启动时，忽略第一次自动触发的剪贴板消息
 			if (isAppLoading)
 			{
 				isAppLoading = false; // 将标志位置为false，确保此逻辑只执行一次
-				if (Clipboard.ContainsText())
-				{
-					// 同步初始的剪贴板内容，以便下一次真正的复制可以被正确比较
-					lastClipboardText = Clipboard.GetText();
-				}
-				return; // 关键：直接退出，不执行任何后续的翻译操作
+                // 使用 try-catch 保护剪贴板读取，防止启动时其他程序占用剪贴板导致崩溃
+                try
+                {
+                    if (Clipboard.ContainsText())
+                    {
+                        // 同步初始的剪贴板内容，以便下一次真正的复制可以被正确比较
+                        lastClipboardText = Clipboard.GetText();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("程序启动时同步剪贴板状态失败: " + ex.Message);
+                    // 启动时读取失败没关系，直接忽略即可，不影响后续监听
+                }
+                return; // 关键：直接退出，不执行任何后续的翻译操作
 			}
 			
 			//  检查功能是否开启
@@ -3420,7 +3458,7 @@ namespace TrOCR
 				return;
 			}
 
-			// 【核心修改】不立即处理，而是重置防抖定时器
+			// 不立即处理，而是重置防抖定时器
 			// 无论来多少次通知，都只是不断地重置计时器
 			clipboardDebounceTimer.Stop();
 			clipboardDebounceTimer.Start();
@@ -3432,39 +3470,40 @@ namespace TrOCR
 		    // 1. 首先停止定时器，防止重复执行
 		    clipboardDebounceTimer.Stop();
 
-		    // 2. 在这里执行原来 HandleClipboardChange 中的所有逻辑
-		    if (Clipboard.ContainsText())
-		    {
-		        string clipboardText;
-		        try
-		        {
-		            // 增加try-catch以防止其他程序锁定剪贴板导致崩溃
-		            clipboardText = Clipboard.GetText();
-		        }
-		        catch (Exception ex)
-		        {
-		            Debug.WriteLine("获取剪贴板文本失败: " + ex.Message);
-		            return;
-		        }
+            string clipboardText = null;
 
-				// 检查是否是新的、非空的文本
-				if (!string.IsNullOrEmpty(clipboardText) && clipboardText != lastClipboardText)
-				{
-					// 更新最后一次的文本记录，防止重复触发
-					lastClipboardText = clipboardText;
+            // 2. 将 ContainsText 和 GetText 全部放入 try-catch 中
+            try
+            {
+                if (Clipboard.ContainsText())
+                {
+                    clipboardText = Clipboard.GetText();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("获取剪贴板文本失败，可能被其他程序占用: " + ex.Message);
+                return; // 获取失败则直接返回，等待下一次用户复制
+            }
 
-					// 显示提示
-					CommonHelper.ShowHelpMsg("已捕获剪贴板，正在翻译...");
+            // 3. 检查是否是新的、非空的文本
+            if (!string.IsNullOrEmpty(clipboardText) && clipboardText != lastClipboardText)
+			{
+				// 更新最后一次的文本记录，防止重复触发
+				lastClipboardText = clipboardText;
 
-					// 设置正确的标志位
-					isContentFromOcr = false;
-					isFromClipboardListener = true;
+				// 显示提示
+				CommonHelper.ShowHelpMsg("已捕获剪贴板，正在翻译...");
 
-					// 调用UI启动方法
-					InitiateTranslationUI(clipboardText);
+				// 设置正确的标志位
+				isContentFromOcr = false;
+				isFromClipboardListener = true;
+
+				// 调用UI启动方法
+				InitiateTranslationUI(clipboardText);
 			
-		        }
 		    }
+		    
 		}
 		/// <summary>
 		/// 显示加载窗口并运行应用程序消息循环
@@ -4229,24 +4268,32 @@ namespace TrOCR
 			{
 				// 隐藏主窗口并准备截图
 				change_QQ_screenshot = false;
+
+				// === 纵深防御: 挂起 lastNormalSize 自动更新 ===
+				isProgrammaticResize = true;
+
+				// === 先关闭翻译模式，再操作 FormBorderStyle ===
+				transtalate_fla = "关闭";
+
+				// 如果工具栏翻译功能关闭，则执行关闭翻译操作
+				if (IniHelper.GetValue("工具栏", "翻译") == "False")
+				{
+					Trans_close_Click(null, EventArgs.Empty, false);
+				}
+
+				// === 现在安全地改变 FormBorderStyle ===
 				FormBorderStyle = FormBorderStyle.None;
 				Visible = false;
 				Thread.Sleep(100);
-				
-				// 根据翻译窗口状态设置窗体宽度
-				if (transtalate_fla == "开启")
-				{
-					form_width = Width / 2;
-				}
-				else
-				{
-					form_width = Width;
-				}
+
+				form_width = Width;
 				
 				// 初始化相关变量
 				shupai_Right_txt = "";
 				shupai_Left_txt = "";
 				form_height = Height;
+				// === 恢复 lastNormalSize 自动更新 ===
+				isProgrammaticResize = false;
 				minico.Visible = false;
 				minico.Visible = true;
 				menu.Close();
@@ -4275,17 +4322,6 @@ namespace TrOCR
 				}
 				
 				
-				RichBoxBody_T.Text = "";
-				typeset_txt = "";
-				transtalate_fla = "关闭";
-				
-				// 如果工具栏翻译功能关闭，则执行关闭翻译操作
-				if (IniHelper.GetValue("工具栏", "翻译") == "False")
-				{
-					// Trans_close.PerformClick();
-					// 【修改3】直接调用新方法
-    				Trans_close_Click(null, EventArgs.Empty, false); 
-				}
 				
 				// 重置窗口大小和边框样式
 				// Size = new Size((int)font_base.Width * 23, (int)font_base.Height * 24);

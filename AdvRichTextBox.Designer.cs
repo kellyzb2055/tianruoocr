@@ -82,6 +82,12 @@ namespace TrOCR
 
                 this.richTextBox1.Font = font;
                 this.richTextBox1.Text = text; // 这步也会触发 TextChanged
+                // 【新增】重新应用文字缩放因子
+                //加个0.000001f，绕过 WinForms 的缓存拦截，修复切换字体后文字缩放失效的bug，下面加 0.000001f的地方同理
+                if (StaticValue.TextScaleFactor >= 0.1f && StaticValue.TextScaleFactor <= 64.0f)
+                {
+                    this.richTextBox1.ZoomFactor = StaticValue.TextScaleFactor+ 0.000001f;
+                }
 
                 // 恢复重绘
                 this.richTextBox1.ResumeLayout();
@@ -450,6 +456,13 @@ namespace TrOCR
             //字体图标（非图片图标）的思路看上个提交吧
         
             this.richTextBox1.LanguageOption = RichTextBoxLanguageOptions.UIFonts;
+            // 【新增】应用原生的视图缩放因子
+            // (WinForms 限制 ZoomFactor 必须在 0.015625 到 64.0 之间)
+            if (StaticValue.TextScaleFactor >= 0.1f && StaticValue.TextScaleFactor <= 64.0f)
+            {
+                this.richTextBox1.ZoomFactor = StaticValue.TextScaleFactor+ 0.000001f;
+                
+            }
         }
         /// <summary>
         /// 设置工具栏的可用状态（用于流式输出时禁用，防止误触）
@@ -471,6 +484,10 @@ namespace TrOCR
             set
             {
                 this.richTextBox1.Text = value;
+                if (StaticValue.TextScaleFactor >= 0.1f && StaticValue.TextScaleFactor <= 64.0f)
+                {
+                    this.richTextBox1.ZoomFactor = StaticValue.TextScaleFactor+ 0.000001f;
+                }
 
             }
         }
@@ -911,8 +928,11 @@ namespace TrOCR
             Font font = new Font(this.Font.Name, 9f * Program.Factor, this.Font.Style, this.Font.Unit, this.Font.GdiCharSet, this.Font.GdiVerticalFont);
             Graphics graphics = base.CreateGraphics();
             SizeF sizeF = graphics.MeasureString("中", font);
-            this.richTextBox1.SelectionIndent = (int)sizeF.Width * 2 * fla;
-            this.richTextBox1.SelectionHangingIndent = -(int)sizeF.Width * 2 * fla;
+            //修改文字缩放后的段落左侧间距
+            // 如果启用了缩放，我们可以把基础缩进除以缩放倍数，这样经过 ZoomFactor 放大后，视觉上刚刚好还原
+            float currentScale = StaticValue.TextScaleFactor > 0.1f ? StaticValue.TextScaleFactor : 1.0f;
+            this.richTextBox1.SelectionIndent = (int)((sizeF.Width * 2 * fla) / currentScale);
+            this.richTextBox1.SelectionHangingIndent = -(int)((sizeF.Width * 2 * fla) / currentScale);
             graphics.Dispose();
         }
 
@@ -1401,6 +1421,11 @@ namespace TrOCR
 
                 this.richTextBox1.Font = font;
                 this.richTextBox1.Text = text;
+                // 【新增】重新应用文字缩放因子
+                if (StaticValue.TextScaleFactor >= 0.1f && StaticValue.TextScaleFactor <= 64.0f)
+                {
+                    this.richTextBox1.ZoomFactor = StaticValue.TextScaleFactor+ 0.000001f;
+                }
             }
             finally
             {

@@ -88,12 +88,15 @@ namespace TrOCR
             //this.tab_标签.MouseEnter += (s, e) => { this.tab_标签.Focus(); };
 
             // 3. 离开时（可选）：把焦点还给别的控件，或者不做处理
-            // === 【新增】启用悬停自动切换 ===
-            EnableTabHoverSwitch(this.tab_标签);
-            EnableTabHoverSwitch(this.tabControl_Trans);
-            EnableTabHoverSwitch(this.tabControl2);
-            EnableTabHoverSwitch(this.tabControl_BaiduApiType);
-            EnableTabHoverSwitch(this.tabControl_TXApiType);
+            // === 【新增】启用悬停自动切换（受配置控制） ===
+            if (StaticValue.EnableTabHoverSwitch)
+            {
+                EnableTabHoverSwitch(this.tab_标签);
+                EnableTabHoverSwitch(this.tabControl_Trans);
+                EnableTabHoverSwitch(this.tabControl2);
+                EnableTabHoverSwitch(this.tabControl_BaiduApiType);
+                EnableTabHoverSwitch(this.tabControl_TXApiType);
+            }
 
         }
         // 滚轮事件处理逻辑
@@ -252,6 +255,12 @@ namespace TrOCR
         /// </summary>
         private void TabControl_Hover_MouseMove(object sender, MouseEventArgs e)
         {
+            // === 实时读取复选框的 UI 状态，而不是全局变量 ===
+            // 只要用户在界面上取消了勾选，哪怕还没关闭窗口保存，也能立刻生效阻断
+            if (!this.checkBox_EnableTabHoverSwitch.Checked)
+            {
+                return;
+            }
             if (sender is TabControl tc)
             {
                 int hoveredIndex = -1;
@@ -1028,6 +1037,8 @@ namespace TrOCR
 			checkbox_AutoCopyScreenshotTranslation.Checked = TrOCRUtils.LoadSetting("配置", "AutoCopyScreenshotTranslation", false);
 			// 加载“无窗口截图翻译”设置
 			checkbox_NoWindowScreenshotTranslation.Checked = TrOCRUtils.LoadSetting("配置", "NoWindowScreenshotTranslation", false);
+			// 加载"标签页悬停自动切换"设置
+			checkBox_EnableTabHoverSwitch.Checked = TrOCRUtils.LoadSetting("配置", "EnableTabHoverSwitch", true);
 			// 【重要】在加载后，立即执行一次联动逻辑，以确保初始状态正确
 			checkbox_AutoCopyScreenshotTranslation_CheckedChanged(null, null);
 
@@ -1509,6 +1520,8 @@ namespace TrOCR
 			textBox38.Text=TrOCRUtils.LoadSetting("配置", "文本改变自动翻译延时", "5000");
 			//工具栏图标放大倍数
 			textBox37.Text=TrOCRUtils.LoadSetting("工具栏", "图标放大倍数", "1.0");
+			//文字缩放倍数
+			textBox39.Text=TrOCRUtils.LoadSetting("配置", "文字缩放倍数", "1.0");
 
             LoadCustomAIProviders();
             LoadCustomAITransProviders();
@@ -1608,7 +1621,7 @@ namespace TrOCR
 
 			readIniFile();
 			// 使用程序集的实际版本号，而不是写死的值
-			label_VersionInfo.Text = "版本号：" + System.Windows.Forms.Application.ProductVersion;
+			label_VersionInfo.Text = "版本号：" + System.Windows.Forms.Application.ProductVersion.Split('+')[0];
 			label_AuthorInfo.Text = "作者：topkill";
 			chbox_代理服务器.CheckedChanged += chbox_代理服务器_CheckedChanged;
 			更新Button_check.Click += 更新Button_check_Click;
@@ -2620,6 +2633,8 @@ namespace TrOCR
             //保存截图翻译相关配置
             IniHelper.SetValue("配置", "AutoCopyScreenshotTranslation", checkbox_AutoCopyScreenshotTranslation.Checked.ToString());
             IniHelper.SetValue("配置", "NoWindowScreenshotTranslation", checkbox_NoWindowScreenshotTranslation.Checked.ToString());
+            // 保存"标签页悬停自动切换"设置
+            IniHelper.SetValue("配置", "EnableTabHoverSwitch", checkBox_EnableTabHoverSwitch.Checked.ToString());
             // 保存百度OCR密钥和语言设置
             IniHelper.SetValue("密钥_百度", "secret_id", text_baiduaccount.Text);
             IniHelper.SetValue("密钥_百度", "secret_key", text_baidupassword.Text);
@@ -2834,6 +2849,8 @@ namespace TrOCR
             IniHelper.SetValue("配置", "文本改变自动翻译延时", textBox38.Text);
             //工具栏图标放大倍数
             IniHelper.SetValue("工具栏", "图标放大倍数", textBox37.Text);
+			//文字缩放倍数
+			 IniHelper.SetValue("配置", "文字缩放倍数", textBox39.Text);
 
 
             ResetOcrEngineOnConfigChange();

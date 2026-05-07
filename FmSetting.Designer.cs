@@ -198,6 +198,8 @@ namespace TrOCR
             this.checkBox_ShowOcrShupaiLR = new System.Windows.Forms.CheckBox();
             this.checkBox_ShowOcrShupaiRL = new System.Windows.Forms.CheckBox();
             this.Page_About = new System.Windows.Forms.TabPage();
+            this.label78 = new System.Windows.Forms.Label();
+            this.label77 = new System.Windows.Forms.Label();
             this.label_AuthorInfo = new System.Windows.Forms.Label();
             this.label_VersionInfo = new System.Windows.Forms.Label();
             this.Page_代理 = new System.Windows.Forms.TabPage();
@@ -407,10 +409,14 @@ namespace TrOCR
             this.checkbox_NoWindowScreenshotTranslation = new System.Windows.Forms.CheckBox();
             this.checkbox_AutoCopyScreenshotTranslation = new System.Windows.Forms.CheckBox();
             this.groupBox11 = new System.Windows.Forms.GroupBox();
+            this.label80 = new System.Windows.Forms.Label();
+            this.textBox39 = new System.Windows.Forms.TextBox();
+            this.label79 = new System.Windows.Forms.Label();
             this.label62 = new System.Windows.Forms.Label();
             this.textBox37 = new System.Windows.Forms.TextBox();
             this.label61 = new System.Windows.Forms.Label();
             this.cbBox_禁用隐藏原文按钮 = new System.Windows.Forms.CheckBox();
+            this.checkBox_EnableTabHoverSwitch = new System.Windows.Forms.CheckBox();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.cbBox_ListenHideOriginal = new System.Windows.Forms.CheckBox();
@@ -598,8 +604,6 @@ namespace TrOCR
             this.button5 = new System.Windows.Forms.Button();
             this.groupBox14 = new System.Windows.Forms.GroupBox();
             this.label32 = new System.Windows.Forms.Label();
-            this.label77 = new System.Windows.Forms.Label();
-            this.label78 = new System.Windows.Forms.Label();
             this.Page_翻译接口.SuspendLayout();
             this.tabControl_Trans.SuspendLayout();
             this.tabPage_Google.SuspendLayout();
@@ -2737,6 +2741,24 @@ namespace TrOCR
             this.Page_About.TabIndex = 9;
             this.Page_About.Text = "关于";
             // 
+            // label78
+            // 
+            this.label78.AutoSize = true;
+            this.label78.Location = new System.Drawing.Point(30, 136);
+            this.label78.Name = "label78";
+            this.label78.Size = new System.Drawing.Size(297, 45);
+            this.label78.TabIndex = 3;
+            this.label78.Text = "如果遇到问题，请到Github仓库反馈。\r\n\r\n如果能帮到你，可以到Github仓库给个star";
+            // 
+            // label77
+            // 
+            this.label77.AutoSize = true;
+            this.label77.Location = new System.Drawing.Point(30, 99);
+            this.label77.Name = "label77";
+            this.label77.Size = new System.Drawing.Size(378, 15);
+            this.label77.TabIndex = 2;
+            this.label77.Text = "开源地址：https://github.com/Topkill/tianruoocr";
+            // 
             // label_AuthorInfo
             // 
             this.label_AuthorInfo.AutoSize = true;
@@ -4872,7 +4894,6 @@ namespace TrOCR
             this.tab_标签.Controls.Add(this.Page_代理);
             this.tab_标签.Controls.Add(this.Page_更新);
             this.tab_标签.Controls.Add(this.Page_webdav);
-            // this.tab_标签.Controls.Add(this.Page_反馈);
             this.tab_标签.Controls.Add(this.Page_About);
             this.tab_标签.Location = new System.Drawing.Point(13, 2);
             this.tab_标签.Margin = new System.Windows.Forms.Padding(4);
@@ -5026,25 +5047,55 @@ namespace TrOCR
             // 
             // groupBox11
             // 
+            this.groupBox11.Controls.Add(this.label80);
+            this.groupBox11.Controls.Add(this.textBox39);
+            this.groupBox11.Controls.Add(this.label79);
             this.groupBox11.Controls.Add(this.label62);
             this.groupBox11.Controls.Add(this.textBox37);
             this.groupBox11.Controls.Add(this.label61);
             this.groupBox11.Controls.Add(this.cbBox_禁用隐藏原文按钮);
+            this.groupBox11.Controls.Add(this.checkBox_EnableTabHoverSwitch);
             this.groupBox11.Location = new System.Drawing.Point(9, 383);
             this.groupBox11.Name = "groupBox11";
-            this.groupBox11.Size = new System.Drawing.Size(511, 100);
+            this.groupBox11.Size = new System.Drawing.Size(511, 122);
             this.groupBox11.TabIndex = 1;
             this.groupBox11.TabStop = false;
             this.groupBox11.Text = "其他";
+            // 
+            // label80
+            // 
+            this.label80.AutoSize = true;
+            this.label80.Location = new System.Drawing.Point(185, 80);
+            this.label80.Name = "label80";
+            this.label80.Size = new System.Drawing.Size(240, 15);
+            this.label80.TabIndex = 9;
+            this.label80.Text = "倍（1倍为不放大，重新识别生效）";
+            // 
+            // textBox39
+            // 
+            this.textBox39.Location = new System.Drawing.Point(121, 77);
+            this.textBox39.Multiline = true;
+            this.textBox39.Name = "textBox39";
+            this.textBox39.Size = new System.Drawing.Size(58, 20);
+            this.textBox39.TabIndex = 8;
+            // 
+            // label79
+            // 
+            this.label79.AutoSize = true;
+            this.label79.Location = new System.Drawing.Point(1, 80);
+            this.label79.Name = "label79";
+            this.label79.Size = new System.Drawing.Size(75, 15);
+            this.label79.TabIndex = 7;
+            this.label79.Text = "文字缩放:";
             // 
             // label62
             // 
             this.label62.AutoSize = true;
             this.label62.Location = new System.Drawing.Point(185, 51);
             this.label62.Name = "label62";
-            this.label62.Size = new System.Drawing.Size(285, 15);
+            this.label62.Size = new System.Drawing.Size(240, 15);
             this.label62.TabIndex = 5;
-            this.label62.Text = "倍（1倍为不放大，修改后重启软件生效）";
+            this.label62.Text = "倍（1倍为不放大，重启软件生效）";
             // 
             // textBox37
             // 
@@ -5072,6 +5123,16 @@ namespace TrOCR
             this.cbBox_禁用隐藏原文按钮.TabIndex = 1;
             this.cbBox_禁用隐藏原文按钮.Text = "全局禁用显示/隐藏原文按钮";
             this.cbBox_禁用隐藏原文按钮.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_EnableTabHoverSwitch
+            // 
+            this.checkBox_EnableTabHoverSwitch.AutoSize = true;
+            this.checkBox_EnableTabHoverSwitch.Location = new System.Drawing.Point(248, 24);
+            this.checkBox_EnableTabHoverSwitch.Name = "checkBox_EnableTabHoverSwitch";
+            this.checkBox_EnableTabHoverSwitch.Size = new System.Drawing.Size(194, 19);
+            this.checkBox_EnableTabHoverSwitch.TabIndex = 6;
+            this.checkBox_EnableTabHoverSwitch.Text = "设置标签页悬停自动切换";
+            this.checkBox_EnableTabHoverSwitch.UseVisualStyleBackColor = true;
             // 
             // groupBox9
             // 
@@ -6953,24 +7014,6 @@ namespace TrOCR
             this.label32.Size = new System.Drawing.Size(67, 15);
             this.label32.TabIndex = 0;
             // 
-            // label77
-            // 
-            this.label77.AutoSize = true;
-            this.label77.Location = new System.Drawing.Point(30, 99);
-            this.label77.Name = "label77";
-            this.label77.Size = new System.Drawing.Size(378, 15);
-            this.label77.TabIndex = 2;
-            this.label77.Text = "开源地址：https://github.com/Topkill/tianruoocr";
-            // 
-            // label78
-            // 
-            this.label78.AutoSize = true;
-            this.label78.Location = new System.Drawing.Point(30, 136);
-            this.label78.Name = "label78";
-            this.label78.Size = new System.Drawing.Size(297, 45);
-            this.label78.TabIndex = 3;
-            this.label78.Text = "如果遇到问题，请到Github仓库反馈。\r\n\r\n如果能帮到你，可以到Github仓库给个star";
-            // 
             // FmSetting
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -7579,6 +7622,7 @@ namespace TrOCR
         private System.Windows.Forms.Label label33;
         private System.Windows.Forms.GroupBox groupBox11;
         private System.Windows.Forms.CheckBox cbBox_禁用隐藏原文按钮;
+        private System.Windows.Forms.CheckBox checkBox_EnableTabHoverSwitch;
         private System.Windows.Forms.CheckBox checkbox_AutoCopyScreenshotTranslation;
         private System.Windows.Forms.CheckBox checkbox_NoWindowScreenshotTranslation;
         private System.Windows.Forms.PictureBox pictureBox_截图翻译;
@@ -7788,5 +7832,8 @@ namespace TrOCR
         private System.Windows.Forms.Label label76;
         private System.Windows.Forms.Label label77;
         private System.Windows.Forms.Label label78;
+        private System.Windows.Forms.Label label79;
+        private System.Windows.Forms.Label label80;
+        private System.Windows.Forms.TextBox textBox39;
     }
 }
