@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -81,7 +81,7 @@ namespace TrOCR.Helper
                 if (ocr == null)
                 {
                     var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wco_data");
-                    ocr = new ImageOcr(path);
+                    ocr = new ImageOcr("");
                 }
                 ocr.Run(imageBytes, (path, result) =>
                 {
