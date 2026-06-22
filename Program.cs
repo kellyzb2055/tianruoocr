@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -36,7 +36,10 @@ namespace TrOCR
         [STAThread]
         public static void Main(string[] args)
         {
-           /* 
+            // 强制将当前工作目录设置为程序所在的安装目录，解决开机自启或通过注册表/快捷方式启动时，当前工作目录默认被设为 C:\Windows\system32 或用户主目录，导致微信OCR等组件寻找不到所需exe/dll依赖的问题。
+            System.IO.Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+
+            /* 
             *另一种定义dll依赖查找路径的方法，尝试修复使用收纳法后， PaddleOCR2初始化找不到依赖的问题。
             *经过测试，没有修复成功，把所有dll移动到lib文件夹后，PaddleOCR2初始化还是找不到依赖，只能把它相关的sdcb.paddle等dll依旧放在exe同级目录了
             try
