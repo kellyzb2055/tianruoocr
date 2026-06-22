@@ -4,16 +4,9 @@ name: 构建并发行
 
 # 触发工作流的事件
 on:
-  # push:
-    # # branches: [ "main","feature/more" ]
-    # branches: [ "main" ]
-    # tags: [ 'v*' ] # <--- 新增：当推送 v* 标签时也触发，匹配v开头的标签
-    # tags: [ '*' ] #匹配所有标签
-  # pull_request:
-  #   branches: [ "main" ]
-  # watch:
-  #   types: [started]
-  #手动触发按钮
+  push:
+    tags:
+      - 'v*'
   workflow_dispatch:
     # <--- 新增：为手动运行添加输入框，以支持手动运行 action 创建发行版(草稿) ---
     inputs:
